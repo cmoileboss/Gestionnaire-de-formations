@@ -1,0 +1,1991 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>NetCoreAPI</name>
+    </assembly>
+    <members>
+        <member name="T:NetCoreAPI.Controllers.AirecommandationController">
+            <summary>
+            Contrôleur REST exposé sous la route <c>/airecommandations</c>.
+            Gère les opérations CRUD sur les recommandations IA.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.AirecommandationController.#ctor(NetCoreAPI.Services.IAirecommandationService)">
+            <summary>
+            Initialise le contrôleur avec le service recommandation IA injecté.
+            </summary>
+            <param name="airecommandationService">Service métier des recommandations IA.</param>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.AirecommandationController.Get">
+            <summary>
+            Récupère la liste de toutes les recommandations IA.
+            </summary>
+            <returns>200 OK avec la liste des recommandations IA.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.AirecommandationController.GetById(System.Int32)">
+            <summary>
+            Récupère une recommandation IA par son identifiant.
+            </summary>
+            <param name="id">Identifiant de la recommandation.</param>
+            <returns>200 OK avec la recommandation ou 404 si non trouvée.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.AirecommandationController.Create(NetCoreAPI.DTOs.AirecommandationDto)">
+            <summary>
+            Crée une nouvelle recommandation IA.
+            </summary>
+            <param name="dto">Données de la recommandation à créer.</param>
+            <returns>201 Created avec la recommandation créée.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.AirecommandationController.Update(System.Int32,NetCoreAPI.DTOs.AirecommandationDto)">
+            <summary>
+            Met à jour une recommandation IA existante.
+            </summary>
+            <param name="id">Identifiant de la recommandation à mettre à jour.</param>
+            <param name="dto">Nouvelles données de la recommandation.</param>
+            <returns>200 OK avec la recommandation mise à jour.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.AirecommandationController.Delete(System.Int32)">
+            <summary>
+            Supprime une recommandation IA par son identifiant.
+            </summary>
+            <param name="id">Identifiant de la recommandation à supprimer.</param>
+            <returns>204 No Content si supprimée, 404 si non trouvée.</returns>
+        </member>
+        <member name="T:NetCoreAPI.Controllers.EvaluationController">
+            <summary>
+            Contrôleur REST exposé sous la route <c>/evaluations</c>.
+            Gère les opérations CRUD sur les évaluations.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.EvaluationController.#ctor(NetCoreAPI.Services.IEvaluationService)">
+            <summary>
+            Initialise le contrôleur avec le service évaluation injecté.
+            </summary>
+            <param name="evaluationService">Service métier des évaluations.</param>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.EvaluationController.Get">
+            <summary>
+            Récupère la liste de toutes les évaluations.
+            </summary>
+            <returns>200 OK avec la liste des évaluations.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.EvaluationController.GetById(System.Int32)">
+            <summary>
+            Récupère une évaluation par son identifiant.
+            </summary>
+            <param name="id">Identifiant de l'évaluation.</param>
+            <returns>200 OK avec l'évaluation ou 404 si non trouvée.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.EvaluationController.Create(NetCoreAPI.DTOs.EvaluationDto)">
+            <summary>
+            Crée une nouvelle évaluation.
+            </summary>
+            <param name="dto">Données de l'évaluation à créer.</param>
+            <returns>201 Created avec l'évaluation créée.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.EvaluationController.Update(System.Int32,NetCoreAPI.DTOs.EvaluationDto)">
+            <summary>
+            Met à jour une évaluation existante.
+            </summary>
+            <param name="id">Identifiant de l'évaluation à mettre à jour.</param>
+            <param name="dto">Nouvelles données de l'évaluation.</param>
+            <returns>200 OK avec l'évaluation mise à jour.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.EvaluationController.Delete(System.Int32)">
+            <summary>
+            Supprime une évaluation par son identifiant.
+            </summary>
+            <param name="id">Identifiant de l'évaluation à supprimer.</param>
+            <returns>204 No Content si supprimée, 404 si non trouvée.</returns>
+        </member>
+        <member name="T:NetCoreAPI.Controllers.FormationController">
+            <summary>
+            Contrôleur REST exposé sous la route <c>/formations</c>.
+            Gère les opérations CRUD sur les formations.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.FormationController.#ctor(NetCoreAPI.Services.IFormationService)">
+            <summary>
+            Initialise le contrôleur avec le service formation injecté.
+            </summary>
+            <param name="formationService">Service métier des formations.</param>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.FormationController.Get">
+            <summary>
+            Récupère la liste de toutes les formations.
+            </summary>
+            <returns>200 OK avec la liste des formations.</returns>
+            <response code="200">Liste des formations récupérée avec succès.</response>
+            <response code="401">Non autorisé. L'utilisateur doit être authentifié.</response>
+            <response code="403">Interdit. L'utilisateur n'a pas les permissions nécessaires.</response>
+            <response code="500">Erreur serveur. Un problème est survenu lors de la récupération des formations.</response>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.FormationController.GetById(System.Int32)">
+            <summary>
+            Récupère une formation par son identifiant.
+            </summary>
+            <param name="id">Identifiant de la formation.</param>
+            <returns>200 OK avec la formation ou 404 si non trouvée.</returns>
+            <response code="200">Formation récupérée avec succès.</response>
+            <response code="401">Non autorisé.</response>
+            <response code="404">Formation non trouvée.</response>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.FormationController.Create(NetCoreAPI.DTOs.FormationCreationUpdateDto)">
+            <summary>
+            Crée une nouvelle formation.
+            </summary>
+            <param name="formationDto">Données de la formation à créer.</param>
+            <returns>201 Created avec la formation créée.</returns>
+            <response code="201">Formation créée avec succès.</response>
+            <response code="400">Données invalides.</response>
+            <response code="401">Non autorisé.</response>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.FormationController.Update(System.Int32,NetCoreAPI.DTOs.FormationCreationUpdateDto)">
+            <summary>
+            Met à jour une formation existante.
+            </summary>
+            <param name="id">Identifiant de la formation à mettre à jour.</param>
+            <param name="formationDto">Nouvelles données de la formation.</param>
+            <returns>200 OK avec la formation mise à jour.</returns>
+            <response code="200">Formation mise à jour avec succès.</response>
+            <response code="400">Données invalides.</response>
+            <response code="401">Non autorisé.</response>
+            <response code="404">Formation non trouvée.</response>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.FormationController.Delete(System.Int32)">
+            <summary>
+            Supprime une formation par son identifiant.
+            </summary>
+            <param name="id">Identifiant de la formation à supprimer.</param>
+            <returns>204 No Content si supprimée, 404 si non trouvée.</returns>
+            <response code="204">Formation supprimée avec succès.</response>
+            <response code="401">Non autorisé.</response>
+            <response code="404">Formation non trouvée.</response>
+        </member>
+        <member name="T:NetCoreAPI.Controllers.ModuleController">
+            <summary>
+            Contrôleur REST exposé sous la route <c>/modules</c>.
+            Gère les opérations CRUD sur les modules pédagogiques.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.ModuleController.#ctor(NetCoreAPI.Services.IModuleService)">
+            <summary>
+            Initialise le contrôleur avec le service module injecté.
+            </summary>
+            <param name="moduleService">Service métier des modules.</param>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.ModuleController.Get">
+            <summary>
+            Récupère la liste de tous les modules.
+            </summary>
+            <returns>200 OK avec la liste des modules.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.ModuleController.GetById(System.Int32)">
+            <summary>
+            Récupère un module par son identifiant.
+            </summary>
+            <param name="id">Identifiant du module.</param>
+            <returns>200 OK avec le module ou 404 si non trouvé.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.ModuleController.Create(NetCoreAPI.DTOs.ModuleDto)">
+            <summary>
+            Crée un nouveau module.
+            </summary>
+            <param name="dto">Données du module à créer.</param>
+            <returns>201 Created avec le module créé.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.ModuleController.Update(System.Int32,NetCoreAPI.DTOs.ModuleDto)">
+            <summary>
+            Met à jour un module existant.
+            </summary>
+            <param name="id">Identifiant du module à mettre à jour.</param>
+            <param name="dto">Nouvelles données du module.</param>
+            <returns>200 OK avec le module mis à jour.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.ModuleController.Delete(System.Int32)">
+            <summary>
+            Supprime un module par son identifiant.
+            </summary>
+            <param name="id">Identifiant du module à supprimer.</param>
+            <returns>204 No Content si supprimé, 404 si non trouvé.</returns>
+        </member>
+        <member name="T:NetCoreAPI.Controllers.ResultController">
+            <summary>
+            Contrôleur REST exposé sous la route <c>/results</c>.
+            Gère les opérations CRUD sur les résultats d'évaluation.
+            La clé est composite : userId + evaluationId.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.ResultController.#ctor(NetCoreAPI.Services.IResultService)">
+            <summary>
+            Initialise le contrôleur avec le service résultat injecté.
+            </summary>
+            <param name="resultService">Service métier des résultats.</param>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.ResultController.Get">
+            <summary>
+            Récupère la liste de tous les résultats.
+            </summary>
+            <returns>200 OK avec la liste des résultats.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.ResultController.GetById(System.Int32,System.Int32)">
+            <summary>
+            Récupère un résultat par sa clé composite (userId + evaluationId).
+            </summary>
+            <param name="userId">Identifiant de l'utilisateur.</param>
+            <param name="evaluationId">Identifiant de l'évaluation.</param>
+            <returns>200 OK avec le résultat ou 404 si non trouvé.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.ResultController.Create(NetCoreAPI.DTOs.ResultDto)">
+            <summary>
+            Crée un nouveau résultat.
+            </summary>
+            <param name="dto">Données du résultat à créer.</param>
+            <returns>201 Created avec le résultat créé.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.ResultController.Update(System.Int32,System.Int32,NetCoreAPI.DTOs.ResultDto)">
+            <summary>
+            Met à jour un résultat existant.
+            </summary>
+            <param name="userId">Identifiant de l'utilisateur.</param>
+            <param name="evaluationId">Identifiant de l'évaluation.</param>
+            <param name="dto">Nouvelles données du résultat.</param>
+            <returns>200 OK avec le résultat mis à jour.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.ResultController.Delete(System.Int32,System.Int32)">
+            <summary>
+            Supprime un résultat par sa clé composite.
+            </summary>
+            <param name="userId">Identifiant de l'utilisateur.</param>
+            <param name="evaluationId">Identifiant de l'évaluation.</param>
+            <returns>204 No Content si supprimé, 404 si non trouvé.</returns>
+        </member>
+        <member name="T:NetCoreAPI.Controllers.SessionController">
+            <summary>
+            Contrôleur REST exposé sous la route <c>/sessions</c>.
+            Gère les opérations CRUD sur les sessions de formation.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.SessionController.#ctor(NetCoreAPI.Services.ISessionService)">
+            <summary>
+            Initialise le contrôleur avec le service session injecté.
+            </summary>
+            <param name="sessionService">Service métier des sessions.</param>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.SessionController.Get">
+            <summary>
+            Récupère la liste de toutes les sessions.
+            </summary>
+            <returns>200 OK avec la liste des sessions.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.SessionController.GetById(System.Int32)">
+            <summary>
+            Récupère une session par son identifiant.
+            </summary>
+            <param name="id">Identifiant de la session.</param>
+            <returns>200 OK avec la session ou 404 si non trouvée.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.SessionController.Create(NetCoreAPI.DTOs.SessionDto)">
+            <summary>
+            Crée une nouvelle session.
+            </summary>
+            <param name="dto">Données de la session à créer.</param>
+            <returns>201 Created avec la session créée.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.SessionController.Update(System.Int32,NetCoreAPI.DTOs.SessionDto)">
+            <summary>
+            Met à jour une session existante.
+            </summary>
+            <param name="id">Identifiant de la session à mettre à jour.</param>
+            <param name="dto">Nouvelles données de la session.</param>
+            <returns>200 OK avec la session mise à jour.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.SessionController.Delete(System.Int32)">
+            <summary>
+            Supprime une session par son identifiant.
+            </summary>
+            <param name="id">Identifiant de la session à supprimer.</param>
+            <returns>204 No Content si supprimée, 404 si non trouvée.</returns>
+        </member>
+        <member name="T:NetCoreAPI.Controllers.SubscriptionController">
+            <summary>
+            Contrôleur REST exposé sous la route <c>/subscriptions</c>.
+            Gère les opérations CRUD sur les abonnements (inscriptions aux sessions).
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.SubscriptionController.#ctor(NetCoreAPI.Services.ISubscriptionService)">
+            <summary>
+            Initialise le contrôleur avec le service abonnement injecté.
+            </summary>
+            <param name="subscriptionService">Service métier des abonnements.</param>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.SubscriptionController.Get">
+            <summary>
+            Récupère la liste de tous les abonnements.
+            </summary>
+            <returns>200 OK avec la liste des abonnements.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.SubscriptionController.GetById(System.Int32)">
+            <summary>
+            Récupère un abonnement par son identifiant.
+            </summary>
+            <param name="id">Identifiant de l'abonnement.</param>
+            <returns>200 OK avec l'abonnement ou 404 si non trouvé.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.SubscriptionController.Create(NetCoreAPI.DTOs.SubscriptionDto)">
+            <summary>
+            Crée un nouvel abonnement.
+            </summary>
+            <param name="dto">Données de l'abonnement à créer.</param>
+            <returns>201 Created avec l'abonnement créé.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.SubscriptionController.Update(System.Int32,NetCoreAPI.DTOs.SubscriptionDto)">
+            <summary>
+            Met à jour un abonnement existant.
+            </summary>
+            <param name="id">Identifiant de l'abonnement à mettre à jour.</param>
+            <param name="dto">Nouvelles données de l'abonnement.</param>
+            <returns>200 OK avec l'abonnement mis à jour.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.SubscriptionController.Delete(System.Int32)">
+            <summary>
+            Supprime un abonnement par son identifiant.
+            </summary>
+            <param name="id">Identifiant de l'abonnement à supprimer.</param>
+            <returns>204 No Content si supprimé, 404 si non trouvé.</returns>
+        </member>
+        <member name="T:NetCoreAPI.Controllers.UserController">
+            <summary>
+            Contrôleur REST exposé sous la route <c>/users</c>.
+            Gère les opérations CRUD sur les utilisateurs.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.UserController.#ctor(NetCoreAPI.Services.IUserService)">
+            <summary>
+            Initialise le contrôleur avec le service utilisateur injecté.
+            </summary>
+            <param name="userService">Service métier des utilisateurs.</param>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.UserController.Get">
+            <summary>
+            Récupère la liste de tous les utilisateurs.
+            </summary>
+            <returns>200 OK avec la liste des utilisateurs.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.UserController.Get(System.Int32)">
+            <summary>
+            Récupère un utilisateur par son identifiant.
+            </summary>
+            <param name="id">Identifiant de l'utilisateur.</param>
+            <returns>200 OK avec l'utilisateur, ou 404 s'il n'existe pas.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.UserController.Update(System.Int32,NetCoreAPI.DTOs.UserCreationUpdateDto)">
+            <summary>
+            Met à jour un utilisateur existant.
+            </summary>
+            <param name="id">Identifiant de l'utilisateur à mettre à jour.</param>
+            <param name="userDto">Nouvelles données de l'utilisateur.</param>
+            <returns>200 OK avec le DTO mis à jour.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.UserController.Delete(System.Int32)">
+            <summary>
+            Supprime un utilisateur par son identifiant.
+            </summary>
+            <param name="id">Identifiant de l'utilisateur à supprimer.</param>
+            <returns>204 No Content si supprimé, 404 s'il n'existe pas.</returns>
+        </member>
+        <member name="T:NetCoreAPI.Data.GestionFormationContext">
+            <summary>
+            Contexte Entity Framework Core pour la gestion des formations.
+            Fournit l'accès aux tables de la base de données via des <see cref="T:Microsoft.EntityFrameworkCore.DbSet`1"/>.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Data.GestionFormationContext.#ctor">
+            <summary>Initialise une instance avec les options par défaut.</summary>
+        </member>
+        <member name="M:NetCoreAPI.Data.GestionFormationContext.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions{NetCoreAPI.Data.GestionFormationContext})">
+            <summary>Initialise une instance avec les options spécifiées (injection de dépendances).</summary>
+            <param name="options">Options de configuration du contexte.</param>
+        </member>
+        <member name="P:NetCoreAPI.Data.GestionFormationContext.Airecommandations">
+            <summary>Table des recommandations IA.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Data.GestionFormationContext.Evaluations">
+            <summary>Table des évaluations.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Data.GestionFormationContext.Formations">
+            <summary>Table des formations.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Data.GestionFormationContext.Modules">
+            <summary>Table des modules pédagogiques.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Data.GestionFormationContext.Results">
+            <summary>Table des résultats d'évaluation.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Data.GestionFormationContext.Sessions">
+            <summary>Table des sessions de formation.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Data.GestionFormationContext.Subscriptions">
+            <summary>Table des abonnements (inscriptions) aux sessions.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Data.GestionFormationContext.Users">
+            <summary>Table des utilisateurs.</summary>
+        </member>
+        <member name="M:NetCoreAPI.Data.GestionFormationContext.OnConfiguring(Microsoft.EntityFrameworkCore.DbContextOptionsBuilder)">
+            <summary>
+            Configure la chaîne de connexion à la base de données SQL Server
+            à partir des variables d'environnement <c>Server</c> et <c>Database</c>.
+            </summary>
+            <param name="optionsBuilder">Constructeur d'options du contexte.</param>
+        </member>
+        <member name="M:NetCoreAPI.Data.GestionFormationContext.OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <summary>
+            Configure le schéma de la base de données : clés, index, relations et mappages de colonnes.
+            </summary>
+            <param name="modelBuilder">Constructeur de modèle EF Core.</param>
+        </member>
+        <member name="T:NetCoreAPI.DTOs.AirecommandationDto">
+            <summary>
+            DTO représentant une recommandation générée par l'IA pour une session.
+            </summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.AirecommandationDto.RecommendationId">
+            <summary>Identifiant unique de la recommandation.</summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.AirecommandationDto.SessionId">
+            <summary>Identifiant de la session concernée par la recommandation.</summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.AirecommandationDto.Date">
+            <summary>Date de génération de la recommandation.</summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.AirecommandationDto.Confidence">
+            <summary>Niveau de confiance du modèle IA (entre 0 et 100).</summary>
+        </member>
+        <member name="T:NetCoreAPI.DTOs.AuthDto">
+            <summary>
+            DTO pour l'authentification des utilisateurs.
+            Contient les propriétés nécessaires pour la connexion et l'inscription.
+            </summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.AuthDto.Email">
+            <summary>
+            Nom d'utilisateur de l'utilisateur.
+            </summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.AuthDto.Password">
+            <summary>
+            Mot de passe de l'utilisateur.
+            </summary>
+        </member>
+        <member name="T:NetCoreAPI.DTOs.EvaluationDto">
+            <summary>
+            DTO représentant une évaluation associée à un module.
+            </summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.EvaluationDto.EvaluationId">
+            <summary>Identifiant unique de l'évaluation.</summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.EvaluationDto.StartDate">
+            <summary>Date et heure de début de l'évaluation.</summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.EvaluationDto.EndDate">
+            <summary>Date et heure de fin de l'évaluation.</summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.EvaluationDto.Place">
+            <summary>Lieu où se déroule l'évaluation.</summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.EvaluationDto.ModuleId">
+            <summary>Identifiant du module auquel cette évaluation est rattachée.</summary>
+        </member>
+        <member name="T:NetCoreAPI.DTOs.FormationDto">
+            <summary>
+            DTO représentant une formation avec ses modules et sessions associés.
+            </summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.FormationDto.FormationId">
+            <summary>Identifiant unique de la formation.</summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.FormationDto.Title">
+            <summary>Titre de la formation.</summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.FormationDto.Description">
+            <summary>Description détaillée de la formation.</summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.FormationDto.Modules">
+            <summary>Liste des modules composant la formation.</summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.FormationDto.Sessions">
+            <summary>Liste des sessions planifiées pour cette formation.</summary>
+        </member>
+        <member name="T:NetCoreAPI.DTOs.ModuleDto">
+            <summary>
+            DTO représentant un module pédagogique.
+            </summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.ModuleDto.ModuleId">
+            <summary>Identifiant unique du module.</summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.ModuleDto.Title">
+            <summary>Titre du module.</summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.ModuleDto.Subject">
+            <summary>Sujet principal abordé par le module.</summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.ModuleDto.Description">
+            <summary>Description détaillée du contenu du module.</summary>
+        </member>
+        <member name="T:NetCoreAPI.DTOs.ResultDto">
+            <summary>
+            DTO représentant le résultat d'un utilisateur à une évaluation.
+            Clé composite : UserId + EvaluationId.
+            </summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.ResultDto.UserId">
+            <summary>Identifiant de l'utilisateur.</summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.ResultDto.EvaluationId">
+            <summary>Identifiant de l'évaluation.</summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.ResultDto.Score">
+            <summary>Score numérique obtenu par l'utilisateur.</summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.ResultDto.Success">
+            <summary>Indique si l'utilisateur a réussi l'évaluation.</summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.ResultDto.Date">
+            <summary>Date à laquelle le résultat a été enregistré.</summary>
+        </member>
+        <member name="T:NetCoreAPI.DTOs.SessionDto">
+            <summary>
+            DTO représentant une session de formation (date, lieu et formation associée).
+            </summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.SessionDto.SessionId">
+            <summary>Identifiant unique de la session.</summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.SessionDto.FormationId">
+            <summary>Identifiant de la formation dont fait partie la session.</summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.SessionDto.StartDate">
+            <summary>Date et heure de début de la session.</summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.SessionDto.EndDate">
+            <summary>Date et heure de fin de la session.</summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.SessionDto.Place">
+            <summary>Lieu où se déroule la session.</summary>
+        </member>
+        <member name="T:NetCoreAPI.DTOs.SubscriptionDto">
+            <summary>
+            DTO représentant l'inscription d'un utilisateur à une session de formation.
+            </summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.SubscriptionDto.UserId">
+            <summary>Identifiant de l'utilisateur inscrit.</summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.SubscriptionDto.SessionId">
+            <summary>Identifiant de la session visée.</summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.SubscriptionDto.SubscriptionDate">
+            <summary>Date à laquelle l'inscription a été effectuée.</summary>
+        </member>
+        <member name="T:NetCoreAPI.DTOs.UserCreationUpdateDto">
+            <summary>
+            DTO utilisé pour la création ou la mise à jour d'un utilisateur.
+            </summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.UserCreationUpdateDto.PasswordHash">
+            <summary>Hash du mot de passe (8 à 100 caractères).</summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.UserCreationUpdateDto.Email">
+            <summary>Adresse email unique de l'utilisateur.</summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.UserCreationUpdateDto.Address">
+            <summary>Adresse postale de l'utilisateur (optionnelle).</summary>
+        </member>
+        <member name="T:NetCoreAPI.DTOs.UserDto">
+            <summary>
+            DTO représentant les données publiques d'un utilisateur (lecture).
+            </summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.UserDto.UserId">
+            <summary>Identifiant unique de l'utilisateur.</summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.UserDto.Email">
+            <summary>Adresse email de l'utilisateur.</summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.UserDto.Address">
+            <summary>Adresse postale de l'utilisateur (optionnelle).</summary>
+        </member>
+        <member name="T:NetCoreAPI.Mapping.MappingProfile">
+            <summary>
+            Profil AutoMapper définissant les correspondances entre les modèles du domaine et les DTOs.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Mapping.MappingProfile.#ctor">
+            <summary>
+            Configure toutes les correspondances bidirectionnelles entre modèles et DTOs.
+            </summary>
+        </member>
+        <member name="T:NetCoreAPI.Models.Airecommandation">
+            <summary>
+            Représente une recommandation générée par l'IA pour une session de formation.
+            </summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Airecommandation.RecommendationId">
+            <summary>Identifiant unique de la recommandation IA.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Airecommandation.SessionId">
+            <summary>Identifiant de la session pour laquelle la recommandation a été générée.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Airecommandation.Date">
+            <summary>Date de génération de la recommandation.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Airecommandation.Confidence">
+            <summary>Niveau de confiance de la recommandation IA (entre 0 et 100).</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Airecommandation.Session">
+            <summary>Session pour laquelle cette recommandation a été produite.</summary>
+        </member>
+        <member name="T:NetCoreAPI.Models.Evaluation">
+            <summary>
+            Représente une évaluation associée à un module de formation.
+            </summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Evaluation.EvaluationId">
+            <summary>Identifiant unique de l'évaluation.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Evaluation.StartDate">
+            <summary>Date et heure de début de l'évaluation.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Evaluation.EndDate">
+            <summary>Date et heure de fin de l'évaluation.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Evaluation.Place">
+            <summary>Lieu où se déroule l'évaluation.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Evaluation.ModuleId">
+            <summary>Identifiant du module auquel cette évaluation est rattachée.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Evaluation.Module">
+            <summary>Module auquel cette évaluation est rattachée.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Evaluation.Results">
+            <summary>Résultats obtenus par les utilisateurs à cette évaluation.</summary>
+        </member>
+        <member name="T:NetCoreAPI.Models.Formation">
+            <summary>
+            Représente une formation disponible sur la plateforme.
+            </summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Formation.FormationId">
+            <summary>Identifiant unique de la formation.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Formation.Title">
+            <summary>Titre de la formation.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Formation.Description">
+            <summary>Description détaillée du contenu de la formation.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Formation.Sessions">
+            <summary>Sessions planifiées pour cette formation.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Formation.Modules">
+            <summary>Modules pédagogiques composant la formation.</summary>
+        </member>
+        <member name="T:NetCoreAPI.Models.Module">
+            <summary>
+            Représente un module pédagogique faisant partie d'une ou plusieurs formations.
+            </summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Module.ModuleId">
+            <summary>Identifiant unique du module.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Module.Title">
+            <summary>Titre du module.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Module.Subject">
+            <summary>Sujet principal abordé par le module.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Module.Description">
+            <summary>Description détaillée du contenu du module.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Module.Evaluations">
+            <summary>Évaluations rattachées à ce module.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Module.Formations">
+            <summary>Formations qui incluent ce module.</summary>
+        </member>
+        <member name="T:NetCoreAPI.Models.Result">
+            <summary>
+            Représente le résultat obtenu par un utilisateur à une évaluation.
+            Clé composite : identifiant utilisateur + identifiant évaluation.
+            </summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Result.UserId">
+            <summary>Identifiant de l'utilisateur (partie de la clé composite).</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Result.EvaluationId">
+            <summary>Identifiant de l'évaluation (partie de la clé composite).</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Result.Score">
+            <summary>Score numérique obtenu par l'utilisateur.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Result.Success">
+            <summary>Indique si l'utilisateur a réussi l'évaluation.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Result.Date">
+            <summary>Date à laquelle le résultat a été enregistré.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Result.Evaluation">
+            <summary>Évaluation associée à ce résultat.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Result.User">
+            <summary>Utilisateur ayant obtenu ce résultat.</summary>
+        </member>
+        <member name="T:NetCoreAPI.Models.Session">
+            <summary>
+            Représente une session planifiée d'une formation à une date et un lieu donnés.
+            </summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Session.SessionId">
+            <summary>Identifiant unique de la session.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Session.FormationId">
+            <summary>Identifiant de la formation associée à cette session.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Session.StartDate">
+            <summary>Date et heure de début de la session.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Session.EndDate">
+            <summary>Date et heure de fin de la session.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Session.Place">
+            <summary>Lieu où se déroule la session.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Session.Airecommandations">
+            <summary>Recommandations IA générées pour cette session.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Session.Formation">
+            <summary>Formation associée à cette session.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Session.Subscriptions">
+            <summary>Abonnements des utilisateurs à cette session.</summary>
+        </member>
+        <member name="T:NetCoreAPI.Models.Subscription">
+            <summary>
+            Représente l'inscription d'un utilisateur à une session de formation.
+            Clé composite : identifiant utilisateur + identifiant session.
+            </summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Subscription.UserId">
+            <summary>Identifiant de l'utilisateur inscrit (partie de la clé composite).</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Subscription.SessionId">
+            <summary>Identifiant de la session visée (partie de la clé composite).</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Subscription.SubscriptionDate">
+            <summary>Date à laquelle l'inscription a été effectuée.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Subscription.Session">
+            <summary>Session à laquelle l'utilisateur est inscrit.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.Subscription.User">
+            <summary>Utilisateur qui s'est inscrit.</summary>
+        </member>
+        <member name="T:NetCoreAPI.Models.User">
+            <summary>
+            Représente un utilisateur de la plateforme de gestion des formations.
+            </summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.User.UserId">
+            <summary>Identifiant unique de l'utilisateur.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.User.PasswordHash">
+            <summary>Hash du mot de passe de l'utilisateur (min. 8 caractères).</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.User.Email">
+            <summary>Adresse email unique de l'utilisateur.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.User.Address">
+            <summary>Adresse postale de l'utilisateur (optionnelle).</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.User.Results">
+            <summary>Résultats d'évaluation associés à l'utilisateur.</summary>
+        </member>
+        <member name="P:NetCoreAPI.Models.User.Subscriptions">
+            <summary>Abonnements aux sessions de l'utilisateur.</summary>
+        </member>
+        <member name="T:NetCoreAPI.Repositories.AirecommandationRepository">
+            <summary>
+            Repository pour la gestion des entités Airecommandation.
+            Fournit des méthodes CRUD pour les recommandations IA.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.AirecommandationRepository.#ctor(NetCoreAPI.Data.GestionFormationContext)">
+            <summary>
+            Initialise une nouvelle instance du repository Airecommandation.
+            </summary>
+            <param name="context">Contexte de base de données injecté.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.AirecommandationRepository.GetAllAsync">
+            <summary>
+            Récupère toutes les recommandations IA.
+            </summary>
+            <returns>Liste des recommandations IA.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.AirecommandationRepository.GetByIdAsync(System.Int32)">
+            <summary>
+            Récupère une recommandation IA par son identifiant.
+            </summary>
+            <param name="id">Identifiant de la recommandation.</param>
+            <returns>Recommandation correspondante ou null.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.AirecommandationRepository.AddAsync(NetCoreAPI.Models.Airecommandation)">
+            <summary>
+            Ajoute une nouvelle recommandation IA.
+            </summary>
+            <param name="entity">Recommandation à ajouter.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.AirecommandationRepository.UpdateAsync(NetCoreAPI.Models.Airecommandation)">
+            <summary>
+            Met à jour une recommandation IA existante.
+            </summary>
+            <param name="entity">Recommandation à mettre à jour.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.AirecommandationRepository.DeleteAsync(System.Int32)">
+            <summary>
+            Supprime une recommandation IA par son identifiant.
+            </summary>
+            <param name="id">Identifiant de la recommandation à supprimer.</param>
+        </member>
+        <member name="T:NetCoreAPI.Repositories.EvaluationRepository">
+            <summary>
+            Repository pour la gestion des entités Evaluation.
+            Fournit des méthodes CRUD pour les évaluations.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.EvaluationRepository.#ctor(NetCoreAPI.Data.GestionFormationContext)">
+            <summary>
+            Initialise une nouvelle instance du repository Evaluation.
+            </summary>
+            <param name="context">Contexte de base de données injecté.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.EvaluationRepository.GetAllAsync">
+            <summary>
+            Récupère toutes les évaluations.
+            </summary>
+            <returns>Liste des évaluations.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.EvaluationRepository.GetByIdAsync(System.Int32)">
+            <summary>
+            Récupère une évaluation par son identifiant.
+            </summary>
+            <param name="id">Identifiant de l'évaluation.</param>
+            <returns>Évaluation correspondante ou null.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.EvaluationRepository.AddAsync(NetCoreAPI.Models.Evaluation)">
+            <summary>
+            Ajoute une nouvelle évaluation.
+            </summary>
+            <param name="entity">Évaluation à ajouter.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.EvaluationRepository.UpdateAsync(NetCoreAPI.Models.Evaluation)">
+            <summary>
+            Met à jour une évaluation existante.
+            </summary>
+            <param name="entity">Évaluation à mettre à jour.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.EvaluationRepository.DeleteAsync(System.Int32)">
+            <summary>
+            Supprime une évaluation par son identifiant.
+            </summary>
+            <param name="id">Identifiant de l'évaluation à supprimer.</param>
+        </member>
+        <member name="T:NetCoreAPI.Repositories.FormationRepository">
+            <summary>
+            Repository pour la gestion des entités Formation.
+            Fournit des méthodes CRUD pour les formations.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.FormationRepository.#ctor(NetCoreAPI.Data.GestionFormationContext)">
+            <summary>
+            Initialise une nouvelle instance du repository Formation.
+            </summary>
+            <param name="context">Contexte de base de données injecté.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.FormationRepository.GetAllAsync">
+            <summary>
+            Récupère toutes les formations.
+            </summary>
+            <returns>Liste des formations.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.FormationRepository.GetByIdAsync(System.Int32)">
+            <summary>
+            Récupère une formation par son identifiant.
+            </summary>
+            <param name="id">Identifiant de la formation.</param>
+            <returns>Formation correspondante ou null.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.FormationRepository.AddAsync(NetCoreAPI.Models.Formation)">
+            <summary>
+            Ajoute une nouvelle formation.
+            </summary>
+            <param name="entity">Formation à ajouter.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.FormationRepository.UpdateAsync(NetCoreAPI.Models.Formation)">
+            <summary>
+            Met à jour une formation existante.
+            </summary>
+            <param name="entity">Formation à mettre à jour.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.FormationRepository.DeleteAsync(System.Int32)">
+            <summary>
+            Supprime une formation par son identifiant.
+            </summary>
+            <param name="id">Identifiant de la formation à supprimer.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.FormationRepository.ExistsAsync(System.Int32)">
+            <summary> 
+            Vérifie si une formation existe par son identifiant.
+            </summary>
+            <param name="id">Identifiant de la formation.</param>
+            <returns>True si la formation existe, sinon false.</returns>
+        </member>
+        <member name="T:NetCoreAPI.Repositories.IAirecommandationRepository">
+            <summary>
+            Interface du repository pour la gestion des recommandations IA.
+            Définit les opérations CRUD sur les recommandations IA.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.IAirecommandationRepository.GetAllAsync">
+            <summary>
+            Récupère toutes les recommandations IA.
+            </summary>
+            <returns>Liste des recommandations IA.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.IAirecommandationRepository.GetByIdAsync(System.Int32)">
+            <summary>
+            Récupère une recommandation IA par son identifiant.
+            </summary>
+            <param name="id">Identifiant de la recommandation.</param>
+            <returns>La recommandation ou null.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.IAirecommandationRepository.AddAsync(NetCoreAPI.Models.Airecommandation)">
+            <summary>
+            Ajoute une nouvelle recommandation IA.
+            </summary>
+            <param name="entity">Recommandation à ajouter.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.IAirecommandationRepository.UpdateAsync(NetCoreAPI.Models.Airecommandation)">
+            <summary>
+            Met à jour une recommandation IA existante.
+            </summary>
+            <param name="entity">Recommandation à mettre à jour.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.IAirecommandationRepository.DeleteAsync(System.Int32)">
+            <summary>
+            Supprime une recommandation IA par son identifiant.
+            </summary>
+            <param name="id">Identifiant de la recommandation à supprimer.</param>
+        </member>
+        <member name="T:NetCoreAPI.Repositories.IEvaluationRepository">
+            <summary>
+            Interface du repository pour la gestion des évaluations.
+            Définit les opérations CRUD sur les évaluations.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.IEvaluationRepository.GetAllAsync">
+            <summary>
+            Récupère toutes les évaluations.
+            </summary>
+            <returns>Liste des évaluations.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.IEvaluationRepository.GetByIdAsync(System.Int32)">
+            <summary>
+            Récupère une évaluation par son identifiant.
+            </summary>
+            <param name="id">Identifiant de l'évaluation.</param>
+            <returns>L'évaluation ou null.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.IEvaluationRepository.AddAsync(NetCoreAPI.Models.Evaluation)">
+            <summary>
+            Ajoute une nouvelle évaluation.
+            </summary>
+            <param name="entity">Évaluation à ajouter.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.IEvaluationRepository.UpdateAsync(NetCoreAPI.Models.Evaluation)">
+            <summary>
+            Met à jour une évaluation existante.
+            </summary>
+            <param name="entity">Évaluation à mettre à jour.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.IEvaluationRepository.DeleteAsync(System.Int32)">
+            <summary>
+            Supprime une évaluation par son identifiant.
+            </summary>
+            <param name="id">Identifiant de l'évaluation à supprimer.</param>
+        </member>
+        <member name="T:NetCoreAPI.Repositories.IFormationRepository">
+            <summary>
+            Interface du repository pour la gestion des formations.
+            Définit les opérations CRUD sur les formations.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.IFormationRepository.GetAllAsync">
+            <summary>
+            Récupère toutes les formations.
+            </summary>
+            <returns>Liste des formations.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.IFormationRepository.GetByIdAsync(System.Int32)">
+            <summary>
+            Récupère une formation par son identifiant.
+            </summary>
+            <param name="id">Identifiant de la formation.</param>
+            <returns>La formation ou null.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.IFormationRepository.AddAsync(NetCoreAPI.Models.Formation)">
+            <summary>
+            Ajoute une nouvelle formation.
+            </summary>
+            <param name="entity">Formation à ajouter.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.IFormationRepository.UpdateAsync(NetCoreAPI.Models.Formation)">
+            <summary>
+            Met à jour une formation existante.
+            </summary>
+            <param name="entity">Formation à mettre à jour.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.IFormationRepository.DeleteAsync(System.Int32)">
+            <summary>
+            Supprime une formation par son identifiant.
+            </summary>
+            <param name="id">Identifiant de la formation à supprimer.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.IFormationRepository.ExistsAsync(System.Int32)">
+            <summary> 
+            Vérifie si une formation existe par son identifiant.
+            </summary>
+            <param name="id">Identifiant de la formation.</param>
+            <returns>True si la formation existe, sinon false.</returns>
+        </member>
+        <member name="T:NetCoreAPI.Repositories.IModuleRepository">
+            <summary>
+            Interface du repository pour la gestion des modules.
+            Définit les opérations CRUD sur les modules de formation.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.IModuleRepository.GetAllAsync">
+            <summary>
+            Récupère tous les modules.
+            </summary>
+            <returns>Liste des modules.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.IModuleRepository.GetByIdAsync(System.Int32)">
+            <summary>
+            Récupère un module par son identifiant.
+            </summary>
+            <param name="id">Identifiant du module.</param>
+            <returns>Le module ou null.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.IModuleRepository.AddAsync(NetCoreAPI.Models.Module)">
+            <summary>
+            Ajoute un nouveau module.
+            </summary>
+            <param name="entity">Module à ajouter.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.IModuleRepository.UpdateAsync(NetCoreAPI.Models.Module)">
+            <summary>
+            Met à jour un module existant.
+            </summary>
+            <param name="entity">Module à mettre à jour.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.IModuleRepository.DeleteAsync(System.Int32)">
+            <summary>
+            Supprime un module par son identifiant.
+            </summary>
+            <param name="id">Identifiant du module à supprimer.</param>
+        </member>
+        <member name="T:NetCoreAPI.Repositories.IResultRepository">
+            <summary>
+            Interface du repository pour la gestion des résultats d'évaluation.
+            Définit les opérations CRUD sur les résultats (clé composite UserId + EvaluationId).
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.IResultRepository.GetAllAsync">
+            <summary>Récupère tous les résultats.</summary>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.IResultRepository.GetByIdAsync(System.Int32,System.Int32)">
+            <summary>Récupère un résultat par sa clé composite.</summary>
+            <param name="userId">Identifiant de l'utilisateur.</param>
+            <param name="evaluationId">Identifiant de l'évaluation.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.IResultRepository.AddAsync(NetCoreAPI.Models.Result)">
+            <summary>Ajoute un nouveau résultat.</summary>
+            <param name="entity">Résultat à ajouter.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.IResultRepository.UpdateAsync(NetCoreAPI.Models.Result)">
+            <summary>Met à jour un résultat existant.</summary>
+            <param name="entity">Résultat à mettre à jour.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.IResultRepository.DeleteAsync(System.Int32,System.Int32)">
+            <summary>Supprime un résultat par sa clé composite.</summary>
+            <param name="userId">Identifiant de l'utilisateur.</param>
+            <param name="evaluationId">Identifiant de l'évaluation.</param>
+        </member>
+        <member name="T:NetCoreAPI.Repositories.ISessionRepository">
+            <summary>
+            Interface du repository pour la gestion des sessions.
+            Définit les opérations CRUD sur les sessions de formation.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.ISessionRepository.GetAllAsync">
+            <summary>
+            Récupère toutes les sessions.
+            </summary>
+            <returns>Liste des sessions.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.ISessionRepository.GetByIdAsync(System.Int32)">
+            <summary>
+            Récupère une session par son identifiant.
+            </summary>
+            <param name="id">Identifiant de la session.</param>
+            <returns>La session ou null.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.ISessionRepository.AddAsync(NetCoreAPI.Models.Session)">
+            <summary>
+            Ajoute une nouvelle session.
+            </summary>
+            <param name="entity">Session à ajouter.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.ISessionRepository.UpdateAsync(NetCoreAPI.Models.Session)">
+            <summary>
+            Met à jour une session existante.
+            </summary>
+            <param name="entity">Session à mettre à jour.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.ISessionRepository.DeleteAsync(System.Int32)">
+            <summary>
+            Supprime une session par son identifiant.
+            </summary>
+            <param name="id">Identifiant de la session à supprimer.</param>
+        </member>
+        <member name="T:NetCoreAPI.Repositories.ISubscriptionRepository">
+            <summary>
+            Interface du repository pour la gestion des abonnements.
+            Définit les opérations CRUD sur les abonnements.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.ISubscriptionRepository.GetAllAsync">
+            <summary>
+            Récupère tous les abonnements.
+            </summary>
+            <returns>Liste des abonnements.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.ISubscriptionRepository.GetByIdAsync(System.Int32)">
+            <summary>
+            Récupère un abonnement par son identifiant.
+            </summary>
+            <param name="id">Identifiant de l'abonnement.</param>
+            <returns>L'abonnement ou null.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.ISubscriptionRepository.AddAsync(NetCoreAPI.Models.Subscription)">
+            <summary>
+            Ajoute un nouvel abonnement.
+            </summary>
+            <param name="entity">Abonnement à ajouter.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.ISubscriptionRepository.UpdateAsync(NetCoreAPI.Models.Subscription)">
+            <summary>
+            Met à jour un abonnement existant.
+            </summary>
+            <param name="entity">Abonnement à mettre à jour.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.ISubscriptionRepository.DeleteAsync(System.Int32)">
+            <summary>
+            Supprime un abonnement par son identifiant.
+            </summary>
+            <param name="id">Identifiant de l'abonnement à supprimer.</param>
+        </member>
+        <member name="T:NetCoreAPI.Repositories.IUserRepository">
+            <summary>
+            Interface du repository pour la gestion des utilisateurs.
+            Définit les opérations CRUD et de recherche utilisateur.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.IUserRepository.GetAllAsync">
+            <summary>
+            Récupère tous les utilisateurs.
+            </summary>
+            <returns>Liste des utilisateurs.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.IUserRepository.GetByIdAsync(System.Int32)">
+            <summary>
+            Récupère un utilisateur par son identifiant.
+            </summary>
+            <param name="id">Identifiant de l'utilisateur.</param>
+            <returns>L'utilisateur ou null.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.IUserRepository.GetByEmailAsync(System.String)">
+            <summary>
+            Récupère un utilisateur par son email.
+            </summary>
+            <param name="email">Email de l'utilisateur.</param>
+            <returns>L'utilisateur ou null.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.IUserRepository.CreateAsync(NetCoreAPI.Models.User)">
+            <summary>
+            Crée un nouvel utilisateur.
+            </summary>
+            <param name="user">Utilisateur à créer.</param>
+            <returns>L'utilisateur créé.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.IUserRepository.UpdateAsync(NetCoreAPI.Models.User)">
+            <summary>
+            Met à jour un utilisateur existant.
+            </summary>
+            <param name="user">Utilisateur à mettre à jour.</param>
+            <returns>L'utilisateur mis à jour.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.IUserRepository.DeleteAsync(System.Int32)">
+            <summary>
+            Supprime un utilisateur par son identifiant.
+            </summary>
+            <param name="id">Identifiant de l'utilisateur à supprimer.</param>
+            <returns>True si supprimé, sinon false.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.IUserRepository.ExistsAsync(System.Int32)">
+            <summary>
+            Vérifie si un utilisateur existe par son identifiant.
+            </summary>
+            <param name="id">Identifiant de l'utilisateur.</param>
+            <returns>True si l'utilisateur existe.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.IUserRepository.EmailExistsAsync(System.String)">
+            <summary>
+            Vérifie si un email existe déjà.
+            </summary>
+            <param name="email">Email à vérifier.</param>
+            <returns>True si l'email existe.</returns>
+        </member>
+        <member name="T:NetCoreAPI.Repositories.ModuleRepository">
+            <summary>
+            Repository pour la gestion des entités Module.
+            Fournit des méthodes CRUD pour les modules de formation.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.ModuleRepository.#ctor(NetCoreAPI.Data.GestionFormationContext)">
+            <summary>
+            Initialise une nouvelle instance du repository Module.
+            </summary>
+            <param name="context">Contexte de base de données injecté.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.ModuleRepository.GetAllAsync">
+            <summary>
+            Récupère tous les modules.
+            </summary>
+            <returns>Liste des modules.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.ModuleRepository.GetByIdAsync(System.Int32)">
+            <summary>
+            Récupère un module par son identifiant.
+            </summary>
+            <param name="id">Identifiant du module.</param>
+            <returns>Module correspondant ou null.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.ModuleRepository.AddAsync(NetCoreAPI.Models.Module)">
+            <summary>
+            Ajoute un nouveau module.
+            </summary>
+            <param name="entity">Module à ajouter.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.ModuleRepository.UpdateAsync(NetCoreAPI.Models.Module)">
+            <summary>
+            Met à jour un module existant.
+            </summary>
+            <param name="entity">Module à mettre à jour.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.ModuleRepository.DeleteAsync(System.Int32)">
+            <summary>
+            Supprime un module par son identifiant.
+            </summary>
+            <param name="id">Identifiant du module à supprimer.</param>
+        </member>
+        <member name="T:NetCoreAPI.Repositories.ResultRepository">
+            <summary>
+            Repository pour la gestion des entités Result.
+            Fournit des méthodes CRUD pour les résultats d'évaluation (clé composite UserId + EvaluationId).
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.ResultRepository.#ctor(NetCoreAPI.Data.GestionFormationContext)">
+            <summary>
+            Initialise une nouvelle instance du repository Result.
+            </summary>
+            <param name="context">Contexte de base de données injecté.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.ResultRepository.GetAllAsync">
+            <summary>Récupère tous les résultats.</summary>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.ResultRepository.GetByIdAsync(System.Int32,System.Int32)">
+            <summary>Récupère un résultat par sa clé composite.</summary>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.ResultRepository.AddAsync(NetCoreAPI.Models.Result)">
+            <summary>Ajoute un nouveau résultat.</summary>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.ResultRepository.UpdateAsync(NetCoreAPI.Models.Result)">
+            <summary>Met à jour un résultat existant.</summary>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.ResultRepository.DeleteAsync(System.Int32,System.Int32)">
+            <summary>Supprime un résultat par sa clé composite.</summary>
+        </member>
+        <member name="T:NetCoreAPI.Repositories.SessionRepository">
+            <summary>
+            Repository pour la gestion des entités Session.
+            Fournit des méthodes CRUD pour les sessions de formation.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.SessionRepository.#ctor(NetCoreAPI.Data.GestionFormationContext)">
+            <summary>
+            Initialise une nouvelle instance du repository Session.
+            </summary>
+            <param name="context">Contexte de base de données injecté.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.SessionRepository.GetAllAsync">
+            <summary>
+            Récupère toutes les sessions.
+            </summary>
+            <returns>Liste des sessions.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.SessionRepository.GetByIdAsync(System.Int32)">
+            <summary>
+            Récupère une session par son identifiant.
+            </summary>
+            <param name="id">Identifiant de la session.</param>
+            <returns>Session correspondante ou null.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.SessionRepository.AddAsync(NetCoreAPI.Models.Session)">
+            <summary>
+            Ajoute une nouvelle session.
+            </summary>
+            <param name="entity">Session à ajouter.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.SessionRepository.UpdateAsync(NetCoreAPI.Models.Session)">
+            <summary>
+            Met à jour une session existante.
+            </summary>
+            <param name="entity">Session à mettre à jour.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.SessionRepository.DeleteAsync(System.Int32)">
+            <summary>
+            Supprime une session par son identifiant.
+            </summary>
+            <param name="id">Identifiant de la session à supprimer.</param>
+        </member>
+        <member name="T:NetCoreAPI.Repositories.SubscriptionRepository">
+            <summary>
+            Repository pour la gestion des abonnements (Subscription).
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.SubscriptionRepository.#ctor(NetCoreAPI.Data.GestionFormationContext)">
+            <summary>
+            Initialise une nouvelle instance du repository Subscription.
+            </summary>
+            <param name="context">Le contexte de base de données.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.SubscriptionRepository.GetAllAsync">
+            <summary>
+            Récupère tous les abonnements.
+            </summary>
+            <returns>Liste des abonnements.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.SubscriptionRepository.GetByIdAsync(System.Int32)">
+            <summary>
+            Récupère un abonnement par son identifiant.
+            </summary>
+            <param name="id">Identifiant de l'abonnement.</param>
+            <returns>L'abonnement ou null.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.SubscriptionRepository.AddAsync(NetCoreAPI.Models.Subscription)">
+            <summary>
+            Ajoute un nouvel abonnement.
+            </summary>
+            <param name="entity">L'abonnement à ajouter.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.SubscriptionRepository.UpdateAsync(NetCoreAPI.Models.Subscription)">
+            <summary>
+            Met à jour un abonnement existant.
+            </summary>
+            <param name="entity">L'abonnement à mettre à jour.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.SubscriptionRepository.DeleteAsync(System.Int32)">
+            <summary>
+            Supprime un abonnement par son identifiant.
+            </summary>
+            <param name="id">Identifiant de l'abonnement à supprimer.</param>
+        </member>
+        <member name="T:NetCoreAPI.Repositories.UserRepository">
+            <summary>
+            Repository pour la gestion des utilisateurs (accès base de données).
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.UserRepository.#ctor(NetCoreAPI.Data.GestionFormationContext)">
+            <summary>
+            Initialise une nouvelle instance du repository utilisateur.
+            </summary>
+            <param name="context">Le contexte de base de données.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.UserRepository.GetAllAsync">
+            <summary>
+            Récupère tous les utilisateurs de la base de données.
+            </summary>
+            <returns>Une liste d'utilisateurs.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.UserRepository.GetByIdAsync(System.Int32)">
+            <summary>
+            Récupère un utilisateur par son identifiant.
+            </summary>
+            <param name="id">L'identifiant de l'utilisateur.</param>
+            <returns>L'utilisateur ou null s'il n'existe pas.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.UserRepository.GetByEmailAsync(System.String)">
+            <summary>
+            Récupère un utilisateur par son email.
+            </summary>
+            <param name="email">L'email de l'utilisateur.</param>
+            <returns>L'utilisateur ou null s'il n'existe pas.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.UserRepository.CreateAsync(NetCoreAPI.Models.User)">
+            <summary>
+            Crée un nouvel utilisateur.
+            </summary>
+            <param name="user">L'utilisateur à créer.</param>
+            <returns>L'utilisateur créé.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.UserRepository.UpdateAsync(NetCoreAPI.Models.User)">
+            <summary>
+            Met à jour un utilisateur existant.
+            </summary>
+            <param name="user">L'utilisateur à mettre à jour.</param>
+            <returns>L'utilisateur mis à jour.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.UserRepository.DeleteAsync(System.Int32)">
+            <summary>
+            Supprime un utilisateur par son identifiant.
+            </summary>
+            <param name="id">L'identifiant de l'utilisateur à supprimer.</param>
+            <returns>True si l'utilisateur a été supprimé, sinon false.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.UserRepository.ExistsAsync(System.Int32)">
+            <summary>
+            Vérifie si un utilisateur existe par son identifiant.
+            </summary>
+            <param name="id">L'identifiant de l'utilisateur.</param>
+            <returns>True si l'utilisateur existe, sinon false.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.UserRepository.EmailExistsAsync(System.String)">
+            <summary>
+            Vérifie si un utilisateur existe par son email.
+            </summary>
+            <param name="email">L'email à vérifier.</param>
+            <returns>True si l'email existe, sinon false.</returns>
+        </member>
+        <member name="T:NetCoreAPI.Services.AirecommandationService">
+            <summary>
+            Service métier pour la gestion des recommandations IA.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Services.AirecommandationService.#ctor(NetCoreAPI.Repositories.IAirecommandationRepository,AutoMapper.IMapper)">
+            <summary>
+            Initialise une nouvelle instance du service recommandation IA.
+            </summary>
+            <param name="airecommandationRepository">Repository recommandation injecté.</param>
+            <param name="mapper">Instance d'AutoMapper injectée.</param>
+        </member>
+        <member name="T:NetCoreAPI.Services.AuthService">
+            <summary>
+            Service d'authentification des utilisateurs.
+            Implémente les méthodes de connexion et d'inscription définies dans l'interface IAuthService.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Services.AuthService.#ctor(NetCoreAPI.Repositories.IUserRepository,AutoMapper.IMapper,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Initialise le service d'authentification avec les dépendances nécessaires.
+            </summary>
+            <param name="userRepository">Dépôt d'utilisateurs pour accéder aux données utilisateur.</param>
+            <param name="mapper">Mapper pour convertir entre les entités et les DTOs.</param>
+            <param name="config">Configuration pour accéder aux paramètres de l'application, notamment pour le JWT.</param>
+        </member>
+        <member name="M:NetCoreAPI.Services.AuthService.Login(NetCoreAPI.DTOs.AuthDto)">
+            <summary>
+            Authentifie un utilisateur avec ses identifiants et génère un token JWT.
+            Vérifie que l'email existe et que le mot de passe est correct, puis génère un token JWT contenant les claims de l'utilisateur.
+            </summary>
+            <param name="loginDto">Données de connexion de l'utilisateur.</param>
+            <returns>Token JWT si l'authentification réussit, sinon null.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Services.AuthService.Register(NetCoreAPI.DTOs.AuthDto)">
+            <summary>
+            Inscrit un nouvel utilisateur avec les données fournies.
+            Vérifie que l'email n'est pas déjà utilisé, puis crée l'utilisateur et retourne ses données.
+            </summary>
+            <param name="registerDto">Données d'inscription de l'utilisateur.</param>
+            <returns>Utilisateur créé si l'inscription réussit, sinon null.</returns>
+        </member>
+        <member name="T:NetCoreAPI.Services.EvaluationService">
+            <summary>
+            Service métier pour la gestion des évaluations.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Services.EvaluationService.#ctor(NetCoreAPI.Repositories.IEvaluationRepository,AutoMapper.IMapper)">
+            <summary>
+            Initialise une nouvelle instance du service évaluation.
+            </summary>
+            <param name="evaluationRepository">Repository évaluation injecté.</param>
+            <param name="mapper">Instance d'AutoMapper injectée.</param>
+        </member>
+        <member name="T:NetCoreAPI.Services.FormationService">
+            <summary>
+             Service métier pour la gestion des formations.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Services.FormationService.#ctor(NetCoreAPI.Repositories.IFormationRepository,AutoMapper.IMapper)">
+            <summary>
+            Initialise une nouvelle instance du service de formation.
+            </summary>
+            <param name="formationRepository">Repository de formation injecté.</param>
+            <param name="mapper">Instance d'AutoMapper injectée.</param>
+        </member>
+        <member name="T:NetCoreAPI.Services.IAirecommandationService">
+            <summary>
+            Interface du service métier pour la gestion des recommandations IA.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Services.IAirecommandationService.GetAllAsync">
+            <summary>Récupère toutes les recommandations IA.</summary>
+        </member>
+        <member name="M:NetCoreAPI.Services.IAirecommandationService.GetByIdAsync(System.Int32)">
+            <summary>Récupère une recommandation IA par son identifiant.</summary>
+            <param name="id">Identifiant de la recommandation.</param>
+        </member>
+        <member name="M:NetCoreAPI.Services.IAirecommandationService.CreateAsync(NetCoreAPI.DTOs.AirecommandationDto)">
+            <summary>Crée une nouvelle recommandation IA.</summary>
+            <param name="dto">DTO de la recommandation à créer.</param>
+        </member>
+        <member name="M:NetCoreAPI.Services.IAirecommandationService.UpdateAsync(System.Int32,NetCoreAPI.DTOs.AirecommandationDto)">
+            <summary>Met à jour une recommandation IA existante.</summary>
+            <param name="id">Identifiant de la recommandation.</param>
+            <param name="dto">DTO avec les nouvelles données.</param>
+        </member>
+        <member name="M:NetCoreAPI.Services.IAirecommandationService.DeleteAsync(System.Int32)">
+            <summary>Supprime une recommandation IA par son identifiant.</summary>
+            <param name="id">Identifiant de la recommandation à supprimer.</param>
+        </member>
+        <member name="T:NetCoreAPI.Services.IAuthService">
+            <summary>
+            Interface du service d'authentification.
+            Définit les méthodes pour gérer l'authentification des utilisateurs.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Services.IAuthService.Login(NetCoreAPI.DTOs.AuthDto)">
+            <summary>
+            Authentifie un utilisateur avec ses identifiants et génère un token JWT.
+            </summary>
+            <param name="loginDto">Données de connexion de l'utilisateur.</param>
+            <returns>Token JWT si l'authentification réussit, sinon null.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Services.IAuthService.Register(NetCoreAPI.DTOs.AuthDto)">
+            <summary>
+            Crée un utilisateur avec ses identifiants.
+            </summary>
+            <param name="registerDto">Données d'inscription de l'utilisateur.</param>
+            <returns>Utilisateur créé si l'inscription réussit, sinon null.</returns>
+        </member>
+        <member name="T:NetCoreAPI.Services.IEvaluationService">
+            <summary>
+            Interface du service métier pour la gestion des évaluations.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Services.IEvaluationService.GetAllAsync">
+            <summary>Récupère toutes les évaluations.</summary>
+        </member>
+        <member name="M:NetCoreAPI.Services.IEvaluationService.GetByIdAsync(System.Int32)">
+            <summary>Récupère une évaluation par son identifiant.</summary>
+            <param name="id">Identifiant de l'évaluation.</param>
+        </member>
+        <member name="M:NetCoreAPI.Services.IEvaluationService.CreateAsync(NetCoreAPI.DTOs.EvaluationDto)">
+            <summary>Crée une nouvelle évaluation.</summary>
+            <param name="dto">DTO de l'évaluation à créer.</param>
+        </member>
+        <member name="M:NetCoreAPI.Services.IEvaluationService.UpdateAsync(System.Int32,NetCoreAPI.DTOs.EvaluationDto)">
+            <summary>Met à jour une évaluation existante.</summary>
+            <param name="id">Identifiant de l'évaluation.</param>
+            <param name="dto">DTO avec les nouvelles données.</param>
+        </member>
+        <member name="M:NetCoreAPI.Services.IEvaluationService.DeleteAsync(System.Int32)">
+            <summary>Supprime une évaluation par son identifiant.</summary>
+            <param name="id">Identifiant de l'évaluation à supprimer.</param>
+        </member>
+        <member name="T:NetCoreAPI.Services.IFormationService">
+            <summary>
+            Interface du service métier pour la gestion des formations.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Services.IFormationService.GetAllAsync">
+            <summary>
+            Récupère toutes les formations.
+            </summary>
+            <returns>Liste des DTO formations.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Services.IFormationService.GetByIdAsync(System.Int32)">
+            <summary>
+            Récupère une formation par son identifiant.
+            </summary>
+            <param name="id">Identifiant de la formation.</param>
+            <returns>Le DTO formation ou null.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Services.IFormationService.CreateAsync(NetCoreAPI.DTOs.FormationCreationUpdateDto)">
+            <summary>
+            Crée une nouvelle formation.
+            </summary>
+            <param name="formationDto">DTO formation à créer.</param>
+            <returns>Le DTO formation créé.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Services.IFormationService.UpdateAsync(System.Int32,NetCoreAPI.DTOs.FormationCreationUpdateDto)">
+            <summary>
+            Met à jour une formation existante.
+            </summary>
+            <param name="id">Identifiant de la formation à mettre à jour.</param>
+            <param name="formationDto">DTO formation à mettre à jour.</param>
+            <returns>Le DTO formation mis à jour.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Services.IFormationService.DeleteAsync(System.Int32)">
+            <summary>
+            Supprime une formation par son identifiant.
+            </summary>
+            <param name="id">Identifiant de la formation à supprimer.</param>
+            <returns>True si supprimé, sinon false.</returns>
+        </member>
+        <member name="T:NetCoreAPI.Services.IModuleService">
+            <summary>
+            Interface du service métier pour la gestion des modules.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Services.IModuleService.GetAllAsync">
+            <summary>Récupère tous les modules.</summary>
+        </member>
+        <member name="M:NetCoreAPI.Services.IModuleService.GetByIdAsync(System.Int32)">
+            <summary>Récupère un module par son identifiant.</summary>
+            <param name="id">Identifiant du module.</param>
+        </member>
+        <member name="M:NetCoreAPI.Services.IModuleService.CreateAsync(NetCoreAPI.DTOs.ModuleDto)">
+            <summary>Crée un nouveau module.</summary>
+            <param name="dto">DTO du module à créer.</param>
+        </member>
+        <member name="M:NetCoreAPI.Services.IModuleService.UpdateAsync(System.Int32,NetCoreAPI.DTOs.ModuleDto)">
+            <summary>Met à jour un module existant.</summary>
+            <param name="id">Identifiant du module.</param>
+            <param name="dto">DTO avec les nouvelles données.</param>
+        </member>
+        <member name="M:NetCoreAPI.Services.IModuleService.DeleteAsync(System.Int32)">
+            <summary>Supprime un module par son identifiant.</summary>
+            <param name="id">Identifiant du module à supprimer.</param>
+        </member>
+        <member name="T:NetCoreAPI.Services.IResultService">
+            <summary>
+            Interface du service métier pour la gestion des résultats d'évaluation.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Services.IResultService.GetAllAsync">
+            <summary>Récupère tous les résultats.</summary>
+        </member>
+        <member name="M:NetCoreAPI.Services.IResultService.GetByIdAsync(System.Int32,System.Int32)">
+            <summary>Récupère un résultat par sa clé composite.</summary>
+            <param name="userId">Identifiant de l'utilisateur.</param>
+            <param name="evaluationId">Identifiant de l'évaluation.</param>
+        </member>
+        <member name="M:NetCoreAPI.Services.IResultService.CreateAsync(NetCoreAPI.DTOs.ResultDto)">
+            <summary>Crée un nouveau résultat.</summary>
+            <param name="dto">DTO du résultat à créer.</param>
+        </member>
+        <member name="M:NetCoreAPI.Services.IResultService.UpdateAsync(System.Int32,System.Int32,NetCoreAPI.DTOs.ResultDto)">
+            <summary>Met à jour un résultat existant.</summary>
+            <param name="userId">Identifiant de l'utilisateur.</param>
+            <param name="evaluationId">Identifiant de l'évaluation.</param>
+            <param name="dto">DTO avec les nouvelles données.</param>
+        </member>
+        <member name="M:NetCoreAPI.Services.IResultService.DeleteAsync(System.Int32,System.Int32)">
+            <summary>Supprime un résultat par sa clé composite.</summary>
+            <param name="userId">Identifiant de l'utilisateur.</param>
+            <param name="evaluationId">Identifiant de l'évaluation.</param>
+        </member>
+        <member name="T:NetCoreAPI.Services.ISessionService">
+            <summary>
+            Interface du service métier pour la gestion des sessions.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Services.ISessionService.GetAllAsync">
+            <summary>Récupère toutes les sessions.</summary>
+        </member>
+        <member name="M:NetCoreAPI.Services.ISessionService.GetByIdAsync(System.Int32)">
+            <summary>Récupère une session par son identifiant.</summary>
+            <param name="id">Identifiant de la session.</param>
+        </member>
+        <member name="M:NetCoreAPI.Services.ISessionService.CreateAsync(NetCoreAPI.DTOs.SessionDto)">
+            <summary>Crée une nouvelle session.</summary>
+            <param name="dto">DTO de la session à créer.</param>
+        </member>
+        <member name="M:NetCoreAPI.Services.ISessionService.UpdateAsync(System.Int32,NetCoreAPI.DTOs.SessionDto)">
+            <summary>Met à jour une session existante.</summary>
+            <param name="id">Identifiant de la session.</param>
+            <param name="dto">DTO avec les nouvelles données.</param>
+        </member>
+        <member name="M:NetCoreAPI.Services.ISessionService.DeleteAsync(System.Int32)">
+            <summary>Supprime une session par son identifiant.</summary>
+            <param name="id">Identifiant de la session à supprimer.</param>
+        </member>
+        <member name="T:NetCoreAPI.Services.ISubscriptionService">
+            <summary>
+            Interface du service métier pour la gestion des abonnements.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Services.ISubscriptionService.GetAllAsync">
+            <summary>Récupère tous les abonnements.</summary>
+        </member>
+        <member name="M:NetCoreAPI.Services.ISubscriptionService.GetByIdAsync(System.Int32)">
+            <summary>Récupère un abonnement par son identifiant.</summary>
+            <param name="id">Identifiant de l'abonnement.</param>
+        </member>
+        <member name="M:NetCoreAPI.Services.ISubscriptionService.CreateAsync(NetCoreAPI.DTOs.SubscriptionDto)">
+            <summary>Crée un nouvel abonnement.</summary>
+            <param name="dto">DTO de l'abonnement à créer.</param>
+        </member>
+        <member name="M:NetCoreAPI.Services.ISubscriptionService.UpdateAsync(System.Int32,NetCoreAPI.DTOs.SubscriptionDto)">
+            <summary>Met à jour un abonnement existant.</summary>
+            <param name="id">Identifiant de l'abonnement.</param>
+            <param name="dto">DTO avec les nouvelles données.</param>
+        </member>
+        <member name="M:NetCoreAPI.Services.ISubscriptionService.DeleteAsync(System.Int32)">
+            <summary>Supprime un abonnement par son identifiant.</summary>
+            <param name="id">Identifiant de l'abonnement à supprimer.</param>
+        </member>
+        <member name="T:NetCoreAPI.Services.IUserService">
+            <summary>
+            Interface du service métier pour la gestion des utilisateurs.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Services.IUserService.GetAllAsync">
+            <summary>
+            Récupère tous les utilisateurs.
+            </summary>
+            <returns>Liste des DTO utilisateurs.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Services.IUserService.GetByIdAsync(System.Int32)">
+            <summary>
+            Récupère un utilisateur par son identifiant.
+            </summary>
+            <param name="id">Identifiant de l'utilisateur.</param>
+            <returns>Le DTO utilisateur ou null.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Services.IUserService.GetByEmailAsync(System.String)">
+            <summary>
+            Récupère un utilisateur par son email.
+            </summary>
+            <param name="email">Email de l'utilisateur.</param>
+            <returns>Le DTO utilisateur ou null.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Services.IUserService.CreateAsync(NetCoreAPI.DTOs.UserCreationUpdateDto)">
+            <summary>
+            Crée un nouvel utilisateur.
+            </summary>
+            <param name="userDto">DTO utilisateur à créer.</param>
+            <returns>Le DTO utilisateur créé.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Services.IUserService.UpdateAsync(System.Int32,NetCoreAPI.DTOs.UserCreationUpdateDto)">
+            <summary>
+            Met à jour un utilisateur existant.
+            </summary>
+            <param name="id">Identifiant de l'utilisateur à mettre à jour.</param>
+            <param name="userDto">DTO utilisateur à mettre à jour.</param>
+            <returns>Le DTO utilisateur mis à jour.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Services.IUserService.DeleteAsync(System.Int32)">
+            <summary>
+            Supprime un utilisateur par son identifiant.
+            </summary>
+            <param name="id">Identifiant de l'utilisateur à supprimer.</param>
+            <returns>True si supprimé, sinon false.</returns>
+        </member>
+        <member name="T:NetCoreAPI.Services.ModuleService">
+            <summary>
+            Service métier pour la gestion des modules.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Services.ModuleService.#ctor(NetCoreAPI.Repositories.IModuleRepository,AutoMapper.IMapper)">
+            <summary>
+            Initialise une nouvelle instance du service module.
+            </summary>
+            <param name="moduleRepository">Repository module injecté.</param>
+            <param name="mapper">Instance d'AutoMapper injectée.</param>
+        </member>
+        <member name="T:NetCoreAPI.Services.ResultService">
+            <summary>
+            Service métier pour la gestion des résultats d'évaluation.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Services.ResultService.#ctor(NetCoreAPI.Repositories.IResultRepository,AutoMapper.IMapper)">
+            <summary>
+            Initialise une nouvelle instance du service résultat.
+            </summary>
+            <param name="resultRepository">Repository résultat injecté.</param>
+            <param name="mapper">Instance d'AutoMapper injectée.</param>
+        </member>
+        <member name="T:NetCoreAPI.Services.SessionService">
+            <summary>
+            Service métier pour la gestion des sessions.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Services.SessionService.#ctor(NetCoreAPI.Repositories.ISessionRepository,AutoMapper.IMapper)">
+            <summary>
+            Initialise une nouvelle instance du service session.
+            </summary>
+            <param name="sessionRepository">Repository session injecté.</param>
+            <param name="mapper">Instance d'AutoMapper injectée.</param>
+        </member>
+        <member name="T:NetCoreAPI.Services.SubscriptionService">
+            <summary>
+            Service métier pour la gestion des abonnements.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Services.SubscriptionService.#ctor(NetCoreAPI.Repositories.ISubscriptionRepository,AutoMapper.IMapper)">
+            <summary>
+            Initialise une nouvelle instance du service abonnement.
+            </summary>
+            <param name="subscriptionRepository">Repository abonnement injecté.</param>
+            <param name="mapper">Instance d'AutoMapper injectée.</param>
+        </member>
+        <member name="T:NetCoreAPI.Services.UserService">
+            <summary>
+            Service métier pour la gestion des utilisateurs.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Services.UserService.#ctor(NetCoreAPI.Repositories.IUserRepository,AutoMapper.IMapper)">
+            <summary>
+            Initialise une nouvelle instance du service utilisateur.
+            </summary>
+            <param name="userRepository">Repository utilisateur injecté.</param>
+            <param name="mapper">Instance d'AutoMapper injectée.</param>
+        </member>
+        <member name="M:NetCoreAPI.Services.UserService.GetAllAsync">
+            <summary>
+            Récupère tous les utilisateurs.
+            </summary>
+            <returns>Liste des DTO utilisateurs.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Services.UserService.GetByIdAsync(System.Int32)">
+            <summary>
+            Récupère un utilisateur par son identifiant.
+            </summary>
+            <param name="id">Identifiant de l'utilisateur.</param>
+            <returns>Le DTO utilisateur ou null.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Services.UserService.GetByEmailAsync(System.String)">
+            <summary>
+            Récupère un utilisateur par son email.
+            </summary>
+            <param name="email">Email de l'utilisateur.</param>
+            <returns>Le DTO utilisateur ou null.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Services.UserService.CreateAsync(NetCoreAPI.DTOs.UserCreationUpdateDto)">
+            <summary>
+            Crée un nouvel utilisateur.
+            </summary>
+            <param name="userDto">DTO utilisateur à créer.</param>
+            <returns>Le DTO utilisateur créé.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Services.UserService.UpdateAsync(System.Int32,NetCoreAPI.DTOs.UserCreationUpdateDto)">
+            <summary>
+            Met à jour un utilisateur existant.
+            </summary>
+            <param name="id">Identifiant de l'utilisateur à mettre à jour.</param>
+            <param name="userDto">DTO utilisateur à mettre à jour.</param>
+            <returns>Le DTO utilisateur mis à jour.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Services.UserService.DeleteAsync(System.Int32)">
+            <summary>
+            Supprime un utilisateur par son identifiant.
+            </summary>
+            <param name="id">Identifiant de l'utilisateur à supprimer.</param>
+            <returns>True si supprimé, sinon false.</returns>
+        </member>
+        <member name="M:AuthController.Login(NetCoreAPI.DTOs.AuthDto)">
+            <summary>
+            Authentifie un utilisateur et génère un token JWT.
+            </summary>
+            <param name="loginDto">Données de connexion de l'utilisateur.</param>
+            <returns>200 OK avec le token JWT, ou 401 Unauthorized si les informations sont invalides.</returns>
+        </member>
+        <member name="M:AuthController.Register(NetCoreAPI.DTOs.AuthDto)">
+            <summary>
+            Inscrit un nouvel utilisateur et génère un token JWT.
+            </summary>
+            <param name="registerDto">Données d'inscription de l'utilisateur.</param>
+            <returns>200 OK avec le token JWT, ou 400 Bad Request si les données sont invalides.</returns>
+        </member>
+        <member name="M:AuthController.Logout">
+            <summary>
+            Déconnecte l'utilisateur en supprimant le cookie JWT.
+            </summary>
+            <returns>200 OK après suppression du cookie.</returns>
+        </member>
+        <member name="T:Program">
+            <summary>
+            Auto-generated public partial Program class for top-level statement apps.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.OpenApi.Generated.DocumentationCommentIdHelper.CreateDocumentationId(System.Type)">
+            <summary>
+            Generates a documentation comment ID for a type.
+            Example: T:Namespace.Outer+Inner`1 becomes T:Namespace.Outer.Inner`1
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.OpenApi.Generated.DocumentationCommentIdHelper.CreateDocumentationId(System.Reflection.PropertyInfo)">
+            <summary>
+            Generates a documentation comment ID for a property.
+            Example: P:Namespace.ContainingType.PropertyName or for an indexer P:Namespace.ContainingType.Item(System.Int32)
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.OpenApi.Generated.DocumentationCommentIdHelper.CreateDocumentationId(System.Type,System.String)">
+            <summary>
+            Generates a documentation comment ID for a property given its container type and property name.
+            Example: P:Namespace.ContainingType.PropertyName
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.OpenApi.Generated.DocumentationCommentIdHelper.CreateDocumentationId(System.Reflection.MethodInfo)">
+            <summary>
+            Generates a documentation comment ID for a method (or constructor).
+            For example:
+              M:Namespace.ContainingType.MethodName(ParamType1,ParamType2)~ReturnType
+              M:Namespace.ContainingType.#ctor(ParamType)
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.OpenApi.Generated.DocumentationCommentIdHelper.GetTypeDocId(System.Type,System.Boolean,System.Boolean)">
+            <summary>
+            Generates a documentation ID string for a type.
+            This method handles nested types (replacing '+' with '.'),
+            generic types, arrays, pointers, by-ref types, and generic parameters.
+            The <paramref name="includeGenericArguments"/> flag controls whether
+            constructed generic type arguments are emitted, while <paramref name="omitGenericArity"/>
+            controls whether the generic arity marker (e.g. "`1") is appended.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.OpenApi.Generated.DocumentationCommentIdHelper.NormalizeDocId(System.String)">
+            <summary>
+            Normalizes a documentation comment ID to match the compiler-style format.
+            Strips the return type suffix for ordinary methods but retains it for conversion operators.
+            </summary>
+            <param name="docId">The documentation comment ID to normalize.</param>
+            <returns>The normalized documentation comment ID.</returns>
+        </member>
+    </members>
+</doc>
