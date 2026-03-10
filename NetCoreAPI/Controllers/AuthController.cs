@@ -9,10 +9,12 @@ using NetCoreAPI.Services;
 public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
+        private readonly LDAPService _ldapService;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService, LDAPService ldapService)
         {
             _authService = authService;
+            _ldapService = ldapService;
         }
 
         /// <summary>
@@ -37,7 +39,7 @@ public class AuthController : ControllerBase
                 Expires = DateTimeOffset.UtcNow.AddHours(1)
             });
 
-            return Ok();
+            return Ok(token);
         }
 
         /// <summary>
@@ -64,5 +66,25 @@ public class AuthController : ControllerBase
         {
             Response.Cookies.Delete("access_token");
             return Ok();
+        }
+
+        [HttpPost("ldap-login")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> LdapLogin([FromBody] LDAPDto ldapDto)
+        {
+            var token = _ldapService.Authenticate(ldapDto.Username, ldapDto.Password);
+            if (token == null)
+                return Unauthorized("Invalid LDAP credentials");
+
+            Response.Cookies.Append("access_token", token, new CookieOptions
+            {
+                HttpOnly = true,   // non accessible en JS
+                Secure = true,     // HTTPS uniquement
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTimeOffset.UtcNow.AddHours(1)
+            });
+
+            return Ok(token);
         }
     }

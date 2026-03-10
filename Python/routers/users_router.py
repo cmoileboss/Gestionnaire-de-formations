@@ -7,6 +7,7 @@ from typing import Annotated
 
 from services.UserService import UserService
 from services.SecurityService import SecurityService
+from services.LDAPService import LDAPService
 
 from database_connection import get_db
 
@@ -16,18 +17,25 @@ from models.Evaluation import Evaluation
 
 from apirequests.UserCreationRequest import UserCreationRequest
 from apirequests.LoginRegisterRequest import LoginRegisterRequest
+from apirequests.LDAPRequest import LDAPRequest
 
 from apiresponses.UserResponse import UserResponse
 from apiresponses.SessionResponse import SessionResponse
 from apiresponses.EvaluationResponse import EvaluationResponse
 
+
 def get_user_service(db: Session = Depends(get_db)) -> UserService:
     """Get a UserService instance with the database session"""
     return UserService(db)
 
+def get_ldap_service() -> LDAPService:
+    """Get a UserService instance with the .env values"""
+    return LDAPService(389)  # Port 389 pour LDAP sans SSL, port 636 pour LDAPS avec SSL
+
 users_router = APIRouter(prefix="/users", tags=["Users"])
 
 UserServiceDep = Annotated[UserService, Depends(get_user_service)]
+LDAPServiceDep = Annotated[LDAPService, Depends(get_ldap_service)]
 
 @users_router.post("/login", response_model=UserResponse)
 def login(response: Response, request: LoginRegisterRequest, user_service: UserServiceDep) -> User:
@@ -37,8 +45,21 @@ def login(response: Response, request: LoginRegisterRequest, user_service: UserS
     except ValueError:
         raise HTTPException(status_code=401, detail="Email ou mot de passe invalide")
     token = SecurityService.create_access_token(user.email)
-    response.set_cookie(key="access_token", value=token, httponly=True, secure=False, samesite="lax", max_age=3600)
+    response.set_cookie(
+        key="access_token",
+        value=token,
+        httponly=True,
+        secure=False,
+        samesite="lax",
+        max_age=3600)
     return user
+
+@users_router.post("/ldap")
+def ldap_login(request: LDAPRequest, ldap_service: LDAPServiceDep):
+    is_authenticated = ldap_service.authenticate(request.username, request.password)
+    if is_authenticated:
+        return { "message": "Bonjour Mon Seigneur Patrice !" }
+    return { "message": "Tentative d'usurpation repoussée" }
 
 @users_router.post("/logout")
 def logout(response: Response):

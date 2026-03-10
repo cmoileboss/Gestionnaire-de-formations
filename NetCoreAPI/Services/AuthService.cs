@@ -1,11 +1,8 @@
-using System.Security.Claims;
-using System.Text;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Tokens;
 using AutoMapper;
 using NetCoreAPI.DTOs;
 using NetCoreAPI.Repositories;
 using NetCoreAPI.Models;
+using NetCoreAPI.Utils;
 
 namespace NetCoreAPI.Services;
 
@@ -47,21 +44,7 @@ public class AuthService : IAuthService
             throw new UnauthorizedAccessException("Invalid email or password.");
 
         // Génération du token JWT
-        var claims = new[] {
-        new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-            new Claim(ClaimTypes.Email, user.Email)
-        };
-
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
-        var token = new JwtSecurityToken(
-            issuer: _config["Jwt:Issuer"],
-            audience: _config["Jwt:Audience"],
-            claims: claims,
-            expires: DateTime.UtcNow.AddHours(1),
-            signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
-        );
-
-        var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+        var tokenString = TokenManager.CreateToken(user, this._config);
         return Task.FromResult(tokenString);
     }
 

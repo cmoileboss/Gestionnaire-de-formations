@@ -4,6 +4,7 @@ pyodbc
 fastapi
 uvicorn
 pydantic
+pydantic[email]
 sqlacodegen
 bcrypt
 python-jose[cryptography]
@@ -11,3 +12,4 @@ python-dotenv
 azure-storage-blob
 requests
 PySide6
+ldap3

@@ -18,7 +18,7 @@ class UserService:
         self.session_repository = SessionRepository(db)
         self.evaluation_repository = EvaluationRepository(db)
 
-    def login(self, email: str, password: str) -> str:
+    def login(self, email: str, password: str) -> User:
         """Vérifie les identifiants et retourne un JWT si valides."""
         user = self.user_repository.get_by_email(email)
         if user is None:

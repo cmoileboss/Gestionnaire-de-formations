@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\guillaume.pedrona\\Documents\\Projets\\formation-management\\NetCoreAPI\\NetCoreAPI.csproj": {}
+    "C:\\Users\\guillaume.pedrona\\Documents\\Projets\\Gestionnaire-de-formations\\NetCoreAPI\\NetCoreAPI.csproj": {}
   },
   "projects": {
-    "C:\\Users\\guillaume.pedrona\\Documents\\Projets\\formation-management\\NetCoreAPI\\NetCoreAPI.csproj": {
+    "C:\\Users\\guillaume.pedrona\\Documents\\Projets\\Gestionnaire-de-formations\\NetCoreAPI\\NetCoreAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\guillaume.pedrona\\Documents\\Projets\\formation-management\\NetCoreAPI\\NetCoreAPI.csproj",
+        "projectUniqueName": "C:\\Users\\guillaume.pedrona\\Documents\\Projets\\Gestionnaire-de-formations\\NetCoreAPI\\NetCoreAPI.csproj",
         "projectName": "NetCoreAPI",
-        "projectPath": "C:\\Users\\guillaume.pedrona\\Documents\\Projets\\formation-management\\NetCoreAPI\\NetCoreAPI.csproj",
+        "projectPath": "C:\\Users\\guillaume.pedrona\\Documents\\Projets\\Gestionnaire-de-formations\\NetCoreAPI\\NetCoreAPI.csproj",
         "packagesPath": "C:\\Users\\guillaume.pedrona\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\guillaume.pedrona\\Documents\\Projets\\formation-management\\NetCoreAPI\\obj\\",
+        "outputPath": "C:\\Users\\guillaume.pedrona\\Documents\\Projets\\Gestionnaire-de-formations\\NetCoreAPI\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -63,6 +63,10 @@
               "target": "Package",
               "version": "[4.1.0, )"
             },
+            "DotNetEnv": {
+              "target": "Package",
+              "version": "[3.1.1, )"
+            },
             "Microsoft.AspNetCore.Authentication.JwtBearer": {
               "target": "Package",
               "version": "[10.0.3, )"
@@ -94,6 +98,10 @@
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[10.1.4, )"
+            },
+            "System.DirectoryServices.Protocols": {
+              "target": "Package",
+              "version": "[10.0.0, )"
             }
           },
           "imports": [
