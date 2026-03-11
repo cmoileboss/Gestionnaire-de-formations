@@ -203,29 +203,5 @@ namespace NetCoreAPI.Controllers
 
             return Ok(result.Value);
         }
-
-        /// <summary>
-        /// Inscrit un utilisateur à une évaluation.
-        /// </summary>
-        /// <param name="id">Identifiant de l'utilisateur.</param>
-        /// <param name="evaluationId">Identifiant de l'évaluation.</param>
-        /// <returns>200 OK si l'inscription réussit.</returns>
-        [HttpPost("{id}/evaluations/{evaluationId}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult> EnrollInEvaluation(int id, int evaluationId)
-        {
-            var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            if (currentUserId != id)
-                return Forbid();
-
-            var result = await _userService.EnrollInEvaluationAsync(id, evaluationId);
-            if (!result.IsSuccess)
-                return BadRequest(new { error = result.Error });
-
-            return Ok(new { message = "Utilisateur inscrit à l'évaluation avec succès" });
-        }
     }
 }

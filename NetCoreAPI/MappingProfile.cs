@@ -22,6 +22,7 @@ public class MappingProfile : Profile
         CreateMap<Result, ResultDto>().ReverseMap();
         CreateMap<Module, ModuleDto>().ReverseMap();
         CreateMap<Formation, FormationDto>().ReverseMap();
+        CreateMap<FormationCreationUpdateDto, Formation>();
         CreateMap<Evaluation, EvaluationDto>().ReverseMap();
         CreateMap<Airecommandation, AirecommandationDto>().ReverseMap();
     }

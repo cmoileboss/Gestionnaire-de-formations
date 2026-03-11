@@ -103,7 +103,7 @@ builder.Services.AddDbContext<GestionFormationContext>(options =>
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<LDAPService>();
+builder.Services.AddScoped<ILDAPService, LDAPService>();
 builder.Services.AddScoped<IFormationService, FormationService>();
 builder.Services.AddScoped<IEvaluationService, EvaluationService>();
 builder.Services.AddScoped<IModuleService, ModuleService>();

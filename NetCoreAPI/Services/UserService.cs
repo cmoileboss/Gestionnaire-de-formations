@@ -274,47 +274,4 @@ public class UserService : IUserService
             throw new InvalidOperationException("An error occurred while retrieving user evaluations.", ex);
         }
     }
-
-    /// <summary>
-    /// Inscrit un utilisateur à une évaluation.
-    /// </summary>
-    /// <param name="userId">Identifiant de l'utilisateur.</param>
-    /// <param name="evaluationId">Identifiant de l'évaluation.</param>
-    /// <returns>Result indiquant le succès ou l'échec de l'inscription.</returns>
-    public async Task<Result<bool>> EnrollInEvaluationAsync(int userId, int evaluationId)
-    {
-        try
-        {
-            if (!await _userRepository.ExistsAsync(userId))
-                return Result<bool>.Failure($"User with ID {userId} not found.");
-
-            // TODO: Implement evaluation enrollment logic
-            // This would typically create a Result record with a pending status
-            return Result<bool>.Failure("Evaluation enrollment not yet implemented.");
-        }
-        catch (Exception ex)
-        {
-            throw new InvalidOperationException("An error occurred while enrolling in evaluation.", ex);
-        }
-    }
-
-    /// <summary>
-    /// Désinscrit un utilisateur d'une évaluation.
-    /// </summary>
-    /// <param name="userId">Identifiant de l'utilisateur.</param>
-    /// <param name="evaluationId">Identifiant de l'évaluation.</param>
-    /// <returns>Result indiquant le succès ou l'échec de la désinscription.</returns>
-    public async Task<Result<bool>> UnenrollFromEvaluationAsync(int userId, int evaluationId)
-    {
-        try
-        {
-            // TODO: Implement evaluation unenrollment logic
-            // This would typically delete the Result record
-            return Result<bool>.Failure("Evaluation unenrollment not yet implemented.");
-        }
-        catch (Exception ex)
-        {
-            throw new InvalidOperationException("An error occurred while unenrolling from evaluation.", ex);
-        }
-    }
 }

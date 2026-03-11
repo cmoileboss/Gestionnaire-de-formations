@@ -48,13 +48,13 @@ public partial class GestionFormationContext : DbContext
 
     /// <summary>
     /// Configure la chaîne de connexion à la base de données SQL Server
-    /// à partir des variables d'environnement <c>Server</c> et <c>Database</c>.
+    /// à partir des variables d'environnement <c>SERVER</c> et <c>DATABASE</c>.
     /// </summary>
     /// <param name="optionsBuilder">Constructeur d'options du contexte.</param>
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
-            optionsBuilder.UseSqlServer("Server=" + Environment.GetEnvironmentVariable("Server") + ";Database=" + Environment.GetEnvironmentVariable("Database") + ";Integrated Security=True;TrustServerCertificate=True;");
+            optionsBuilder.UseSqlServer("Server=" + Environment.GetEnvironmentVariable("SERVER") + ";Database=" + Environment.GetEnvironmentVariable("DATABASE") + ";Integrated Security=True;TrustServerCertificate=True;");
     }
 
     /// <summary>

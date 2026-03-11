@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends, Response
 from sqlalchemy.orm import Session
 from typing import Annotated
 
-from main import limiter
 
 from database_connection import get_db
 
@@ -28,7 +27,6 @@ result_router = APIRouter(
     tags=["Results"], 
     dependencies=[
         Depends(SecurityService.get_current_user),
-        Depends(limiter.limit("100/minute"))
     ]
 )
 ResultServiceDep = Annotated[ResultService, Depends(get_result_service)]

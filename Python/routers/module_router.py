@@ -4,7 +4,6 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import Annotated
 
-from main import limiter
 
 from database_connection import get_db
 
@@ -26,7 +25,6 @@ module_router = APIRouter(
     tags=["Modules"], 
     dependencies=[
         Depends(SecurityService.get_current_user),
-        Depends(limiter.limit("100/minute"))
     ]
 )
 ModuleServiceDep = Annotated[ModuleService, Depends(get_module_service)]

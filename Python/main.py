@@ -4,9 +4,6 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.openapi.utils import get_openapi
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 
-from slowapi import Limiter, _rate_limit_exceeded_handler
-from slowapi.util import get_remote_address
-from slowapi.errors import RateLimitExceeded
 
 from database_connection import Base, engine
 
@@ -58,9 +55,6 @@ def startup_event():
     # Base.metadata.drop_all(bind=engine)  # Supprime toutes les tables
     Base.metadata.create_all(bind=engine)
 
-limiter = Limiter(key_func=get_remote_address)
-app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # Enregistrement des handlers d'exceptions personnalisées
 app.add_exception_handler(NotFoundError, not_found_handler)

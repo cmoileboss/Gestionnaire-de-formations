@@ -256,7 +256,6 @@ LDAP_DOMAIN=ENTREPRISE
 - `POST /users/{id}/sessions/{sessionId}` - Inscrire l'utilisateur à une session
 - `DELETE /users/{id}/sessions/{sessionId}` - Désinscrire l'utilisateur d'une session
 - `GET /users/{id}/evaluations` - Évaluations auxquelles l'utilisateur est inscrit
-- `POST /users/{id}/evaluations/{evaluationId}` - Inscrire l'utilisateur à une évaluation
 
 ### Formations
 - `GET /formations` - Liste de toutes les formations

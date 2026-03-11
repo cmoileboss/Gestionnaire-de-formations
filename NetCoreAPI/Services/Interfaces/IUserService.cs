@@ -79,20 +79,4 @@ public interface IUserService
     /// <param name="userId">Identifiant de l'utilisateur.</param>
     /// <returns>Result contenant la liste des évaluations ou un message d'erreur.</returns>
     Task<Result<IEnumerable<EvaluationDto>>> GetUserEvaluationsAsync(int userId);
-
-    /// <summary>
-    /// Inscrit un utilisateur à une évaluation.
-    /// </summary>
-    /// <param name="userId">Identifiant de l'utilisateur.</param>
-    /// <param name="evaluationId">Identifiant de l'évaluation.</param>
-    /// <returns>Result indiquant le succès ou l'échec de l'inscription.</returns>
-    Task<Result<bool>> EnrollInEvaluationAsync(int userId, int evaluationId);
-
-    /// <summary>
-    /// Désinscrit un utilisateur d'une évaluation.
-    /// </summary>
-    /// <param name="userId">Identifiant de l'utilisateur.</param>
-    /// <param name="evaluationId">Identifiant de l'évaluation.</param>
-    /// <returns>Result indiquant le succès ou l'échec de la désinscription.</returns>
-    Task<Result<bool>> UnenrollFromEvaluationAsync(int userId, int evaluationId);
 }

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("NetCoreAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+57cf36a986d1f3ce2c09e0243d2fe88aaf4f6684")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e80bbd5f3cea9850a90e27a311e6aceef33285f0")]
 [assembly: System.Reflection.AssemblyProductAttribute("NetCoreAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("NetCoreAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

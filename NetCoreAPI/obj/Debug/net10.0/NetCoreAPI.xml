@@ -491,14 +491,6 @@
             <param name="id">Identifiant de l'utilisateur.</param>
             <returns>200 OK avec la liste des évaluations.</returns>
         </member>
-        <member name="M:NetCoreAPI.Controllers.UserController.EnrollInEvaluation(System.Int32,System.Int32)">
-            <summary>
-            Inscrit un utilisateur à une évaluation.
-            </summary>
-            <param name="id">Identifiant de l'utilisateur.</param>
-            <param name="evaluationId">Identifiant de l'évaluation.</param>
-            <returns>200 OK si l'inscription réussit.</returns>
-        </member>
         <member name="T:NetCoreAPI.Data.GestionFormationContext">
             <summary>
             Contexte Entity Framework Core pour la gestion des formations.
@@ -539,7 +531,7 @@
         <member name="M:NetCoreAPI.Data.GestionFormationContext.OnConfiguring(Microsoft.EntityFrameworkCore.DbContextOptionsBuilder)">
             <summary>
             Configure la chaîne de connexion à la base de données SQL Server
-            à partir des variables d'environnement <c>Server</c> et <c>Database</c>.
+            à partir des variables d'environnement <c>SERVER</c> et <c>DATABASE</c>.
             </summary>
             <param name="optionsBuilder">Constructeur d'options du contexte.</param>
         </member>
@@ -747,6 +739,30 @@
             <summary>
             Configure toutes les correspondances bidirectionnelles entre modèles et DTOs.
             </summary>
+        </member>
+        <member name="T:NetCoreAPI.Migrations.LastMigration">
+            <inheritdoc />
+        </member>
+        <member name="M:NetCoreAPI.Migrations.LastMigration.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:NetCoreAPI.Migrations.LastMigration.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:NetCoreAPI.Migrations.LastMigration.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:NetCoreAPI.Migrations.Test">
+            <inheritdoc />
+        </member>
+        <member name="M:NetCoreAPI.Migrations.Test.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:NetCoreAPI.Migrations.Test.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:NetCoreAPI.Migrations.Test.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
         </member>
         <member name="T:NetCoreAPI.Models.Airecommandation">
             <summary>
@@ -1905,6 +1921,14 @@
             <param name="moduleId">Identifiant du module.</param>
             <returns>Result indiquant le succès ou l'échec du retrait.</returns>
         </member>
+        <member name="M:NetCoreAPI.Services.ILDAPService.Authenticate(System.String,System.String)">
+            <summary>
+            Authentifie un utilisateur via LDAP.
+            </summary>
+            <param name="username">Nom d'utilisateur LDAP</param>
+            <param name="password">Mot de passe LDAP</param>
+            <returns>Token LDAP si authentifié, sinon null</returns>
+        </member>
         <member name="T:NetCoreAPI.Services.IModuleService">
             <summary>
             Interface du service métier pour la gestion des modules.
@@ -2112,22 +2136,6 @@
             <param name="userId">Identifiant de l'utilisateur.</param>
             <returns>Result contenant la liste des évaluations ou un message d'erreur.</returns>
         </member>
-        <member name="M:NetCoreAPI.Services.IUserService.EnrollInEvaluationAsync(System.Int32,System.Int32)">
-            <summary>
-            Inscrit un utilisateur à une évaluation.
-            </summary>
-            <param name="userId">Identifiant de l'utilisateur.</param>
-            <param name="evaluationId">Identifiant de l'évaluation.</param>
-            <returns>Result indiquant le succès ou l'échec de l'inscription.</returns>
-        </member>
-        <member name="M:NetCoreAPI.Services.IUserService.UnenrollFromEvaluationAsync(System.Int32,System.Int32)">
-            <summary>
-            Désinscrit un utilisateur d'une évaluation.
-            </summary>
-            <param name="userId">Identifiant de l'utilisateur.</param>
-            <param name="evaluationId">Identifiant de l'évaluation.</param>
-            <returns>Result indiquant le succès ou l'échec de la désinscription.</returns>
-        </member>
         <member name="T:NetCoreAPI.Services.LDAPService">
             <summary>
             Service métier pour la gestion des authentifications au serveur LDAP.
@@ -2269,22 +2277,6 @@
             </summary>
             <param name="userId">Identifiant de l'utilisateur.</param>
             <returns>Result contenant la liste des évaluations ou un message d'erreur.</returns>
-        </member>
-        <member name="M:NetCoreAPI.Services.UserService.EnrollInEvaluationAsync(System.Int32,System.Int32)">
-            <summary>
-            Inscrit un utilisateur à une évaluation.
-            </summary>
-            <param name="userId">Identifiant de l'utilisateur.</param>
-            <param name="evaluationId">Identifiant de l'évaluation.</param>
-            <returns>Result indiquant le succès ou l'échec de l'inscription.</returns>
-        </member>
-        <member name="M:NetCoreAPI.Services.UserService.UnenrollFromEvaluationAsync(System.Int32,System.Int32)">
-            <summary>
-            Désinscrit un utilisateur d'une évaluation.
-            </summary>
-            <param name="userId">Identifiant de l'utilisateur.</param>
-            <param name="evaluationId">Identifiant de l'évaluation.</param>
-            <returns>Result indiquant le succès ou l'échec de la désinscription.</returns>
         </member>
         <member name="T:NetCoreAPI.Utils.Result`1">
             <summary>

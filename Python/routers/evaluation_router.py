@@ -4,7 +4,6 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import Annotated
 
-from limiter_config import limiter
 
 from database_connection import get_db
 
@@ -29,7 +28,6 @@ evaluation_router = APIRouter(
     tags=["Evaluations"], 
     dependencies=[
         Depends(SecurityService.get_current_user),
-        Depends(limiter.limit("100/minute"))
     ]
 )
 EvaluationServiceDep = Annotated[EvaluationService, Depends(get_evaluation_service)]
