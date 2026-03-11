@@ -20,7 +20,7 @@ public class LDAPService
     {
         this._config = config;
         this._server = Environment.GetEnvironmentVariable("LDAP_SERVER") ?? throw new InvalidOperationException("LDAP_SERVER environment variable is not set");
-        this._port = 339;
+        this._port = 389;
         this._domain = Environment.GetEnvironmentVariable("LDAP_DOMAIN") ?? throw new InvalidOperationException("LDAP_DOMAIN environment variable is not set");
     }
 
@@ -39,10 +39,12 @@ public class LDAPService
         // Créer la connexion LDAP
         try
         {
-            var connection = new LdapConnection(identifier, credentials);
-            // AuthType selon votre AD : Basic, Negotiate, Kerberos
-            connection.AuthType = AuthType.Basic;
-            
+            var connection = new LdapConnection(identifier, credentials)
+            {
+                // AuthType selon votre AD : Basic, Negotiate, Kerberos
+                AuthType = AuthType.Basic
+            };
+
             // Bind (authentification)
             connection.Bind();
             

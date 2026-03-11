@@ -12,16 +12,30 @@ namespace NetCoreAPI.Services;
 public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
+    private readonly ISubscriptionRepository _subscriptionRepository;
+    private readonly ISessionRepository _sessionRepository;
+    private readonly IResultRepository _resultRepository;
     private readonly IMapper _mapper;
 
     /// <summary>
     /// Initialise une nouvelle instance du service utilisateur.
     /// </summary>
     /// <param name="userRepository">Repository utilisateur injecté.</param>
+    /// <param name="subscriptionRepository">Repository abonnement injecté.</param>
+    /// <param name="sessionRepository">Repository session injecté.</param>
+    /// <param name="resultRepository">Repository résultat injecté.</param>
     /// <param name="mapper">Instance d'AutoMapper injectée.</param>
-    public UserService(IUserRepository userRepository, IMapper mapper)
+    public UserService(
+        IUserRepository userRepository,
+        ISubscriptionRepository subscriptionRepository,
+        ISessionRepository sessionRepository,
+        IResultRepository resultRepository,
+        IMapper mapper)
     {
         _userRepository = userRepository;
+        _subscriptionRepository = subscriptionRepository;
+        _sessionRepository = sessionRepository;
+        _resultRepository = resultRepository;
         _mapper = mapper;
     }
 
@@ -153,6 +167,154 @@ public class UserService : IUserService
         catch (Exception ex)
         {
             throw new InvalidOperationException("An error occurred while deleting user.", ex);
+        }
+    }
+
+    /// <summary>
+    /// Récupère toutes les sessions auxquelles un utilisateur est inscrit.
+    /// </summary>
+    /// <param name="userId">Identifiant de l'utilisateur.</param>
+    /// <returns>Result contenant la liste des sessions ou un message d'erreur.</returns>
+    public async Task<Result<IEnumerable<SessionDto>>> GetUserSessionsAsync(int userId)
+    {
+        try
+        {
+            if (!await _userRepository.ExistsAsync(userId))
+                return Result<IEnumerable<SessionDto>>.Failure($"User with ID {userId} not found.");
+
+            var subscriptions = await _subscriptionRepository.GetByUserIdAsync(userId);
+            var sessions = subscriptions.Select(s => s.Session).ToList();
+            var sessionDtos = _mapper.Map<IEnumerable<SessionDto>>(sessions);
+            return Result<IEnumerable<SessionDto>>.Success(sessionDtos);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException("An error occurred while retrieving user sessions.", ex);
+        }
+    }
+
+    /// <summary>
+    /// Inscrit un utilisateur à une session de formation.
+    /// </summary>
+    /// <param name="userId">Identifiant de l'utilisateur.</param>
+    /// <param name="sessionId">Identifiant de la session.</param>
+    /// <returns>Result indiquant le succès ou l'échec de l'inscription.</returns>
+    public async Task<Result<bool>> SubscribeToSessionAsync(int userId, int sessionId)
+    {
+        try
+        {
+            if (!await _userRepository.ExistsAsync(userId))
+                return Result<bool>.Failure($"User with ID {userId} not found.");
+
+            var session = await _sessionRepository.GetByIdAsync(sessionId);
+            if (session == null)
+                return Result<bool>.Failure($"Session with ID {sessionId} not found.");
+
+            var existing = await _subscriptionRepository.GetByUserAndSessionAsync(userId, sessionId);
+            if (existing != null)
+                return Result<bool>.Failure($"User {userId} is already subscribed to session {sessionId}.");
+
+            var subscription = new Subscription
+            {
+                UserId = userId,
+                SessionId = sessionId,
+                SubscriptionDate = DateTime.UtcNow
+            };
+            await _subscriptionRepository.AddAsync(subscription);
+            return Result<bool>.Success(true);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException("An error occurred while subscribing to session.", ex);
+        }
+    }
+
+    /// <summary>
+    /// Désinscrit un utilisateur d'une session de formation.
+    /// </summary>
+    /// <param name="userId">Identifiant de l'utilisateur.</param>
+    /// <param name="sessionId">Identifiant de la session.</param>
+    /// <returns>Result indiquant le succès ou l'échec de la désinscription.</returns>
+    public async Task<Result<bool>> UnsubscribeFromSessionAsync(int userId, int sessionId)
+    {
+        try
+        {
+            var subscription = await _subscriptionRepository.GetByUserAndSessionAsync(userId, sessionId);
+            if (subscription == null)
+                return Result<bool>.Failure($"Subscription not found for user {userId} and session {sessionId}.");
+
+            await _subscriptionRepository.DeleteByCompositeKeyAsync(userId, sessionId);
+            return Result<bool>.Success(true);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException("An error occurred while unsubscribing from session.", ex);
+        }
+    }
+
+    /// <summary>
+    /// Récupère toutes les évaluations auxquelles un utilisateur est inscrit.
+    /// </summary>
+    /// <param name="userId">Identifiant de l'utilisateur.</param>
+    /// <returns>Result contenant la liste des évaluations ou un message d'erreur.</returns>
+    public async Task<Result<IEnumerable<EvaluationDto>>> GetUserEvaluationsAsync(int userId)
+    {
+        try
+        {
+            if (!await _userRepository.ExistsAsync(userId))
+                return Result<IEnumerable<EvaluationDto>>.Failure($"User with ID {userId} not found.");
+
+            var results = await _resultRepository.GetByUserIdAsync(userId);
+            var evaluations = results.Select(r => r.Evaluation).Distinct().ToList();
+            var evaluationDtos = _mapper.Map<IEnumerable<EvaluationDto>>(evaluations);
+            return Result<IEnumerable<EvaluationDto>>.Success(evaluationDtos);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException("An error occurred while retrieving user evaluations.", ex);
+        }
+    }
+
+    /// <summary>
+    /// Inscrit un utilisateur à une évaluation.
+    /// </summary>
+    /// <param name="userId">Identifiant de l'utilisateur.</param>
+    /// <param name="evaluationId">Identifiant de l'évaluation.</param>
+    /// <returns>Result indiquant le succès ou l'échec de l'inscription.</returns>
+    public async Task<Result<bool>> EnrollInEvaluationAsync(int userId, int evaluationId)
+    {
+        try
+        {
+            if (!await _userRepository.ExistsAsync(userId))
+                return Result<bool>.Failure($"User with ID {userId} not found.");
+
+            // TODO: Implement evaluation enrollment logic
+            // This would typically create a Result record with a pending status
+            return Result<bool>.Failure("Evaluation enrollment not yet implemented.");
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException("An error occurred while enrolling in evaluation.", ex);
+        }
+    }
+
+    /// <summary>
+    /// Désinscrit un utilisateur d'une évaluation.
+    /// </summary>
+    /// <param name="userId">Identifiant de l'utilisateur.</param>
+    /// <param name="evaluationId">Identifiant de l'évaluation.</param>
+    /// <returns>Result indiquant le succès ou l'échec de la désinscription.</returns>
+    public async Task<Result<bool>> UnenrollFromEvaluationAsync(int userId, int evaluationId)
+    {
+        try
+        {
+            // TODO: Implement evaluation unenrollment logic
+            // This would typically delete the Result record
+            return Result<bool>.Failure("Evaluation unenrollment not yet implemented.");
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException("An error occurred while unenrolling from evaluation.", ex);
         }
     }
 }

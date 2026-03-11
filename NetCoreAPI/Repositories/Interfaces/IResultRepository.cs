@@ -28,5 +28,15 @@ namespace NetCoreAPI.Repositories
         /// <param name="userId">Identifiant de l'utilisateur.</param>
         /// <param name="evaluationId">Identifiant de l'évaluation.</param>
         Task DeleteAsync(int userId, int evaluationId);
+
+        /// <summary>Récupère tous les résultats d'un utilisateur.</summary>
+        /// <param name="userId">Identifiant de l'utilisateur.</param>
+        /// <returns>Liste des résultats de l'utilisateur.</returns>
+        Task<IEnumerable<Result>> GetByUserIdAsync(int userId);
+
+        /// <summary>Récupère tous les résultats d'une évaluation.</summary>
+        /// <param name="evaluationId">Identifiant de l'évaluation.</param>
+        /// <returns>Liste des résultats de l'évaluation.</returns>
+        Task<IEnumerable<Result>> GetByEvaluationIdAsync(int evaluationId);
     }
 }

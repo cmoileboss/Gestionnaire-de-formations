@@ -27,4 +27,9 @@ public interface ISessionService
     /// <summary>Supprime une session par son identifiant.</summary>
     /// <param name="id">Identifiant de la session à supprimer.</param>
     Task<Result<bool>> DeleteAsync(int id);
+
+    /// <summary>Récupère tous les utilisateurs inscrits à une session.</summary>
+    /// <param name="sessionId">Identifiant de la session.</param>
+    /// <returns>Result contenant la liste des utilisateurs ou un message d'erreur.</returns>
+    Task<Result<IEnumerable<UserDto>>> GetSessionUsersAsync(int sessionId);
 }

@@ -122,5 +122,22 @@ namespace NetCoreAPI.Controllers
                 return NotFound();
             }
         }
+
+        /// <summary>
+        /// Récupère tous les utilisateurs inscrits à une évaluation.
+        /// </summary>
+        /// <param name="id">Identifiant de l'évaluation.</param>
+        /// <returns>200 OK avec la liste des utilisateurs.</returns>
+        [HttpGet("{id}/users")]
+        [ProducesResponseType(typeof(IEnumerable<UserDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<IEnumerable<UserDto>>> GetEvaluationUsers(int id)
+        {
+            var result = await _evaluationService.GetEvaluationUsersAsync(id);
+            if (!result.IsSuccess)
+                return NotFound(new { error = result.Error });
+
+            return Ok(result.Value);
+        }
     }
 }

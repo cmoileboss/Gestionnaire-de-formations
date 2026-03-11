@@ -12,16 +12,22 @@ namespace NetCoreAPI.Services;
 public class EvaluationService : IEvaluationService
 {
     private readonly IEvaluationRepository _evaluationRepository;
+    private readonly IResultRepository _resultRepository;
     private readonly IMapper _mapper;
 
     /// <summary>
     /// Initialise une nouvelle instance du service évaluation.
     /// </summary>
     /// <param name="evaluationRepository">Repository évaluation injecté.</param>
+    /// <param name="resultRepository">Repository résultat injecté.</param>
     /// <param name="mapper">Instance d'AutoMapper injectée.</param>
-    public EvaluationService(IEvaluationRepository evaluationRepository, IMapper mapper)
+    public EvaluationService(
+        IEvaluationRepository evaluationRepository,
+        IResultRepository resultRepository,
+        IMapper mapper)
     {
         _evaluationRepository = evaluationRepository;
+        _resultRepository = resultRepository;
         _mapper = mapper;
     }
 
@@ -100,6 +106,25 @@ public class EvaluationService : IEvaluationService
         catch (Exception ex)
         {
             throw new InvalidOperationException($"An error occurred while deleting evaluation {id}.", ex);
+        }
+    }
+
+    public async Task<Result<IEnumerable<UserDto>>> GetEvaluationUsersAsync(int evaluationId)
+    {
+        try
+        {
+            var evaluation = await _evaluationRepository.GetByIdAsync(evaluationId);
+            if (evaluation == null)
+                return Result<IEnumerable<UserDto>>.Failure($"Évaluation avec l'ID {evaluationId} non trouvée.");
+
+            var results = await _resultRepository.GetByEvaluationIdAsync(evaluationId);
+            var users = results.Select(r => r.User).Distinct().ToList();
+            var userDtos = _mapper.Map<IEnumerable<UserDto>>(users);
+            return Result<IEnumerable<UserDto>>.Success(userDtos);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"An error occurred while retrieving users for evaluation {evaluationId}.", ex);
         }
     }
 }

@@ -122,5 +122,77 @@ namespace NetCoreAPI.Controllers
                 return NotFound();
             }
         }
+
+        /// <summary>
+        /// Récupère tous les abonnements d'un utilisateur.
+        /// </summary>
+        /// <param name="userId">Identifiant de l'utilisateur.</param>
+        /// <returns>200 OK avec la liste des abonnements.</returns>
+        [HttpGet("user/{userId}")]
+        [ProducesResponseType(typeof(IEnumerable<SubscriptionDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult<IEnumerable<SubscriptionDto>>> GetByUserId(int userId)
+        {
+            var result = await _subscriptionService.GetByUserIdAsync(userId);
+            if (!result.IsSuccess)
+                return BadRequest(new { error = result.Error });
+
+            return Ok(result.Value);
+        }
+
+        /// <summary>
+        /// Récupère tous les abonnements d'une session.
+        /// </summary>
+        /// <param name="sessionId">Identifiant de la session.</param>
+        /// <returns>200 OK avec la liste des abonnements.</returns>
+        [HttpGet("session/{sessionId}")]
+        [ProducesResponseType(typeof(IEnumerable<SubscriptionDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult<IEnumerable<SubscriptionDto>>> GetBySessionId(int sessionId)
+        {
+            var result = await _subscriptionService.GetBySessionIdAsync(sessionId);
+            if (!result.IsSuccess)
+                return BadRequest(new { error = result.Error });
+
+            return Ok(result.Value);
+        }
+
+        /// <summary>
+        /// Récupère un abonnement spécifique par utilisateur et session.
+        /// </summary>
+        /// <param name="userId">Identifiant de l'utilisateur.</param>
+        /// <param name="sessionId">Identifiant de la session.</param>
+        /// <returns>200 OK avec l'abonnement ou 404 si non trouvé.</returns>
+        [HttpGet("{userId}/{sessionId}")]
+        [ProducesResponseType(typeof(SubscriptionDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult<SubscriptionDto>> GetByUserAndSession(int userId, int sessionId)
+        {
+            var result = await _subscriptionService.GetByUserAndSessionAsync(userId, sessionId);
+            if (!result.IsSuccess)
+                return NotFound(new { error = result.Error });
+
+            return Ok(result.Value);
+        }
+
+        /// <summary>
+        /// Supprime un abonnement par utilisateur et session.
+        /// </summary>
+        /// <param name="userId">Identifiant de l'utilisateur.</param>
+        /// <param name="sessionId">Identifiant de la session.</param>
+        /// <returns>200 OK si supprimé, 404 si non trouvé.</returns>
+        [HttpDelete("{userId}/{sessionId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult> DeleteByUserAndSession(int userId, int sessionId)
+        {
+            var result = await _subscriptionService.DeleteByUserAndSessionAsync(userId, sessionId);
+            if (!result.IsSuccess)
+                return NotFound(new { error = result.Error });
+
+            return Ok(new { message = "Abonnement supprimé avec succès" });
+        }
     }
 }

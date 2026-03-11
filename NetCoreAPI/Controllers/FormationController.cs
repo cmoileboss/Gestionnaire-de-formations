@@ -144,5 +144,59 @@ namespace NetCoreAPI.Controllers
                 return NotFound();
             }
         }
+
+        /// <summary>
+        /// Récupère tous les modules associés à une formation.
+        /// </summary>
+        /// <param name="id">Identifiant de la formation.</param>
+        /// <returns>200 OK avec la liste des modules.</returns>
+        [HttpGet("{id}/modules")]
+        [ProducesResponseType(typeof(IEnumerable<ModuleDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<IEnumerable<ModuleDto>>> GetFormationModules(int id)
+        {
+            var result = await _formationService.GetFormationModulesAsync(id);
+            if (!result.IsSuccess)
+                return NotFound(new { error = result.Error });
+
+            return Ok(result.Value);
+        }
+
+        /// <summary>
+        /// Associe un module à une formation.
+        /// </summary>
+        /// <param name="id">Identifiant de la formation.</param>
+        /// <param name="moduleId">Identifiant du module.</param>
+        /// <returns>200 OK si l'association réussit.</returns>
+        [HttpPost("{id}/modules/{moduleId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> AddModuleToFormation(int id, int moduleId)
+        {
+            var result = await _formationService.AddModuleToFormationAsync(id, moduleId);
+            if (!result.IsSuccess)
+                return BadRequest(new { error = result.Error });
+
+            return Ok(new { message = "Module ajouté à la formation avec succès" });
+        }
+
+        /// <summary>
+        /// Retire un module d'une formation.
+        /// </summary>
+        /// <param name="id">Identifiant de la formation.</param>
+        /// <param name="moduleId">Identifiant du module.</param>
+        /// <returns>200 OK si le retrait réussit.</returns>
+        [HttpDelete("{id}/modules/{moduleId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> RemoveModuleFromFormation(int id, int moduleId)
+        {
+            var result = await _formationService.RemoveModuleFromFormationAsync(id, moduleId);
+            if (!result.IsSuccess)
+                return NotFound(new { error = result.Error });
+
+            return Ok(new { message = "Module retiré de la formation avec succès" });
+        }
     }
 }

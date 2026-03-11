@@ -12,16 +12,22 @@ namespace NetCoreAPI.Services;
 public class SessionService : ISessionService
 {
     private readonly ISessionRepository _sessionRepository;
+    private readonly ISubscriptionRepository _subscriptionRepository;
     private readonly IMapper _mapper;
 
     /// <summary>
     /// Initialise une nouvelle instance du service session.
     /// </summary>
     /// <param name="sessionRepository">Repository session injecté.</param>
+    /// <param name="subscriptionRepository">Repository abonnement injecté.</param>
     /// <param name="mapper">Instance d'AutoMapper injectée.</param>
-    public SessionService(ISessionRepository sessionRepository, IMapper mapper)
+    public SessionService(
+        ISessionRepository sessionRepository,
+        ISubscriptionRepository subscriptionRepository,
+        IMapper mapper)
     {
         _sessionRepository = sessionRepository;
+        _subscriptionRepository = subscriptionRepository;
         _mapper = mapper;
     }
 
@@ -100,6 +106,25 @@ public class SessionService : ISessionService
         catch (Exception ex)
         {
             throw new InvalidOperationException($"An error occurred while deleting session {id}.", ex);
+        }
+    }
+
+    public async Task<Result<IEnumerable<UserDto>>> GetSessionUsersAsync(int sessionId)
+    {
+        try
+        {
+            var session = await _sessionRepository.GetByIdAsync(sessionId);
+            if (session == null)
+                return Result<IEnumerable<UserDto>>.Failure($"Session avec l'ID {sessionId} non trouvée.");
+
+            var subscriptions = await _subscriptionRepository.GetBySessionIdAsync(sessionId);
+            var users = subscriptions.Select(s => s.User).ToList();
+            var userDtos = _mapper.Map<IEnumerable<UserDto>>(users);
+            return Result<IEnumerable<UserDto>>.Success(userDtos);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"An error occurred while retrieving users for session {sessionId}.", ex);
         }
     }
 }

@@ -45,5 +45,12 @@ namespace NetCoreAPI.Repositories
         /// <param name="id">Identifiant de la formation.</param>
         /// <returns>True si la formation existe, sinon false.</returns>
         Task<bool> ExistsAsync(int id);
+
+        /// <summary>
+        /// Récupère une formation par son identifiant avec ses modules.
+        /// </summary>
+        /// <param name="id">Identifiant de la formation.</param>
+        /// <returns>La formation avec ses modules ou null.</returns>
+        Task<Formation?> GetByIdWithModulesAsync(int id);
     }
 }

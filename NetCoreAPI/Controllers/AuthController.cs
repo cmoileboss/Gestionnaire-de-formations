@@ -33,7 +33,8 @@ public class AuthController : ControllerBase
             
             if (!result.IsSuccess)
                 return Unauthorized(new { error = result.Error });
-
+            
+            Response.Cookies.Delete("access_token");
             Response.Cookies.Append("access_token", result.Value!, new CookieOptions
             {
                 HttpOnly = true,   // non accessible en JS
@@ -42,7 +43,7 @@ public class AuthController : ControllerBase
                 Expires = DateTimeOffset.UtcNow.AddHours(1)
             });
             
-            return Ok(result.Value);
+            return Ok("Login réussi avec l'identifiant " + loginDto.Email);
         }
 
         /// <summary>
@@ -84,6 +85,7 @@ public class AuthController : ControllerBase
             if (token == null)
                 return Unauthorized("Invalid LDAP credentials");
 
+            Response.Cookies.Delete("access_token");
             Response.Cookies.Append("access_token", token, new CookieOptions
             {
                 HttpOnly = true,   // non accessible en JS
@@ -92,6 +94,6 @@ public class AuthController : ControllerBase
                 Expires = DateTimeOffset.UtcNow.AddHours(1)
             });
 
-            return Ok(token);
+            return Ok("Login LDAP réussi avec l'identifiant " + ldapDto.Username);
         }
     }

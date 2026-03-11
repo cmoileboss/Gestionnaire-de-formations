@@ -101,4 +101,62 @@ public class SubscriptionService : ISubscriptionService
             throw new InvalidOperationException($"An error occurred while deleting subscription {id}.", ex);
         }
     }
+
+    public async Task<Result<IEnumerable<SubscriptionDto>>> GetByUserIdAsync(int userId)
+    {
+        try
+        {
+            var subscriptions = await _subscriptionRepository.GetByUserIdAsync(userId);
+            return Result<IEnumerable<SubscriptionDto>>.Success(_mapper.Map<IEnumerable<SubscriptionDto>>(subscriptions));
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"An error occurred while retrieving subscriptions for user {userId}.", ex);
+        }
+    }
+
+    public async Task<Result<IEnumerable<SubscriptionDto>>> GetBySessionIdAsync(int sessionId)
+    {
+        try
+        {
+            var subscriptions = await _subscriptionRepository.GetBySessionIdAsync(sessionId);
+            return Result<IEnumerable<SubscriptionDto>>.Success(_mapper.Map<IEnumerable<SubscriptionDto>>(subscriptions));
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"An error occurred while retrieving subscriptions for session {sessionId}.", ex);
+        }
+    }
+
+    public async Task<Result<SubscriptionDto>> GetByUserAndSessionAsync(int userId, int sessionId)
+    {
+        try
+        {
+            var subscription = await _subscriptionRepository.GetByUserAndSessionAsync(userId, sessionId);
+            if (subscription == null)
+                return Result<SubscriptionDto>.Failure($"Abonnement non trouvé pour l'utilisateur {userId} et la session {sessionId}.");
+            return Result<SubscriptionDto>.Success(_mapper.Map<SubscriptionDto>(subscription));
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"An error occurred while retrieving subscription for user {userId} and session {sessionId}.", ex);
+        }
+    }
+
+    public async Task<Result<bool>> DeleteByUserAndSessionAsync(int userId, int sessionId)
+    {
+        try
+        {
+            var subscription = await _subscriptionRepository.GetByUserAndSessionAsync(userId, sessionId);
+            if (subscription == null)
+                return Result<bool>.Failure($"Abonnement non trouvé pour l'utilisateur {userId} et la session {sessionId}.");
+
+            await _subscriptionRepository.DeleteByCompositeKeyAsync(userId, sessionId);
+            return Result<bool>.Success(true);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"An error occurred while deleting subscription for user {userId} and session {sessionId}.", ex);
+        }
+    }
 }

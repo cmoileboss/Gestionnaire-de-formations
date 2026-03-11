@@ -38,5 +38,34 @@ namespace NetCoreAPI.Repositories
         /// </summary>
         /// <param name="id">Identifiant de l'abonnement à supprimer.</param>
         Task DeleteAsync(int id);
+
+        /// <summary>
+        /// Récupère tous les abonnements d'un utilisateur spécifique.
+        /// </summary>
+        /// <param name="userId">Identifiant de l'utilisateur.</param>
+        /// <returns>Liste des abonnements de l'utilisateur.</returns>
+        Task<IEnumerable<Subscription>> GetByUserIdAsync(int userId);
+
+        /// <summary>
+        /// Récupère tous les abonnements pour une session spécifique.
+        /// </summary>
+        /// <param name="sessionId">Identifiant de la session.</param>
+        /// <returns>Liste des abonnements de la session.</returns>
+        Task<IEnumerable<Subscription>> GetBySessionIdAsync(int sessionId);
+
+        /// <summary>
+        /// Récupère un abonnement spécifique par utilisateur et session.
+        /// </summary>
+        /// <param name="userId">Identifiant de l'utilisateur.</param>
+        /// <param name="sessionId">Identifiant de la session.</param>
+        /// <returns>L'abonnement ou null.</returns>
+        Task<Subscription?> GetByUserAndSessionAsync(int userId, int sessionId);
+
+        /// <summary>
+        /// Supprime un abonnement par sa clé composite (utilisateur + session).
+        /// </summary>
+        /// <param name="userId">Identifiant de l'utilisateur.</param>
+        /// <param name="sessionId">Identifiant de la session.</param>
+        Task DeleteByCompositeKeyAsync(int userId, int sessionId);
     }
 }

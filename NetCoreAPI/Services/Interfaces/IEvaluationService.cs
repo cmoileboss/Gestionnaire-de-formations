@@ -27,4 +27,9 @@ public interface IEvaluationService
     /// <summary>Supprime une évaluation par son identifiant.</summary>
     /// <param name="id">Identifiant de l'évaluation à supprimer.</param>
     Task<Result<bool>> DeleteAsync(int id);
+
+    /// <summary>Récupère tous les utilisateurs inscrits à une évaluation.</summary>
+    /// <param name="evaluationId">Identifiant de l'évaluation.</param>
+    /// <returns>Result contenant la liste des utilisateurs ou un message d'erreur.</returns>
+    Task<Result<IEnumerable<UserDto>>> GetEvaluationUsersAsync(int evaluationId);
 }

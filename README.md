@@ -19,12 +19,16 @@ Le **Gestionnaire de Formations** est une application web complète permettant l
 - **LDAP** : System.DirectoryServices.Protocols 10.0.0
 - **Pattern** : Architecture en couches (Controllers → Services → Repositories → Models)
 
+Commande pour installer les dépendances : ```dotnet restore```  
+
 #### Back-end Python
 - **Framework** : FastAPI
 - **Base de données** : SQL Server avec SQLAlchemy
 - **Authentification** : JWT + Passlib/BCrypt
 - **LDAP** : ldap3
 - **Pattern** : Architecture en couches (Routers → Services → Repositories → Models)
+
+Commande pour installer les dépendences : ```python -m pip install -r requirements.txt```  
 
 ### Modèle de Données
 

@@ -53,5 +53,23 @@ namespace NetCoreAPI.Repositories
                 await _context.SaveChangesAsync();
             }
         }
+
+        /// <summary>Récupère tous les résultats d'un utilisateur.</summary>
+        public async Task<IEnumerable<Result>> GetByUserIdAsync(int userId)
+        {
+            return await _context.Results
+                .Include(r => r.Evaluation)
+                .Where(r => r.UserId == userId)
+                .ToListAsync();
+        }
+
+        /// <summary>Récupère tous les résultats d'une évaluation.</summary>
+        public async Task<IEnumerable<Result>> GetByEvaluationIdAsync(int evaluationId)
+        {
+            return await _context.Results
+                .Include(r => r.User)
+                .Where(r => r.EvaluationId == evaluationId)
+                .ToListAsync();
+        }
     }
 }

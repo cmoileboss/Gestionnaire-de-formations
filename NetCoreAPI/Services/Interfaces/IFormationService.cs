@@ -42,4 +42,27 @@ public interface IFormationService
     /// <param name="id">Identifiant de la formation à supprimer.</param>
     /// <returns>Result indiquant le succès ou l'échec de la suppression.</returns>
     Task<Result<bool>> DeleteAsync(int id);
+
+    /// <summary>
+    /// Récupère tous les modules associés à une formation.
+    /// </summary>
+    /// <param name="formationId">Identifiant de la formation.</param>
+    /// <returns>Result contenant la liste des modules ou un message d'erreur.</returns>
+    Task<Result<IEnumerable<ModuleDto>>> GetFormationModulesAsync(int formationId);
+
+    /// <summary>
+    /// Associe un module existant à une formation.
+    /// </summary>
+    /// <param name="formationId">Identifiant de la formation.</param>
+    /// <param name="moduleId">Identifiant du module.</param>
+    /// <returns>Result indiquant le succès ou l'échec de l'association.</returns>
+    Task<Result<bool>> AddModuleToFormationAsync(int formationId, int moduleId);
+
+    /// <summary>
+    /// Retire un module d'une formation.
+    /// </summary>
+    /// <param name="formationId">Identifiant de la formation.</param>
+    /// <param name="moduleId">Identifiant du module.</param>
+    /// <returns>Result indiquant le succès ou l'échec du retrait.</returns>
+    Task<Result<bool>> RemoveModuleFromFormationAsync(int formationId, int moduleId);
 }

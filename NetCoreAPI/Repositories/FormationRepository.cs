@@ -75,5 +75,17 @@ namespace NetCoreAPI.Repositories
         {
             return await _context.Formations.AnyAsync(f => f.FormationId == id);
         }
+
+        /// <summary>
+        /// Récupère une formation par son identifiant avec ses modules.
+        /// </summary>
+        /// <param name="id">Identifiant de la formation.</param>
+        /// <returns>La formation avec ses modules ou null.</returns>
+        public async Task<Formation?> GetByIdWithModulesAsync(int id)
+        {
+            return await _context.Formations
+                .Include(f => f.Modules)
+                .FirstOrDefaultAsync(f => f.FormationId == id);
+        }
     }
 }

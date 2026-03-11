@@ -112,5 +112,120 @@ namespace NetCoreAPI.Controllers
 
             return NoContent();
         }
+
+        /// <summary>
+        /// Récupère toutes les sessions auxquelles un utilisateur est inscrit.
+        /// </summary>
+        /// <param name="id">Identifiant de l'utilisateur.</param>
+        /// <returns>200 OK avec la liste des sessions.</returns>
+        [HttpGet("{id}/sessions")]
+        [ProducesResponseType(typeof(IEnumerable<SessionDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult<IEnumerable<SessionDto>>> GetUserSessions(int id)
+        {
+            var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            if (currentUserId != id)
+                return Forbid();
+
+            var result = await _userService.GetUserSessionsAsync(id);
+            if (!result.IsSuccess)
+                return NotFound(new { error = result.Error });
+
+            return Ok(result.Value);
+        }
+
+        /// <summary>
+        /// Inscrit un utilisateur à une session de formation.
+        /// </summary>
+        /// <param name="id">Identifiant de l'utilisateur.</param>
+        /// <param name="sessionId">Identifiant de la session.</param>
+        /// <returns>200 OK si l'inscription réussit.</returns>
+        [HttpPost("{id}/sessions/{sessionId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult> SubscribeToSession(int id, int sessionId)
+        {
+            var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            if (currentUserId != id)
+                return Forbid();
+
+            var result = await _userService.SubscribeToSessionAsync(id, sessionId);
+            if (!result.IsSuccess)
+                return BadRequest(new { error = result.Error });
+
+            return Ok(new { message = "Utilisateur inscrit à la session avec succès" });
+        }
+
+        /// <summary>
+        /// Désinscrit un utilisateur d'une session de formation.
+        /// </summary>
+        /// <param name="id">Identifiant de l'utilisateur.</param>
+        /// <param name="sessionId">Identifiant de la session.</param>
+        /// <returns>200 OK si la désinscription réussit.</returns>
+        [HttpDelete("{id}/sessions/{sessionId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult> UnsubscribeFromSession(int id, int sessionId)
+        {
+            var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            if (currentUserId != id)
+                return Forbid();
+
+            var result = await _userService.UnsubscribeFromSessionAsync(id, sessionId);
+            if (!result.IsSuccess)
+                return NotFound(new { error = result.Error });
+
+            return Ok(new { message = "Utilisateur désinscrit de la session avec succès" });
+        }
+
+        /// <summary>
+        /// Récupère toutes les évaluations auxquelles un utilisateur est inscrit.
+        /// </summary>
+        /// <param name="id">Identifiant de l'utilisateur.</param>
+        /// <returns>200 OK avec la liste des évaluations.</returns>
+        [HttpGet("{id}/evaluations")]
+        [ProducesResponseType(typeof(IEnumerable<EvaluationDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult<IEnumerable<EvaluationDto>>> GetUserEvaluations(int id)
+        {
+            var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            if (currentUserId != id)
+                return Forbid();
+
+            var result = await _userService.GetUserEvaluationsAsync(id);
+            if (!result.IsSuccess)
+                return NotFound(new { error = result.Error });
+
+            return Ok(result.Value);
+        }
+
+        /// <summary>
+        /// Inscrit un utilisateur à une évaluation.
+        /// </summary>
+        /// <param name="id">Identifiant de l'utilisateur.</param>
+        /// <param name="evaluationId">Identifiant de l'évaluation.</param>
+        /// <returns>200 OK si l'inscription réussit.</returns>
+        [HttpPost("{id}/evaluations/{evaluationId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult> EnrollInEvaluation(int id, int evaluationId)
+        {
+            var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            if (currentUserId != id)
+                return Forbid();
+
+            var result = await _userService.EnrollInEvaluationAsync(id, evaluationId);
+            if (!result.IsSuccess)
+                return BadRequest(new { error = result.Error });
+
+            return Ok(new { message = "Utilisateur inscrit à l'évaluation avec succès" });
+        }
     }
 }

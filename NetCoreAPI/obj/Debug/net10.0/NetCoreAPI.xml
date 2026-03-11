@@ -98,6 +98,13 @@
             <param name="id">Identifiant de l'évaluation à supprimer.</param>
             <returns>204 No Content si supprimée, 404 si non trouvée.</returns>
         </member>
+        <member name="M:NetCoreAPI.Controllers.EvaluationController.GetEvaluationUsers(System.Int32)">
+            <summary>
+            Récupère tous les utilisateurs inscrits à une évaluation.
+            </summary>
+            <param name="id">Identifiant de l'évaluation.</param>
+            <returns>200 OK avec la liste des utilisateurs.</returns>
+        </member>
         <member name="T:NetCoreAPI.Controllers.FormationController">
             <summary>
             Contrôleur REST exposé sous la route <c>/formations</c>.
@@ -161,6 +168,29 @@
             <response code="204">Formation supprimée avec succès.</response>
             <response code="401">Non autorisé.</response>
             <response code="404">Formation non trouvée.</response>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.FormationController.GetFormationModules(System.Int32)">
+            <summary>
+            Récupère tous les modules associés à une formation.
+            </summary>
+            <param name="id">Identifiant de la formation.</param>
+            <returns>200 OK avec la liste des modules.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.FormationController.AddModuleToFormation(System.Int32,System.Int32)">
+            <summary>
+            Associe un module à une formation.
+            </summary>
+            <param name="id">Identifiant de la formation.</param>
+            <param name="moduleId">Identifiant du module.</param>
+            <returns>200 OK si l'association réussit.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.FormationController.RemoveModuleFromFormation(System.Int32,System.Int32)">
+            <summary>
+            Retire un module d'une formation.
+            </summary>
+            <param name="id">Identifiant de la formation.</param>
+            <param name="moduleId">Identifiant du module.</param>
+            <returns>200 OK si le retrait réussit.</returns>
         </member>
         <member name="T:NetCoreAPI.Controllers.ModuleController">
             <summary>
@@ -307,6 +337,13 @@
             <param name="id">Identifiant de la session à supprimer.</param>
             <returns>204 No Content si supprimée, 404 si non trouvée.</returns>
         </member>
+        <member name="M:NetCoreAPI.Controllers.SessionController.GetSessionUsers(System.Int32)">
+            <summary>
+            Récupère tous les utilisateurs inscrits à une session.
+            </summary>
+            <param name="id">Identifiant de la session.</param>
+            <returns>200 OK avec la liste des utilisateurs.</returns>
+        </member>
         <member name="T:NetCoreAPI.Controllers.SubscriptionController">
             <summary>
             Contrôleur REST exposé sous la route <c>/subscriptions</c>.
@@ -354,6 +391,36 @@
             <param name="id">Identifiant de l'abonnement à supprimer.</param>
             <returns>204 No Content si supprimé, 404 si non trouvé.</returns>
         </member>
+        <member name="M:NetCoreAPI.Controllers.SubscriptionController.GetByUserId(System.Int32)">
+            <summary>
+            Récupère tous les abonnements d'un utilisateur.
+            </summary>
+            <param name="userId">Identifiant de l'utilisateur.</param>
+            <returns>200 OK avec la liste des abonnements.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.SubscriptionController.GetBySessionId(System.Int32)">
+            <summary>
+            Récupère tous les abonnements d'une session.
+            </summary>
+            <param name="sessionId">Identifiant de la session.</param>
+            <returns>200 OK avec la liste des abonnements.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.SubscriptionController.GetByUserAndSession(System.Int32,System.Int32)">
+            <summary>
+            Récupère un abonnement spécifique par utilisateur et session.
+            </summary>
+            <param name="userId">Identifiant de l'utilisateur.</param>
+            <param name="sessionId">Identifiant de la session.</param>
+            <returns>200 OK avec l'abonnement ou 404 si non trouvé.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.SubscriptionController.DeleteByUserAndSession(System.Int32,System.Int32)">
+            <summary>
+            Supprime un abonnement par utilisateur et session.
+            </summary>
+            <param name="userId">Identifiant de l'utilisateur.</param>
+            <param name="sessionId">Identifiant de la session.</param>
+            <returns>200 OK si supprimé, 404 si non trouvé.</returns>
+        </member>
         <member name="T:NetCoreAPI.Controllers.UserController">
             <summary>
             Contrôleur REST exposé sous la route <c>/users</c>.
@@ -393,6 +460,44 @@
             </summary>
             <param name="id">Identifiant de l'utilisateur à supprimer.</param>
             <returns>204 No Content si supprimé, 404 s'il n'existe pas.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.UserController.GetUserSessions(System.Int32)">
+            <summary>
+            Récupère toutes les sessions auxquelles un utilisateur est inscrit.
+            </summary>
+            <param name="id">Identifiant de l'utilisateur.</param>
+            <returns>200 OK avec la liste des sessions.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.UserController.SubscribeToSession(System.Int32,System.Int32)">
+            <summary>
+            Inscrit un utilisateur à une session de formation.
+            </summary>
+            <param name="id">Identifiant de l'utilisateur.</param>
+            <param name="sessionId">Identifiant de la session.</param>
+            <returns>200 OK si l'inscription réussit.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.UserController.UnsubscribeFromSession(System.Int32,System.Int32)">
+            <summary>
+            Désinscrit un utilisateur d'une session de formation.
+            </summary>
+            <param name="id">Identifiant de l'utilisateur.</param>
+            <param name="sessionId">Identifiant de la session.</param>
+            <returns>200 OK si la désinscription réussit.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.UserController.GetUserEvaluations(System.Int32)">
+            <summary>
+            Récupère toutes les évaluations auxquelles un utilisateur est inscrit.
+            </summary>
+            <param name="id">Identifiant de l'utilisateur.</param>
+            <returns>200 OK avec la liste des évaluations.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Controllers.UserController.EnrollInEvaluation(System.Int32,System.Int32)">
+            <summary>
+            Inscrit un utilisateur à une évaluation.
+            </summary>
+            <param name="id">Identifiant de l'utilisateur.</param>
+            <param name="evaluationId">Identifiant de l'évaluation.</param>
+            <returns>200 OK si l'inscription réussit.</returns>
         </member>
         <member name="T:NetCoreAPI.Data.GestionFormationContext">
             <summary>
@@ -968,6 +1073,13 @@
             <param name="id">Identifiant de la formation.</param>
             <returns>True si la formation existe, sinon false.</returns>
         </member>
+        <member name="M:NetCoreAPI.Repositories.FormationRepository.GetByIdWithModulesAsync(System.Int32)">
+            <summary>
+            Récupère une formation par son identifiant avec ses modules.
+            </summary>
+            <param name="id">Identifiant de la formation.</param>
+            <returns>La formation avec ses modules ou null.</returns>
+        </member>
         <member name="T:NetCoreAPI.Repositories.IAirecommandationRepository">
             <summary>
             Interface du repository pour la gestion des recommandations IA.
@@ -1086,6 +1198,13 @@
             <param name="id">Identifiant de la formation.</param>
             <returns>True si la formation existe, sinon false.</returns>
         </member>
+        <member name="M:NetCoreAPI.Repositories.IFormationRepository.GetByIdWithModulesAsync(System.Int32)">
+            <summary>
+            Récupère une formation par son identifiant avec ses modules.
+            </summary>
+            <param name="id">Identifiant de la formation.</param>
+            <returns>La formation avec ses modules ou null.</returns>
+        </member>
         <member name="T:NetCoreAPI.Repositories.IModuleRepository">
             <summary>
             Interface du repository pour la gestion des modules.
@@ -1149,6 +1268,16 @@
             <summary>Supprime un résultat par sa clé composite.</summary>
             <param name="userId">Identifiant de l'utilisateur.</param>
             <param name="evaluationId">Identifiant de l'évaluation.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.IResultRepository.GetByUserIdAsync(System.Int32)">
+            <summary>Récupère tous les résultats d'un utilisateur.</summary>
+            <param name="userId">Identifiant de l'utilisateur.</param>
+            <returns>Liste des résultats de l'utilisateur.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.IResultRepository.GetByEvaluationIdAsync(System.Int32)">
+            <summary>Récupère tous les résultats d'une évaluation.</summary>
+            <param name="evaluationId">Identifiant de l'évaluation.</param>
+            <returns>Liste des résultats de l'évaluation.</returns>
         </member>
         <member name="T:NetCoreAPI.Repositories.ISessionRepository">
             <summary>
@@ -1223,6 +1352,35 @@
             Supprime un abonnement par son identifiant.
             </summary>
             <param name="id">Identifiant de l'abonnement à supprimer.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.ISubscriptionRepository.GetByUserIdAsync(System.Int32)">
+            <summary>
+            Récupère tous les abonnements d'un utilisateur spécifique.
+            </summary>
+            <param name="userId">Identifiant de l'utilisateur.</param>
+            <returns>Liste des abonnements de l'utilisateur.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.ISubscriptionRepository.GetBySessionIdAsync(System.Int32)">
+            <summary>
+            Récupère tous les abonnements pour une session spécifique.
+            </summary>
+            <param name="sessionId">Identifiant de la session.</param>
+            <returns>Liste des abonnements de la session.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.ISubscriptionRepository.GetByUserAndSessionAsync(System.Int32,System.Int32)">
+            <summary>
+            Récupère un abonnement spécifique par utilisateur et session.
+            </summary>
+            <param name="userId">Identifiant de l'utilisateur.</param>
+            <param name="sessionId">Identifiant de la session.</param>
+            <returns>L'abonnement ou null.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.ISubscriptionRepository.DeleteByCompositeKeyAsync(System.Int32,System.Int32)">
+            <summary>
+            Supprime un abonnement par sa clé composite (utilisateur + session).
+            </summary>
+            <param name="userId">Identifiant de l'utilisateur.</param>
+            <param name="sessionId">Identifiant de la session.</param>
         </member>
         <member name="T:NetCoreAPI.Repositories.IUserRepository">
             <summary>
@@ -1355,6 +1513,12 @@
         <member name="M:NetCoreAPI.Repositories.ResultRepository.DeleteAsync(System.Int32,System.Int32)">
             <summary>Supprime un résultat par sa clé composite.</summary>
         </member>
+        <member name="M:NetCoreAPI.Repositories.ResultRepository.GetByUserIdAsync(System.Int32)">
+            <summary>Récupère tous les résultats d'un utilisateur.</summary>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.ResultRepository.GetByEvaluationIdAsync(System.Int32)">
+            <summary>Récupère tous les résultats d'une évaluation.</summary>
+        </member>
         <member name="T:NetCoreAPI.Repositories.SessionRepository">
             <summary>
             Repository pour la gestion des entités Session.
@@ -1439,6 +1603,35 @@
             Supprime un abonnement par son identifiant.
             </summary>
             <param name="id">Identifiant de l'abonnement à supprimer.</param>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.SubscriptionRepository.GetByUserIdAsync(System.Int32)">
+            <summary>
+            Récupère tous les abonnements d'un utilisateur spécifique.
+            </summary>
+            <param name="userId">Identifiant de l'utilisateur.</param>
+            <returns>Liste des abonnements de l'utilisateur.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.SubscriptionRepository.GetBySessionIdAsync(System.Int32)">
+            <summary>
+            Récupère tous les abonnements pour une session spécifique.
+            </summary>
+            <param name="sessionId">Identifiant de la session.</param>
+            <returns>Liste des abonnements de la session.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.SubscriptionRepository.GetByUserAndSessionAsync(System.Int32,System.Int32)">
+            <summary>
+            Récupère un abonnement spécifique par utilisateur et session.
+            </summary>
+            <param name="userId">Identifiant de l'utilisateur.</param>
+            <param name="sessionId">Identifiant de la session.</param>
+            <returns>L'abonnement ou null.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Repositories.SubscriptionRepository.DeleteByCompositeKeyAsync(System.Int32,System.Int32)">
+            <summary>
+            Supprime un abonnement par sa clé composite (utilisateur + session).
+            </summary>
+            <param name="userId">Identifiant de l'utilisateur.</param>
+            <param name="sessionId">Identifiant de la session.</param>
         </member>
         <member name="T:NetCoreAPI.Repositories.UserRepository">
             <summary>
@@ -1553,11 +1746,12 @@
             Service métier pour la gestion des évaluations.
             </summary>
         </member>
-        <member name="M:NetCoreAPI.Services.EvaluationService.#ctor(NetCoreAPI.Repositories.IEvaluationRepository,AutoMapper.IMapper)">
+        <member name="M:NetCoreAPI.Services.EvaluationService.#ctor(NetCoreAPI.Repositories.IEvaluationRepository,NetCoreAPI.Repositories.IResultRepository,AutoMapper.IMapper)">
             <summary>
             Initialise une nouvelle instance du service évaluation.
             </summary>
             <param name="evaluationRepository">Repository évaluation injecté.</param>
+            <param name="resultRepository">Repository résultat injecté.</param>
             <param name="mapper">Instance d'AutoMapper injectée.</param>
         </member>
         <member name="T:NetCoreAPI.Services.FormationService">
@@ -1565,11 +1759,12 @@
              Service métier pour la gestion des formations.
             </summary>
         </member>
-        <member name="M:NetCoreAPI.Services.FormationService.#ctor(NetCoreAPI.Repositories.IFormationRepository,AutoMapper.IMapper)">
+        <member name="M:NetCoreAPI.Services.FormationService.#ctor(NetCoreAPI.Repositories.IFormationRepository,NetCoreAPI.Repositories.IModuleRepository,AutoMapper.IMapper)">
             <summary>
             Initialise une nouvelle instance du service de formation.
             </summary>
             <param name="formationRepository">Repository de formation injecté.</param>
+            <param name="moduleRepository">Repository de module injecté.</param>
             <param name="mapper">Instance d'AutoMapper injectée.</param>
         </member>
         <member name="T:NetCoreAPI.Services.IAirecommandationService">
@@ -1642,6 +1837,11 @@
             <summary>Supprime une évaluation par son identifiant.</summary>
             <param name="id">Identifiant de l'évaluation à supprimer.</param>
         </member>
+        <member name="M:NetCoreAPI.Services.IEvaluationService.GetEvaluationUsersAsync(System.Int32)">
+            <summary>Récupère tous les utilisateurs inscrits à une évaluation.</summary>
+            <param name="evaluationId">Identifiant de l'évaluation.</param>
+            <returns>Result contenant la liste des utilisateurs ou un message d'erreur.</returns>
+        </member>
         <member name="T:NetCoreAPI.Services.IFormationService">
             <summary>
             Interface du service métier pour la gestion des formations.
@@ -1681,6 +1881,29 @@
             </summary>
             <param name="id">Identifiant de la formation à supprimer.</param>
             <returns>Result indiquant le succès ou l'échec de la suppression.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Services.IFormationService.GetFormationModulesAsync(System.Int32)">
+            <summary>
+            Récupère tous les modules associés à une formation.
+            </summary>
+            <param name="formationId">Identifiant de la formation.</param>
+            <returns>Result contenant la liste des modules ou un message d'erreur.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Services.IFormationService.AddModuleToFormationAsync(System.Int32,System.Int32)">
+            <summary>
+            Associe un module existant à une formation.
+            </summary>
+            <param name="formationId">Identifiant de la formation.</param>
+            <param name="moduleId">Identifiant du module.</param>
+            <returns>Result indiquant le succès ou l'échec de l'association.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Services.IFormationService.RemoveModuleFromFormationAsync(System.Int32,System.Int32)">
+            <summary>
+            Retire un module d'une formation.
+            </summary>
+            <param name="formationId">Identifiant de la formation.</param>
+            <param name="moduleId">Identifiant du module.</param>
+            <returns>Result indiquant le succès ou l'échec du retrait.</returns>
         </member>
         <member name="T:NetCoreAPI.Services.IModuleService">
             <summary>
@@ -1760,6 +1983,11 @@
             <summary>Supprime une session par son identifiant.</summary>
             <param name="id">Identifiant de la session à supprimer.</param>
         </member>
+        <member name="M:NetCoreAPI.Services.ISessionService.GetSessionUsersAsync(System.Int32)">
+            <summary>Récupère tous les utilisateurs inscrits à une session.</summary>
+            <param name="sessionId">Identifiant de la session.</param>
+            <returns>Result contenant la liste des utilisateurs ou un message d'erreur.</returns>
+        </member>
         <member name="T:NetCoreAPI.Services.ISubscriptionService">
             <summary>
             Interface du service métier pour la gestion des abonnements.
@@ -1784,6 +2012,28 @@
         <member name="M:NetCoreAPI.Services.ISubscriptionService.DeleteAsync(System.Int32)">
             <summary>Supprime un abonnement par son identifiant.</summary>
             <param name="id">Identifiant de l'abonnement à supprimer.</param>
+        </member>
+        <member name="M:NetCoreAPI.Services.ISubscriptionService.GetByUserIdAsync(System.Int32)">
+            <summary>Récupère tous les abonnements d'un utilisateur.</summary>
+            <param name="userId">Identifiant de l'utilisateur.</param>
+            <returns>Result contenant la liste des abonnements ou un message d'erreur.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Services.ISubscriptionService.GetBySessionIdAsync(System.Int32)">
+            <summary>Récupère tous les abonnements d'une session.</summary>
+            <param name="sessionId">Identifiant de la session.</param>
+            <returns>Result contenant la liste des abonnements ou un message d'erreur.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Services.ISubscriptionService.GetByUserAndSessionAsync(System.Int32,System.Int32)">
+            <summary>Récupère un abonnement par utilisateur et session.</summary>
+            <param name="userId">Identifiant de l'utilisateur.</param>
+            <param name="sessionId">Identifiant de la session.</param>
+            <returns>Result contenant l'abonnement ou un message d'erreur.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Services.ISubscriptionService.DeleteByUserAndSessionAsync(System.Int32,System.Int32)">
+            <summary>Supprime un abonnement par utilisateur et session.</summary>
+            <param name="userId">Identifiant de l'utilisateur.</param>
+            <param name="sessionId">Identifiant de la session.</param>
+            <returns>Result indiquant le succès ou l'échec de la suppression.</returns>
         </member>
         <member name="T:NetCoreAPI.Services.IUserService">
             <summary>
@@ -1832,6 +2082,52 @@
             <param name="id">Identifiant de l'utilisateur à supprimer.</param>
             <returns>Result indiquant le succès ou l'échec de la suppression.</returns>
         </member>
+        <member name="M:NetCoreAPI.Services.IUserService.GetUserSessionsAsync(System.Int32)">
+            <summary>
+            Récupère toutes les sessions auxquelles un utilisateur est inscrit.
+            </summary>
+            <param name="userId">Identifiant de l'utilisateur.</param>
+            <returns>Result contenant la liste des sessions ou un message d'erreur.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Services.IUserService.SubscribeToSessionAsync(System.Int32,System.Int32)">
+            <summary>
+            Inscrit un utilisateur à une session de formation.
+            </summary>
+            <param name="userId">Identifiant de l'utilisateur.</param>
+            <param name="sessionId">Identifiant de la session.</param>
+            <returns>Result indiquant le succès ou l'échec de l'inscription.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Services.IUserService.UnsubscribeFromSessionAsync(System.Int32,System.Int32)">
+            <summary>
+            Désinscrit un utilisateur d'une session de formation.
+            </summary>
+            <param name="userId">Identifiant de l'utilisateur.</param>
+            <param name="sessionId">Identifiant de la session.</param>
+            <returns>Result indiquant le succès ou l'échec de la désinscription.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Services.IUserService.GetUserEvaluationsAsync(System.Int32)">
+            <summary>
+            Récupère toutes les évaluations auxquelles un utilisateur est inscrit.
+            </summary>
+            <param name="userId">Identifiant de l'utilisateur.</param>
+            <returns>Result contenant la liste des évaluations ou un message d'erreur.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Services.IUserService.EnrollInEvaluationAsync(System.Int32,System.Int32)">
+            <summary>
+            Inscrit un utilisateur à une évaluation.
+            </summary>
+            <param name="userId">Identifiant de l'utilisateur.</param>
+            <param name="evaluationId">Identifiant de l'évaluation.</param>
+            <returns>Result indiquant le succès ou l'échec de l'inscription.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Services.IUserService.UnenrollFromEvaluationAsync(System.Int32,System.Int32)">
+            <summary>
+            Désinscrit un utilisateur d'une évaluation.
+            </summary>
+            <param name="userId">Identifiant de l'utilisateur.</param>
+            <param name="evaluationId">Identifiant de l'évaluation.</param>
+            <returns>Result indiquant le succès ou l'échec de la désinscription.</returns>
+        </member>
         <member name="T:NetCoreAPI.Services.LDAPService">
             <summary>
             Service métier pour la gestion des authentifications au serveur LDAP.
@@ -1867,11 +2163,12 @@
             Service métier pour la gestion des sessions.
             </summary>
         </member>
-        <member name="M:NetCoreAPI.Services.SessionService.#ctor(NetCoreAPI.Repositories.ISessionRepository,AutoMapper.IMapper)">
+        <member name="M:NetCoreAPI.Services.SessionService.#ctor(NetCoreAPI.Repositories.ISessionRepository,NetCoreAPI.Repositories.ISubscriptionRepository,AutoMapper.IMapper)">
             <summary>
             Initialise une nouvelle instance du service session.
             </summary>
             <param name="sessionRepository">Repository session injecté.</param>
+            <param name="subscriptionRepository">Repository abonnement injecté.</param>
             <param name="mapper">Instance d'AutoMapper injectée.</param>
         </member>
         <member name="T:NetCoreAPI.Services.SubscriptionService">
@@ -1891,11 +2188,14 @@
             Service métier pour la gestion des utilisateurs.
             </summary>
         </member>
-        <member name="M:NetCoreAPI.Services.UserService.#ctor(NetCoreAPI.Repositories.IUserRepository,AutoMapper.IMapper)">
+        <member name="M:NetCoreAPI.Services.UserService.#ctor(NetCoreAPI.Repositories.IUserRepository,NetCoreAPI.Repositories.ISubscriptionRepository,NetCoreAPI.Repositories.ISessionRepository,NetCoreAPI.Repositories.IResultRepository,AutoMapper.IMapper)">
             <summary>
             Initialise une nouvelle instance du service utilisateur.
             </summary>
             <param name="userRepository">Repository utilisateur injecté.</param>
+            <param name="subscriptionRepository">Repository abonnement injecté.</param>
+            <param name="sessionRepository">Repository session injecté.</param>
+            <param name="resultRepository">Repository résultat injecté.</param>
             <param name="mapper">Instance d'AutoMapper injectée.</param>
         </member>
         <member name="M:NetCoreAPI.Services.UserService.GetAllAsync">
@@ -1939,6 +2239,52 @@
             </summary>
             <param name="id">Identifiant de l'utilisateur à supprimer.</param>
             <returns>Result indiquant le succès ou l'échec de la suppression.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Services.UserService.GetUserSessionsAsync(System.Int32)">
+            <summary>
+            Récupère toutes les sessions auxquelles un utilisateur est inscrit.
+            </summary>
+            <param name="userId">Identifiant de l'utilisateur.</param>
+            <returns>Result contenant la liste des sessions ou un message d'erreur.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Services.UserService.SubscribeToSessionAsync(System.Int32,System.Int32)">
+            <summary>
+            Inscrit un utilisateur à une session de formation.
+            </summary>
+            <param name="userId">Identifiant de l'utilisateur.</param>
+            <param name="sessionId">Identifiant de la session.</param>
+            <returns>Result indiquant le succès ou l'échec de l'inscription.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Services.UserService.UnsubscribeFromSessionAsync(System.Int32,System.Int32)">
+            <summary>
+            Désinscrit un utilisateur d'une session de formation.
+            </summary>
+            <param name="userId">Identifiant de l'utilisateur.</param>
+            <param name="sessionId">Identifiant de la session.</param>
+            <returns>Result indiquant le succès ou l'échec de la désinscription.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Services.UserService.GetUserEvaluationsAsync(System.Int32)">
+            <summary>
+            Récupère toutes les évaluations auxquelles un utilisateur est inscrit.
+            </summary>
+            <param name="userId">Identifiant de l'utilisateur.</param>
+            <returns>Result contenant la liste des évaluations ou un message d'erreur.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Services.UserService.EnrollInEvaluationAsync(System.Int32,System.Int32)">
+            <summary>
+            Inscrit un utilisateur à une évaluation.
+            </summary>
+            <param name="userId">Identifiant de l'utilisateur.</param>
+            <param name="evaluationId">Identifiant de l'évaluation.</param>
+            <returns>Result indiquant le succès ou l'échec de l'inscription.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Services.UserService.UnenrollFromEvaluationAsync(System.Int32,System.Int32)">
+            <summary>
+            Désinscrit un utilisateur d'une évaluation.
+            </summary>
+            <param name="userId">Identifiant de l'utilisateur.</param>
+            <param name="evaluationId">Identifiant de l'évaluation.</param>
+            <returns>Result indiquant le succès ou l'échec de la désinscription.</returns>
         </member>
         <member name="T:NetCoreAPI.Utils.Result`1">
             <summary>

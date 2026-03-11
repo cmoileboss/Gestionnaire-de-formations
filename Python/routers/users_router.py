@@ -48,7 +48,7 @@ def login(response: Response, request: LoginRegisterRequest, user_service: UserS
         key="access_token",
         value=token,
         httponly=True,
-        secure=False,
+        secure=True,
         samesite="lax",
         max_age=3600)
     return user
