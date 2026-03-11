@@ -235,62 +235,101 @@ LDAP_DOMAIN=ENTREPRISE
 - Python 3.11+ (pour API Python)
 - Active Directory/LDAP (optionnel, pour authentification entreprise)
 
-## API REST - Endpoints Principaux
+## API REST - Endpoints Complets
 
 ### Authentification
-- `POST /users/login` - Connexion (JWT)
-- `POST /users/register` - Inscription
-- `POST /users/logout` - Déconnexion
-- `POST /users/ldap` - Authentification LDAP
+- `POST /login` - Connexion avec email/mot de passe (génère JWT)
+- `POST /register` - Inscription d'un nouvel utilisateur
+- `POST /logout` - Déconnexion (supprime le cookie JWT)
+- `POST /ldap` - Authentification via LDAP/Active Directory (génère JWT)
 
 ### Utilisateurs
-- `GET /users` - Liste des utilisateurs
-- `GET /users/{id}` - Détails utilisateur
-- `PUT /users/{id}` - Mise à jour profil
-- `DELETE /users/{id}` - Suppression compte
+- `GET /users` - Liste de tous les utilisateurs
+- `GET /users/{id}` - Détails d'un utilisateur spécifique
+- `PUT /users/{id}` - Mise à jour du profil utilisateur
+- `DELETE /users/{id}` - Suppression du compte utilisateur
+- `GET /users/{id}/sessions` - Sessions auxquelles l'utilisateur est inscrit
+- `POST /users/{id}/sessions/{sessionId}` - Inscrire l'utilisateur à une session
+- `DELETE /users/{id}/sessions/{sessionId}` - Désinscrire l'utilisateur d'une session
+- `GET /users/{id}/evaluations` - Évaluations auxquelles l'utilisateur est inscrit
+- `POST /users/{id}/evaluations/{evaluationId}` - Inscrire l'utilisateur à une évaluation
 
 ### Formations
-- `GET /formations` - Liste des formations
-- `GET /formations/{id}` - Détails formation
-- `POST /formations` - Créer formation
-- `PUT /formations/{id}` - Modifier formation
-- `DELETE /formations/{id}` - Supprimer formation
-- `GET /formations/{id}/modules` - Modules de la formation
-- `POST /formations/{id}/modules/{moduleId}` - Associer module
-- `DELETE /formations/{id}/modules/{moduleId}` - Retirer module
+- `GET /formations` - Liste de toutes les formations
+- `GET /formations/{id}` - Détails d'une formation
+- `POST /formations` - Créer une nouvelle formation
+- `PUT /formations/{id}` - Modifier une formation
+- `DELETE /formations/{id}` - Supprimer une formation
+- `GET /formations/{id}/modules` - Modules associés à la formation
+- `POST /formations/{id}/modules/{moduleId}` - Associer un module à la formation
+- `DELETE /formations/{id}/modules/{moduleId}` - Retirer un module de la formation
+
+### Modules
+- `GET /modules` - Liste de tous les modules
+- `GET /modules/{id}` - Détails d'un module
+- `POST /modules` - Créer un nouveau module
+- `PUT /modules/{id}` - Modifier un module
+- `DELETE /modules/{id}` - Supprimer un module
 
 ### Sessions
-- `GET /sessions` - Liste des sessions
-- `GET /sessions/{id}` - Détails session
-- `POST /sessions` - Créer session
-- `PUT /sessions/{id}` - Modifier session
-- `DELETE /sessions/{id}` - Supprimer session
-- `GET /sessions/{id}/users` - Participants
+- `GET /sessions` - Liste de toutes les sessions
+- `GET /sessions/{id}` - Détails d'une session
+- `POST /sessions` - Créer une nouvelle session
+- `PUT /sessions/{id}` - Modifier une session
+- `DELETE /sessions/{id}` - Supprimer une session
+- `GET /sessions/{id}/users` - Liste des utilisateurs inscrits à la session
 
-### Inscriptions
-- `POST /users/{userId}/sessions/{sessionId}` - S'inscrire
-- `DELETE /users/{userId}/sessions/{sessionId}` - Se désinscrire
-- `GET /users/{userId}/sessions` - Sessions de l'utilisateur
+### Abonnements (Subscriptions)
+- `GET /subscriptions` - Liste de tous les abonnements
+- `GET /subscriptions/{id}` - Détails d'un abonnement par ID unique
+- `POST /subscriptions` - Créer un nouvel abonnement
+- `PUT /subscriptions/{id}` - Modifier un abonnement
+- `DELETE /subscriptions/{id}` - Supprimer un abonnement par ID
+- `GET /subscriptions/user/{userId}` - Abonnements d'un utilisateur spécifique
+- `GET /subscriptions/session/{sessionId}` - Abonnements pour une session spécifique
+- `GET /subscriptions/{userId}/{sessionId}` - Abonnement par clé composite
+- `DELETE /subscriptions/{userId}/{sessionId}` - Supprimer un abonnement par clé composite
 
 ### Évaluations
-- `GET /evaluations` - Liste des évaluations
-- `GET /evaluations/{id}` - Détails évaluation
-- `POST /evaluations` - Créer évaluation
-- `PUT /evaluations/{id}` - Modifier évaluation
-- `DELETE /evaluations/{id}` - Supprimer évaluation
+- `GET /evaluations` - Liste de toutes les évaluations
+- `GET /evaluations/{id}` - Détails d'une évaluation
+- `POST /evaluations` - Créer une nouvelle évaluation
+- `PUT /evaluations/{id}` - Modifier une évaluation
+- `DELETE /evaluations/{id}` - Supprimer une évaluation
+- `GET /evaluations/{id}/users` - Liste des utilisateurs inscrits à l'évaluation
 
 ### Résultats
-- `GET /results` - Liste des résultats
-- `GET /results/{id}` - Détails résultat
-- `POST /results` - Enregistrer résultat
-- `DELETE /results/{id}` - Supprimer résultat
+- `GET /results` - Liste de tous les résultats
+- `GET /results/{userId}/{evaluationId}` - Résultat par clé composite
+- `POST /results` - Enregistrer un nouveau résultat
+- `PUT /results/{userId}/{evaluationId}` - Modifier un résultat
+- `DELETE /results/{userId}/{evaluationId}` - Supprimer un résultat
 
 ## Documentation API
 
 Les deux implémentations exposent une documentation interactive :
 
-- **.NET Core** : Swagger UI accessible via `/swagger`
-- **Python** : ReDoc et Swagger UI via FastAPI (`/docs` et `/redoc`)
+### .NET Core
+- **Swagger UI** : `https://localhost:5001/swagger`
+- **Spécification OpenAPI (utilisable avec Postman)** : `https://localhost:5001/swagger/v1/swagger.json`
+
+### Python FastAPI
+- **Swagger UI** : `http://localhost:8000/docs`
+- **ReDoc** : `http://localhost:8000/redoc`
+- **Spécification OpenAPI (utilisable avec Postman)** : `http://localhost:8000/openapi.json`
+
+### Import dans Postman
+
+Pour importer automatiquement tous les endpoints dans Postman :
+
+1. Démarrez l'API (`.NET` ou `Python`)
+2. Dans Postman, cliquez sur **Import**
+3. Sélectionnez **Link** et collez l'URL de la spécification :
+   - .NET Core : `https://localhost:5001/swagger/v1/swagger.json`
+   - Python : `http://localhost:8000/openapi.json`
+4. Cliquez sur **Import**
+
+Postman créera automatiquement une collection complète avec tous les endpoints, paramètres et schémas de requête.
 
 ## Performances et Scalabilité
 
