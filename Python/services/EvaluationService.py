@@ -2,6 +2,8 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 
 from repositories.EvaluationRepository import EvaluationRepository
+from repositories.ResultRepository import ResultRepository
+
 from models.Evaluation import Evaluation
 from models.User import User
 from exceptions import NotFoundError
@@ -10,6 +12,7 @@ from exceptions import NotFoundError
 class EvaluationService:
     def __init__(self, db: Session):
         self.evaluation_repository = EvaluationRepository(db)
+        self.result_repository = ResultRepository(db)
 
 
     def get_all_evaluations(self) -> list[Evaluation]:
@@ -45,5 +48,12 @@ class EvaluationService:
 
 
     def get_evaluation_users(self, evaluation_id: int) -> list[User]:
-        """Retourne les utilisateurs inscrits à une évaluation (non implémenté)."""
-        return []
+        """Retourne les utilisateurs inscrits à une évaluation."""
+        # Vérifier que l'évaluation existe
+        evaluation = self.evaluation_repository.get_by_id(evaluation_id)
+        if evaluation is None:
+            raise NotFoundError("Évaluation", evaluation_id)
+        
+        results = self.result_repository.get_by_evaluation(evaluation_id)
+        users = [result.user for result in results if result.user is not None]
+        return users

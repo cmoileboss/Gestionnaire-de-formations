@@ -4,6 +4,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import Annotated
 
+from limiter_config import limiter
+
 from database_connection import get_db
 
 from models.Formation import Formation
@@ -22,7 +24,14 @@ def get_formation_service(db: Session = Depends(get_db)) -> FormationService:
     """Get a FormationService instance with the database session"""
     return FormationService(db)
 
-formation_router = APIRouter(prefix="/formations", tags=["Formations"], dependencies=[Depends(SecurityService.get_current_user)])
+formation_router = APIRouter(
+    prefix="/formations", 
+    tags=["Formations"], 
+    dependencies=[
+        Depends(SecurityService.get_current_user),
+        Depends(limiter.limit("100/minute"))
+    ]
+)
 FormationServiceDep = Annotated[FormationService, Depends(get_formation_service)]
 
 @formation_router.get("/", response_model=list[FormationResponse])

@@ -58,6 +58,22 @@ class ResultRepository:
         :return: Liste de résultats
         """
         return self.db.query(Result).all()
+    
+    def get_by_user(self, user_id: int) -> list[Result]:
+        """
+        Récupère tous les résultats pour un utilisateur donné.
+        :param user_id: Identifiant de l'utilisateur
+        :return: Liste de résultats
+        """
+        return self.db.query(Result).filter(Result.user_id == user_id).all()
+
+    def get_by_evaluation(self, evaluation_id: int) -> list[Result]:
+        """
+        Récupère tous les résultats pour une évaluation donnée.
+        :param evaluation_id: Identifiant de l'évaluation
+        :return: Liste de résultats
+        """
+        return self.db.query(Result).filter(Result.evaluation_id == evaluation_id).all()
 
     def update(self, user_id: int, evaluation_id: int, score: float = None, 
                success: bool = None, date: datetime = None) -> Result:

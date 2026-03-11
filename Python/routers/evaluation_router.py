@@ -4,6 +4,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import Annotated
 
+from limiter_config import limiter
+
 from database_connection import get_db
 
 from models.Evaluation import Evaluation
@@ -22,7 +24,13 @@ def get_evaluation_service(db: Session = Depends(get_db)) -> EvaluationService:
     """Get an EvaluationService instance with the database session"""
     return EvaluationService(db)
 
-evaluation_router = APIRouter(prefix="/evaluations", tags=["Evaluations"], dependencies=[Depends(SecurityService.get_current_user)]
+evaluation_router = APIRouter(
+    prefix="/evaluations", 
+    tags=["Evaluations"], 
+    dependencies=[
+        Depends(SecurityService.get_current_user),
+        Depends(limiter.limit("100/minute"))
+    ]
 )
 EvaluationServiceDep = Annotated[EvaluationService, Depends(get_evaluation_service)]
 

@@ -46,5 +46,10 @@ class SessionService:
 
     def get_session_users(self, session_id: int) -> list[User]:
         """Retourne tous les utilisateurs inscrits à une session."""
+        # Vérifier que la session existe
+        session = self.session_repository.get_by_id(session_id)
+        if session is None:
+            raise NotFoundError("Session", session_id)
+        
         subscriptions = self.subscription_repository.get_by_session(session_id)
         return [sub.user for sub in subscriptions]

@@ -62,14 +62,26 @@ class UserService:
 
     def get_user_sessions(self, user_id: int) -> list[SessionModel]:
         """Retourne la liste des sessions auxquelles l'utilisateur est inscrit."""
+        # Vérifier que l'utilisateur existe
+        user = self.user_repository.get_by_id(user_id)
+        if user is None:
+            raise NotFoundError("Utilisateur", user_id)
+        
         subscriptions = self.subscription_repository.get_by_user(user_id)
         return [sub.session for sub in subscriptions]
 
     def subscribe_to_session(self, user_id: int, session_id: int) -> None:
         """Inscrit un utilisateur à une session. Lève NotFoundError ou DuplicateError."""
+        # Vérifier que l'utilisateur existe
+        user = self.user_repository.get_by_id(user_id)
+        if user is None:
+            raise NotFoundError("Utilisateur", user_id)
+        
+        # Vérifier que la session existe
         session = self.session_repository.get_by_id(session_id)
         if session is None:
             raise NotFoundError("Session", session_id)
+        
         existing = self.subscription_repository.get(user_id, session_id)
         if existing:
             raise DuplicateError(f"L'utilisateur {user_id} est déjà inscrit à la session {session_id}")
@@ -80,16 +92,3 @@ class UserService:
         success = self.subscription_repository.delete(user_id, session_id)
         if not success:
             raise NotFoundError("Abonnement", f"{user_id}/{session_id}")
-
-
-    def get_user_evaluations(self, user_id: int) -> list[Evaluation]:
-        """Retourne les évaluations de l'utilisateur (non implémenté)."""
-        return []
-
-    def enroll_in_evaluation(self, user_id: int, evaluation_id: int) -> bool:
-        """Inscrit un utilisateur à une évaluation (non implémenté)."""
-        return False
-
-    def unenroll_from_evaluation(self, user_id: int, evaluation_id: int) -> bool:
-        """Désinscrit un utilisateur d'une évaluation (non implémenté)."""
-        return False

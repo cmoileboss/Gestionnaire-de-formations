@@ -29,6 +29,14 @@ class ResultService:
         if result is None:
             raise NotFoundError("Résultat", f"user_id={user_id}, evaluation_id={evaluation_id}")
         return result
+
+    def get_results_by_user(self, user_id: int):
+        """Retourne tous les résultats d'évaluation pour un utilisateur donné."""
+        return self.result_repository.get_by_user(user_id)
+
+    def get_results_by_evaluation(self, evaluation_id: int):
+        """Retourne tous les résultats d'évaluation pour une évaluation donnée."""
+        return self.result_repository.get_by_evaluation(evaluation_id)
     
     def update_result(self, user_id: int, evaluation_id: int, score: float = None, success: bool = None, date=None):
         """Met à jour un résultat d'évaluation. Lève NotFoundError si introuvable."""

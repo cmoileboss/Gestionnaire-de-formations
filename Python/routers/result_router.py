@@ -2,6 +2,8 @@ from fastapi import APIRouter, Depends, Response
 from sqlalchemy.orm import Session
 from typing import Annotated
 
+from main import limiter
+
 from database_connection import get_db
 
 from models.User import User
@@ -21,7 +23,14 @@ def get_result_service(db: Session = Depends(get_db)) -> ResultService:
     """Get a ResultService instance with the database session"""
     return ResultService(db)
 
-result_router = APIRouter(prefix="/results", tags=["Results"], dependencies=[Depends(SecurityService.get_current_user)])
+result_router = APIRouter(
+    prefix="/results", 
+    tags=["Results"], 
+    dependencies=[
+        Depends(SecurityService.get_current_user),
+        Depends(limiter.limit("100/minute"))
+    ]
+)
 ResultServiceDep = Annotated[ResultService, Depends(get_result_service)]
 
 @result_router.get("/", response_model=list[ResultResponse])

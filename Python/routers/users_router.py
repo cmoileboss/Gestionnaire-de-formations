@@ -5,6 +5,8 @@ from fastapi import APIRouter, Depends, Response
 from sqlalchemy.orm import Session
 from typing import Annotated
 
+from main import limiter
+
 from services.ResultService import ResultService
 from services.UserService import UserService
 from services.SecurityService import SecurityService
@@ -40,7 +42,11 @@ def get_result_service() -> ResultService:
     db = get_db()
     return ResultService(db)
 
-users_router = APIRouter(prefix="/users", tags=["Users"])
+users_router = APIRouter(
+    prefix="/users", 
+    tags=["Users"],
+    dependencies=[Depends(limiter.limit("100/minute"))]
+)
 
 UserServiceDep = Annotated[UserService, Depends(get_user_service)]
 LDAPServiceDep = Annotated[LDAPService, Depends(get_ldap_service)]
@@ -99,7 +105,7 @@ def read_user(user_id: int, user_service: UserServiceDep, current_user: User = D
     :param current_user: Currently authenticated user.
     :return: The matching User record.
     """
-    if current_user.id != user_id:
+    if current_user.user_id != user_id:
         raise ForbiddenError("Vous ne pouvez accéder qu'à vos propres informations")
     return user_service.get_user(user_id)
 
@@ -114,12 +120,12 @@ def update_user(user_id: int, request: UserCreationRequest, user_service: UserSe
     :param current_user: Currently authenticated user.
     :return: The updated User record.
     """
-    if current_user.id != user_id:
+    if current_user.user_id != user_id:
         raise ForbiddenError("Vous ne pouvez modifier que vos propres informations")
     return user_service.update_user(user_id, request.email, request.password, request.address)
 
 @users_router.delete("/{user_id}", response_model=dict)
-def delete_user(user_id: int, user_service: UserServiceDep, current_user: User = Depends(SecurityService.get_current_user)) -> dict:
+def delete_user(response: Response, user_id: int, user_service: UserServiceDep, current_user: User = Depends(SecurityService.get_current_user)) -> dict:
     """Delete a user by their identifier.
 
     :param user_id: Primary key of the user to delete.
@@ -127,9 +133,10 @@ def delete_user(user_id: int, user_service: UserServiceDep, current_user: User =
     :param current_user: Currently authenticated user.
     :return: Confirmation message on success.
     """
-    if current_user.id != user_id:
+    if current_user.user_id != user_id:
         raise ForbiddenError("Vous ne pouvez supprimer que votre propre compte")
     user_service.delete_user(user_id)
+    response.delete_cookie("access_token")
     return {"message": "Utilisateur supprimé avec succès"}
 
 # Endpoints for managing user sessions (subscriptions)
@@ -143,7 +150,7 @@ def get_user_sessions(user_id: int, user_service: UserServiceDep, current_user: 
     :param current_user: Currently authenticated user.
     :return: List of Session records the user is subscribed to.
     """
-    if current_user.id != user_id:
+    if current_user.user_id != user_id:
         raise ForbiddenError("Vous ne pouvez accéder qu'à vos propres informations de session")
     return user_service.get_user_sessions(user_id)
 
@@ -157,7 +164,7 @@ def subscribe_user_to_session(user_id: int, session_id: int, user_service: UserS
     :param current_user: Currently authenticated user.
     :return: Confirmation message on success.
     """
-    if current_user.id != user_id:
+    if current_user.user_id != user_id:
         raise ForbiddenError("Vous ne pouvez gérer que vos propres inscriptions")
     user_service.subscribe_to_session(user_id, session_id)
     return {"message": "Utilisateur inscrit à la session avec succès"}
@@ -172,7 +179,7 @@ def unsubscribe_user_from_session(user_id: int, session_id: int, user_service: U
     :param current_user: Currently authenticated user.
     :return: Confirmation message on success.
     """
-    if current_user.id != user_id:
+    if current_user.user_id != user_id:
         raise ForbiddenError("Vous ne pouvez gérer que vos propres inscriptions")
     user_service.unsubscribe_from_session(user_id, session_id)
     return {"message": "Utilisateur désinscrit de la session avec succès"}
@@ -180,7 +187,7 @@ def unsubscribe_user_from_session(user_id: int, session_id: int, user_service: U
 # Endpoints for managing user evaluations
 
 @users_router.get("/{user_id}/evaluations", response_model=list[EvaluationResponse])
-def get_user_evaluations(user_id: int, user_service: UserServiceDep, current_user: User = Depends(SecurityService.get_current_user)) -> list[Evaluation]:
+def get_user_evaluations(user_id: int, result_service: ResultServiceDep, current_user: User = Depends(SecurityService.get_current_user)) -> list[Evaluation]:
     """Return all evaluations a user is enrolled in.
 
     :param user_id: Primary key of the user.
@@ -188,9 +195,9 @@ def get_user_evaluations(user_id: int, user_service: UserServiceDep, current_use
     :param current_user: Currently authenticated user.
     :return: List of Evaluation records the user participates in.
     """
-    if current_user.id != user_id:
+    if current_user.user_id != user_id:
         raise ForbiddenError("Vous ne pouvez accéder qu'à vos propres informations d'évaluation")
-    return user_service.get_user_evaluations(user_id)
+    return result_service.get(user_id)
 
 @users_router.post("/{user_id}/evaluations/{evaluation_id}", response_model=dict)
 def enroll_user_in_evaluation(user_id: int, evaluation_id: int, result_service: ResultServiceDep, current_user: User = Depends(SecurityService.get_current_user)) -> dict:
@@ -202,7 +209,7 @@ def enroll_user_in_evaluation(user_id: int, evaluation_id: int, result_service: 
     :param current_user: Currently authenticated user.
     :return: Confirmation message on success.
     """
-    if current_user.id != user_id:
+    if current_user.user_id != user_id:
         raise ForbiddenError("Vous ne pouvez gérer que vos propres évaluations")
     result_service.create_result(user_id, evaluation_id)
     return {"message": "Utilisateur inscrit à l'évaluation avec succès"}
@@ -218,7 +225,7 @@ def unenroll_user_from_evaluation(user_id: int, evaluation_id: int, result_servi
     :param current_user: Currently authenticated user.
     :return: Confirmation message on success.
     """
-    if current_user.id != user_id:
+    if current_user.user_id != user_id:
         raise ForbiddenError("Vous ne pouvez gérer que vos propres évaluations")
     result_service.delete_result(user_id, evaluation_id)
     return {"message": "Utilisateur désinscrit de l'évaluation avec succès"}

@@ -4,6 +4,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import Annotated
 
+from main import limiter
+
 from database_connection import get_db
 
 from models.Session import Session as SessionModel
@@ -21,7 +23,14 @@ def get_session_service(db: Session = Depends(get_db)) -> SessionService:
     """Get a SessionService instance with the database session"""
     return SessionService(db)
 
-sessions_router = APIRouter(prefix="/sessions", tags=["Sessions"], dependencies=[Depends(SecurityService.get_current_user)])
+sessions_router = APIRouter(
+    prefix="/sessions", 
+    tags=["Sessions"], 
+    dependencies=[
+        Depends(SecurityService.get_current_user),
+        Depends(limiter.limit("100/minute"))
+    ]
+)
 SessionServiceDep = Annotated[SessionService, Depends(get_session_service)]
 
 @sessions_router.get("/", response_model=list[SessionResponse])
