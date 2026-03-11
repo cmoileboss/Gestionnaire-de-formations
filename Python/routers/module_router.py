@@ -38,12 +38,8 @@ def read_module(module_id: int, module_service: ModuleServiceDep) -> Module:
     :param module_id: Primary key of the module to retrieve.
     :param module_service: Injected module service.
     :return: The matching Module record.
-    :raises HTTPException 404: If no module exists with the given ID.
     """
-    module = module_service.get_module(module_id)
-    if module is None:
-        raise HTTPException(status_code=404, detail="Module not found")
-    return module
+    return module_service.get_module(module_id)
 
 @module_router.post("/", response_model=ModuleResponse)
 def create_module(request: ModuleCreationRequest, module_service: ModuleServiceDep) -> Module:
@@ -63,12 +59,8 @@ def update_module(module_id: int, request: ModuleCreationRequest, module_service
     :param request: Request body with updated title, subject, and/or description.
     :param module_service: Injected module service.
     :return: The updated Module record.
-    :raises HTTPException 404: If no module exists with the given ID.
     """
-    updated_module = module_service.update_module(module_id, request.title, request.subject, request.description)
-    if updated_module is None:
-        raise HTTPException(status_code=404, detail="Module not found")
-    return updated_module
+    return module_service.update_module(module_id, request.title, request.subject, request.description)
 
 @module_router.delete("/{module_id}", response_model=dict)
 def delete_module(module_id: int, module_service: ModuleServiceDep) -> dict:
@@ -77,10 +69,6 @@ def delete_module(module_id: int, module_service: ModuleServiceDep) -> dict:
     :param module_id: Primary key of the module to delete.
     :param module_service: Injected module service.
     :return: Confirmation message on success.
-    :raises HTTPException 404: If no module exists with the given ID.
     """
-    success = module_service.delete_module(module_id)
-    if success:
-        return {"message": "Module deleted successfully"}
-    else:
-        raise HTTPException(status_code=404, detail="Module not found")
+    module_service.delete_module(module_id)
+    return {"message": "Module supprimé avec succès"}

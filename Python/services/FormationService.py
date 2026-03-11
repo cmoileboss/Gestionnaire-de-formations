@@ -5,6 +5,7 @@ from repositories.ModuleRepository import ModuleRepository
 from repositories.ModuleUsageRepository import ModuleUsageRepository
 from models.Formation import Formation
 from models.Module import Module
+from exceptions import NotFoundError, DuplicateError
 
 
 class FormationService:
@@ -18,21 +19,29 @@ class FormationService:
         """Retourne la liste de toutes les formations."""
         return self.formation_repository.get_all()
 
-    def get_formation(self, formation_id: int) -> Formation | None:
-        """Retourne une formation par son identifiant, ou None."""
-        return self.formation_repository.get_by_id(formation_id)
+    def get_formation(self, formation_id: int) -> Formation:
+        """Retourne une formation par son identifiant, ou lève NotFoundError."""
+        formation = self.formation_repository.get_by_id(formation_id)
+        if formation is None:
+            raise NotFoundError("Formation", formation_id)
+        return formation
 
     def create_formation(self, name: str, description: str = None) -> Formation:
         """Crée une nouvelle formation."""
         return self.formation_repository.create(name, description)
 
-    def update_formation(self, formation_id: int, name: str = None, description: str = None) -> Formation | None:
-        """Met à jour une formation existante. Retourne None si introuvable."""
-        return self.formation_repository.update(formation_id, name, description)
+    def update_formation(self, formation_id: int, name: str = None, description: str = None) -> Formation:
+        """Met à jour une formation existante. Lève NotFoundError si introuvable."""
+        updated = self.formation_repository.update(formation_id, name, description)
+        if updated is None:
+            raise NotFoundError("Formation", formation_id)
+        return updated
 
-    def delete_formation(self, formation_id: int) -> bool:
-        """Supprime une formation. Retourne True si supprimée."""
-        return self.formation_repository.delete(formation_id)
+    def delete_formation(self, formation_id: int) -> None:
+        """Supprime une formation. Lève NotFoundError si introuvable."""
+        success = self.formation_repository.delete(formation_id)
+        if not success:
+            raise NotFoundError("Formation", formation_id)
 
 
     def get_formation_modules(self, formation_id: int) -> list[Module]:
@@ -45,21 +54,22 @@ class FormationService:
                 modules.append(module)
         return modules
 
-    def add_module_to_formation(self, formation_id: int, module_id: int):
+    def add_module_to_formation(self, formation_id: int, module_id: int) -> None:
         """
         Associe un module à une formation.
-        Retourne None si le module n'existe pas.
-        Lève ValueError si le module est déjà lié.
+        Lève NotFoundError si le module n'existe pas.
+        Lève DuplicateError si le module est déjà lié.
         """
         module = self.module_repository.get_by_id(module_id)
         if module is None:
-            return None
+            raise NotFoundError("Module", module_id)
         existing = self.module_usage_repository.get(module_id, formation_id)
         if existing:
-            raise ValueError("Module already added to this formation")
+            raise DuplicateError(f"Le module {module_id} est déjà associé à la formation {formation_id}")
         self.module_usage_repository.create(module_id, formation_id)
-        return True
 
-    def remove_module_from_formation(self, formation_id: int, module_id: int) -> bool:
-        """Supprime le lien entre un module et une formation. Retourne True si supprimé."""
-        return self.module_usage_repository.delete(module_id, formation_id)
+    def remove_module_from_formation(self, formation_id: int, module_id: int) -> None:
+        """Supprime le lien entre un module et une formation. Lève NotFoundError si non trouvé."""
+        success = self.module_usage_repository.delete(module_id, formation_id)
+        if not success:
+            raise NotFoundError("Association module-formation", f"{module_id}/{formation_id}")

@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from repositories.EvaluationRepository import EvaluationRepository
 from models.Evaluation import Evaluation
 from models.User import User
+from exceptions import NotFoundError
 
 
 class EvaluationService:
@@ -15,9 +16,12 @@ class EvaluationService:
         """Retourne la liste de toutes les évaluations."""
         return self.evaluation_repository.get_all()
 
-    def get_evaluation(self, evaluation_id: int) -> Evaluation | None:
-        """Retourne une évaluation par son identifiant, ou None."""
-        return self.evaluation_repository.get_by_id(evaluation_id)
+    def get_evaluation(self, evaluation_id: int) -> Evaluation:
+        """Retourne une évaluation par son identifiant, ou lève NotFoundError."""
+        evaluation = self.evaluation_repository.get_by_id(evaluation_id)
+        if evaluation is None:
+            raise NotFoundError("Évaluation", evaluation_id)
+        return evaluation
 
     def create_evaluation(self, start_date: datetime, end_date: datetime,
                           place: str, module_id: int) -> Evaluation:
@@ -26,13 +30,18 @@ class EvaluationService:
 
     def update_evaluation(self, evaluation_id: int, start_date: datetime = None,
                           end_date: datetime = None, place: str = None,
-                          module_id: int = None) -> Evaluation | None:
-        """Met à jour une évaluation existante. Retourne None si introuvable."""
-        return self.evaluation_repository.update(evaluation_id, start_date, end_date, place, module_id)
+                          module_id: int = None) -> Evaluation:
+        """Met à jour une évaluation existante. Lève NotFoundError si introuvable."""
+        updated = self.evaluation_repository.update(evaluation_id, start_date, end_date, place, module_id)
+        if updated is None:
+            raise NotFoundError("Évaluation", evaluation_id)
+        return updated
 
-    def delete_evaluation(self, evaluation_id: int) -> bool:
-        """Supprime une évaluation. Retourne True si supprimée."""
-        return self.evaluation_repository.delete(evaluation_id)
+    def delete_evaluation(self, evaluation_id: int) -> None:
+        """Supprime une évaluation. Lève NotFoundError si introuvable."""
+        success = self.evaluation_repository.delete(evaluation_id)
+        if not success:
+            raise NotFoundError("Évaluation", evaluation_id)
 
 
     def get_evaluation_users(self, evaluation_id: int) -> list[User]:

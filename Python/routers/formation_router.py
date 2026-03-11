@@ -34,19 +34,15 @@ def read_formations(formation_service: FormationServiceDep) -> list[Formation]:
     """
     return formation_service.get_all_formations()
 
-@formation_router.get("/{formation_id}", response_model=FormationResponse|dict)
-def read_formation(formation_id: int, formation_service: FormationServiceDep) -> Formation | dict:
+@formation_router.get("/{formation_id}", response_model=FormationResponse)
+def read_formation(formation_id: int, formation_service: FormationServiceDep) -> Formation:
     """Return a single formation by its identifier.
 
     :param formation_id: Primary key of the formation to retrieve.
     :param formation_service: Injected formation service.
     :return: The matching Formation record.
-    :raises HTTPException 404: If no formation exists with the given ID.
     """
-    formation = formation_service.get_formation(formation_id)
-    if formation is None:
-        raise HTTPException(status_code=404, detail="Formation not found")
-    return formation
+    return formation_service.get_formation(formation_id)
 
 @formation_router.post("/", response_model=FormationResponse)
 def create_formation(request: FormationCreationRequest, formation_service: FormationServiceDep) -> Formation:
@@ -66,12 +62,8 @@ def update_formation(formation_id: int, request: FormationCreationRequest, forma
     :param request: Request body with updated name and/or description.
     :param formation_service: Injected formation service.
     :return: The updated Formation record.
-    :raises HTTPException 404: If no formation exists with the given ID.
     """
-    updated_formation = formation_service.update_formation(formation_id, request.name, request.description)
-    if updated_formation is None:
-        raise HTTPException(status_code=404, detail="Formation not found")
-    return updated_formation
+    return formation_service.update_formation(formation_id, request.name, request.description)
 
 @formation_router.delete("/{formation_id}", response_model=dict)
 def delete_formation(formation_id: int, formation_service: FormationServiceDep) -> dict:
@@ -80,13 +72,9 @@ def delete_formation(formation_id: int, formation_service: FormationServiceDep) 
     :param formation_id: Primary key of the formation to delete.
     :param formation_service: Injected formation service.
     :return: Confirmation message on success.
-    :raises HTTPException 404: If no formation exists with the given ID.
     """
-    success = formation_service.delete_formation(formation_id)
-    if success:
-        return {"message": "Formation deleted successfully"}
-    else:
-        raise HTTPException(status_code=404, detail="Formation not found")
+    formation_service.delete_formation(formation_id)
+    return {"message": "Formation supprimée avec succès"}
 
 # Endpoints for managing modules in formations
 
@@ -97,11 +85,7 @@ def get_formation_modules(formation_id: int, formation_service: FormationService
     :param formation_id: Primary key of the formation.
     :param formation_service: Injected formation service.
     :return: List of Module records associated with the formation.
-    :raises HTTPException 404: If no formation exists with the given ID.
     """
-    formation = formation_service.get_formation(formation_id)
-    if formation is None:
-        raise HTTPException(status_code=404, detail="Formation not found")
     return formation_service.get_formation_modules(formation_id)
 
 @formation_router.post("/{formation_id}/modules/{module_id}", response_model=dict)
@@ -112,19 +96,9 @@ def add_module_to_formation(formation_id: int, module_id: int, formation_service
     :param module_id: Primary key of the module to add.
     :param formation_service: Injected formation service.
     :return: Confirmation message on success.
-    :raises HTTPException 404: If the formation or module does not exist.
-    :raises HTTPException 400: If the module is already linked to the formation.
     """
-    formation = formation_service.get_formation(formation_id)
-    if formation is None:
-        raise HTTPException(status_code=404, detail="Formation not found")
-    try:
-        result = formation_service.add_module_to_formation(formation_id, module_id)
-    except ValueError:
-        raise HTTPException(status_code=400, detail="Module already added to this formation")
-    if result is None:
-        raise HTTPException(status_code=404, detail="Module not found")
-    return {"message": "Module added to formation successfully"}
+    formation_service.add_module_to_formation(formation_id, module_id)
+    return {"message": "Module ajouté à la formation avec succès"}
 
 @formation_router.delete("/{formation_id}/modules/{module_id}", response_model=dict)
 def remove_module_from_formation(formation_id: int, module_id: int, formation_service: FormationServiceDep) -> dict:
@@ -134,13 +108,6 @@ def remove_module_from_formation(formation_id: int, module_id: int, formation_se
     :param module_id: Primary key of the module to remove.
     :param formation_service: Injected formation service.
     :return: Confirmation message on success.
-    :raises HTTPException 404: If the formation or module link does not exist.
     """
-    formation = formation_service.get_formation(formation_id)
-    if formation is None:
-        raise HTTPException(status_code=404, detail="Formation not found")
-    success = formation_service.remove_module_from_formation(formation_id, module_id)
-    if success:
-        return {"message": "Module removed from formation successfully"}
-    else:
-        raise HTTPException(status_code=404, detail="Module not found in this formation")
+    formation_service.remove_module_from_formation(formation_id, module_id)
+    return {"message": "Module retiré de la formation avec succès"}

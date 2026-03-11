@@ -42,12 +42,8 @@ def read_evaluation(evaluation_id: int, evaluation_service: EvaluationServiceDep
     :param evaluation_id: Primary key of the evaluation to retrieve.
     :param evaluation_service: Injected evaluation service.
     :return: The matching Evaluation record.
-    :raises HTTPException 404: If no evaluation exists with the given ID.
     """
-    evaluation = evaluation_service.get_evaluation(evaluation_id)
-    if evaluation is None:
-        raise HTTPException(status_code=404, detail="Evaluation not found")
-    return evaluation
+    return evaluation_service.get_evaluation(evaluation_id)
 
 @evaluation_router.post("/", response_model=EvaluationResponse)
 def create_evaluation(request: EvaluationCreationRequest, evaluation_service: EvaluationServiceDep) -> Evaluation:
@@ -72,18 +68,14 @@ def update_evaluation(evaluation_id: int, request: EvaluationCreationRequest, ev
     :param request: Request body with updated dates, place, and/or module_id.
     :param evaluation_service: Injected evaluation service.
     :return: The updated Evaluation record.
-    :raises HTTPException 404: If no evaluation exists with the given ID.
     """
-    updated_evaluation = evaluation_service.update_evaluation(
+    return evaluation_service.update_evaluation(
         evaluation_id,
         request.start_date,
         request.end_date,
         request.place,
         request.module_id
     )
-    if updated_evaluation is None:
-        raise HTTPException(status_code=404, detail="Evaluation not found")
-    return updated_evaluation
 
 @evaluation_router.delete("/{evaluation_id}", response_model=dict)
 def delete_evaluation(evaluation_id: int, evaluation_service: EvaluationServiceDep) -> dict:
@@ -92,13 +84,9 @@ def delete_evaluation(evaluation_id: int, evaluation_service: EvaluationServiceD
     :param evaluation_id: Primary key of the evaluation to delete.
     :param evaluation_service: Injected evaluation service.
     :return: Confirmation message on success.
-    :raises HTTPException 404: If no evaluation exists with the given ID.
     """
-    success = evaluation_service.delete_evaluation(evaluation_id)
-    if success:
-        return {"message": "Evaluation deleted successfully"}
-    else:
-        raise HTTPException(status_code=404, detail="Evaluation not found")
+    evaluation_service.delete_evaluation(evaluation_id)
+    return {"message": "Évaluation supprimée avec succès"}
 
 
 @evaluation_router.get("/{evaluation_id}/users", response_model=list[UserResponse])
@@ -108,9 +96,5 @@ def get_evaluation_users(evaluation_id: int, evaluation_service: EvaluationServi
     :param evaluation_id: Primary key of the evaluation.
     :param evaluation_service: Injected evaluation service.
     :return: List of User records enrolled in the evaluation.
-    :raises HTTPException 404: If no evaluation exists with the given ID.
     """
-    evaluation = evaluation_service.get_evaluation(evaluation_id)
-    if evaluation is None:
-        raise HTTPException(status_code=404, detail="Evaluation not found")
     return evaluation_service.get_evaluation_users(evaluation_id)

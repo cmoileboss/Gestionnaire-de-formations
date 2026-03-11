@@ -9,6 +9,7 @@ from repositories.EvaluationRepository import EvaluationRepository
 from models.User import User
 from models.Session import Session as SessionModel
 from models.Evaluation import Evaluation
+from exceptions import NotFoundError, DuplicateError, UnauthorizedError
 
 
 class UserService:
@@ -19,36 +20,44 @@ class UserService:
         self.evaluation_repository = EvaluationRepository(db)
 
     def login(self, email: str, password: str) -> User:
-        """Vérifie les identifiants et retourne un JWT si valides."""
+        """Vérifie les identifiants et retourne un User si valides, sinon lève UnauthorizedError."""
         user = self.user_repository.get_by_email(email)
         if user is None:
-            raise ValueError("Invalid email or password")
+            raise UnauthorizedError("Email ou mot de passe invalide")
         if not bcrypt.checkpw(password.encode("utf-8"), user.password_hash.encode("utf-8")):
-            raise ValueError("Invalid email or password")
+            raise UnauthorizedError("Email ou mot de passe invalide")
         return user
     
     def get_all_users(self) -> list[User]:
         """Retourne la liste de tous les utilisateurs."""
         return self.user_repository.get_all()
 
-    def get_user(self, user_id: int) -> User | None:
-        """Retourne un utilisateur par son identifiant, ou None."""
-        return self.user_repository.get_by_id(user_id)
+    def get_user(self, user_id: int) -> User:
+        """Retourne un utilisateur par son identifiant, ou lève NotFoundError."""
+        user = self.user_repository.get_by_id(user_id)
+        if user is None:
+            raise NotFoundError("Utilisateur", user_id)
+        return user
 
     def create_user(self, email: str, password: str, address: str = None) -> User:
         """Crée un utilisateur en hachant son mot de passe avec bcrypt."""
         hashed = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
         return self.user_repository.create(email, hashed, address)
 
-    def update_user(self, user_id: int, email: str = None, password: str = None, address: str = None) -> User | None:
-        """Met à jour un utilisateur. Hache le mot de passe si fourni."""
+    def update_user(self, user_id: int, email: str = None, password: str = None, address: str = None) -> User:
+        """Met à jour un utilisateur. Hache le mot de passe si fourni. Lève NotFoundError si introuvable."""
         if password:
             password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
-        return self.user_repository.update(user_id, email, password, address)
+        updated = self.user_repository.update(user_id, email, password, address)
+        if updated is None:
+            raise NotFoundError("Utilisateur", user_id)
+        return updated
 
-    def delete_user(self, user_id: int) -> bool:
-        """Supprime un utilisateur. Retourne True si supprimé."""
-        return self.user_repository.delete(user_id)
+    def delete_user(self, user_id: int) -> None:
+        """Supprime un utilisateur. Lève NotFoundError si introuvable."""
+        success = self.user_repository.delete(user_id)
+        if not success:
+            raise NotFoundError("Utilisateur", user_id)
 
 
     def get_user_sessions(self, user_id: int) -> list[SessionModel]:
@@ -56,20 +65,21 @@ class UserService:
         subscriptions = self.subscription_repository.get_by_user(user_id)
         return [sub.session for sub in subscriptions]
 
-    def subscribe_to_session(self, user_id: int, session_id: int) -> bool:
-        """Inscrit un utilisateur à une session. Lève ValueError si déjà inscrit."""
+    def subscribe_to_session(self, user_id: int, session_id: int) -> None:
+        """Inscrit un utilisateur à une session. Lève NotFoundError ou DuplicateError."""
         session = self.session_repository.get_by_id(session_id)
         if session is None:
-            return None
+            raise NotFoundError("Session", session_id)
         existing = self.subscription_repository.get(user_id, session_id)
         if existing:
-            raise ValueError("User already subscribed to this session")
+            raise DuplicateError(f"L'utilisateur {user_id} est déjà inscrit à la session {session_id}")
         self.subscription_repository.create(user_id, session_id, datetime.utcnow())
-        return True
 
-    def unsubscribe_from_session(self, user_id: int, session_id: int) -> bool:
-        """Désinscrit un utilisateur d'une session. Retourne True si succès."""
-        return self.subscription_repository.delete(user_id, session_id)
+    def unsubscribe_from_session(self, user_id: int, session_id: int) -> None:
+        """Désinscrit un utilisateur d'une session. Lève NotFoundError si non inscrit."""
+        success = self.subscription_repository.delete(user_id, session_id)
+        if not success:
+            raise NotFoundError("Abonnement", f"{user_id}/{session_id}")
 
 
     def get_user_evaluations(self, user_id: int) -> list[Evaluation]:

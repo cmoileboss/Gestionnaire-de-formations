@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, Response
 from sqlalchemy.orm import Session
 from typing import Annotated
 
@@ -11,6 +11,8 @@ from apiresponses.ResultResponse import ResultResponse
 
 from services.ResultService import ResultService
 from services.SecurityService import SecurityService
+
+from exceptions import ForbiddenError
 
 
 
@@ -38,10 +40,9 @@ def create_result(result_service: ResultServiceDep, result_request: ResultCreati
     :param result_service: Injected result service.
     :param current_user: Currently authenticated user.
     :return: The newly created Result record.
-    :raises HTTPException 403: If the current user tries to create a result for another user.
     """
     if current_user.id != result_request.user_id:
-        raise HTTPException(status_code=403, detail="Forbidden: You can only create results for yourself")
+        raise ForbiddenError("Vous ne pouvez créer des résultats que pour vous-même")
     return result_service.create_result(result_request.user_id, result_request.evaluation_id, result_request.score, result_request.success, result_request.date)
 
 @result_router.get("/{result_id}", response_model=ResultResponse)
@@ -52,14 +53,10 @@ def read_result(result_id: int, result_service: ResultServiceDep, current_user: 
     :param result_service: Injected result service.
     :param current_user: Currently authenticated user.
     :return: The matching Result record.
-    :raises HTTPException 403: If the result does not belong to the current user.
-    :raises HTTPException 404: If no result exists with the given ID.
     """
     result = result_service.get_result(result_id)
-    if result is None:
-        raise HTTPException(status_code=404, detail="Result not found")
     if current_user.id != result.user_id:
-        raise HTTPException(status_code=403, detail="Forbidden: You can only access your own results")
+        raise ForbiddenError("Vous ne pouvez accéder qu'à vos propres résultats")
     return result
 
 @result_router.delete("/{result_id}", response_model=dict)
@@ -70,13 +67,9 @@ def delete_result(result_id: int, result_service: ResultServiceDep, current_user
     :param result_service: Injected result service.
     :param current_user: Currently authenticated user.
     :return: Confirmation message on success.
-    :raises HTTPException 403: If the result does not belong to the current user.
-    :raises HTTPException 404: If no result exists with the given ID.
     """
     result = result_service.get_result(result_id)
-    if result is None:
-        raise HTTPException(status_code=404, detail="Result not found")
     if current_user.id != result.user_id:
-        raise HTTPException(status_code=403, detail="Forbidden: You can only delete your own results")
+        raise ForbiddenError("Vous ne pouvez supprimer que vos propres résultats")
     result_service.delete_result(result_id)
-    return {"message": "Result deleted successfully"}
+    return {"message": "Résultat supprimé avec succès"}

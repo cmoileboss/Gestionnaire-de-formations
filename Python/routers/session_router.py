@@ -33,19 +33,15 @@ def read_sessions(session_service: SessionServiceDep) -> list[SessionModel]:
     """
     return session_service.get_all_sessions()
 
-@sessions_router.get("/{session_id}", response_model=SessionResponse|dict)
-def read_session(session_id: int, session_service: SessionServiceDep) -> SessionModel | dict:
+@sessions_router.get("/{session_id}", response_model=SessionResponse)
+def read_session(session_id: int, session_service: SessionServiceDep) -> SessionModel:
     """Return a single training session by its identifier.
 
     :param session_id: Primary key of the session to retrieve.
     :param session_service: Injected session service.
     :return: The matching Session record.
-    :raises HTTPException 404: If no session exists with the given ID.
     """
-    session = session_service.get_session(session_id)
-    if session is None:
-        raise HTTPException(status_code=404, detail="Session not found")
-    return session
+    return session_service.get_session(session_id)
 
 @sessions_router.post("/", response_model=SessionResponse)
 def create_session(request: SessionCreationRequest, session_service: SessionServiceDep) -> SessionModel:
@@ -62,26 +58,22 @@ def create_session(request: SessionCreationRequest, session_service: SessionServ
         request.place
     )
 
-@sessions_router.put("/{session_id}", response_model=SessionResponse|dict)
-def update_session(session_id: int, request: SessionCreationRequest, session_service: SessionServiceDep) -> SessionModel | dict:
+@sessions_router.put("/{session_id}", response_model=SessionResponse)
+def update_session(session_id: int, request: SessionCreationRequest, session_service: SessionServiceDep) -> SessionModel:
     """Update an existing session's details.
 
     :param session_id: Primary key of the session to update.
     :param request: Request body with updated session data.
     :param session_service: Injected session service.
     :return: The updated Session record.
-    :raises HTTPException 404: If no session exists with the given ID.
     """
-    updated_session = session_service.update_session(
+    return session_service.update_session(
         session_id,
         request.formation_id,
         request.start_date,
         request.end_date,
         request.place
     )
-    if updated_session is None:
-        raise HTTPException(status_code=404, detail="Session not found")
-    return updated_session
 
 @sessions_router.delete("/{session_id}", response_model=dict)
 def delete_session(session_id: int, session_service: SessionServiceDep) -> dict:
@@ -90,13 +82,9 @@ def delete_session(session_id: int, session_service: SessionServiceDep) -> dict:
     :param session_id: Primary key of the session to delete.
     :param session_service: Injected session service.
     :return: Confirmation message on success.
-    :raises HTTPException 404: If no session exists with the given ID.
     """
-    success = session_service.delete_session(session_id)
-    if success:
-        return {"message": "Session deleted successfully"}
-    else:
-        raise HTTPException(status_code=404, detail="Session not found")
+    session_service.delete_session(session_id)
+    return {"message": "Session supprimée avec succès"}
 
 # Endpoints for managing session users (subscriptions)
 
@@ -107,9 +95,5 @@ def get_session_users(session_id: int, session_service: SessionServiceDep) -> li
     :param session_id: Primary key of the session.
     :param session_service: Injected session service.
     :return: List of User records subscribed to the session.
-    :raises HTTPException 404: If no session exists with the given ID.
     """
-    session = session_service.get_session(session_id)
-    if session is None:
-        raise HTTPException(status_code=404, detail="Session not found")
     return session_service.get_session_users(session_id)

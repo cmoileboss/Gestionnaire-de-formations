@@ -1,6 +1,6 @@
 """Router for subscription endpoints: CRUD operations on user-session enrollments."""
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from typing import Annotated
 
@@ -14,6 +14,8 @@ from services.SecurityService import SecurityService
 
 from apirequests.SubscriptionCreationRequest import SubscriptionCreationRequest
 from apiresponses.SubscriptionResponse import SubscriptionResponse
+
+from exceptions import ForbiddenError
 
 
 def get_subscription_service(db: Session = Depends(get_db)) -> SubscriptionService:
@@ -40,10 +42,9 @@ def read_subscriptions_by_user(user_id: int, subscription_service: SubscriptionS
     :param subscription_service: Injected subscription service.
     :param current_user: Currently authenticated user.
     :return: List of Subscription records for the given user.
-    :raises HTTPException 403: If the current user is not the owner.
     """
     if current_user.id != user_id:
-        raise HTTPException(status_code=403, detail="Forbidden: You can only access your own subscriptions")
+        raise ForbiddenError("Vous ne pouvez accéder qu'à vos propres inscriptions")
     return subscription_service.get_subscriptions_by_user(user_id)
 
 @subscription_router.get("/session/{session_id}", response_model=list[SubscriptionResponse])
@@ -65,15 +66,10 @@ def read_subscription(user_id: int, session_id: int, subscription_service: Subsc
     :param subscription_service: Injected subscription service.
     :param current_user: Currently authenticated user.
     :return: The matching Subscription record.
-    :raises HTTPException 403: If the current user is not the owner.
-    :raises HTTPException 404: If no subscription exists for the given pair.
     """
     if current_user.id != user_id:
-        raise HTTPException(status_code=403, detail="Forbidden: You can only access your own subscriptions")
-    subscription = subscription_service.get_subscription(user_id, session_id)
-    if subscription is None:
-        raise HTTPException(status_code=404, detail="Subscription not found")
-    return subscription
+        raise ForbiddenError("Vous ne pouvez accéder qu'à vos propres inscriptions")
+    return subscription_service.get_subscription(user_id, session_id)
 
 @subscription_router.post("/", response_model=SubscriptionResponse)
 def create_subscription(request: SubscriptionCreationRequest, subscription_service: SubscriptionServiceDep, current_user: User = Depends(SecurityService.get_current_user)) -> Subscription:
@@ -83,10 +79,9 @@ def create_subscription(request: SubscriptionCreationRequest, subscription_servi
     :param subscription_service: Injected subscription service.
     :param current_user: Currently authenticated user.
     :return: The newly created Subscription record.
-    :raises HTTPException 403: If the current user tries to subscribe another user.
     """
     if current_user.id != request.user_id:
-        raise HTTPException(status_code=403, detail="Forbidden: You can only create subscriptions for yourself")
+        raise ForbiddenError("Vous ne pouvez créer des inscriptions que pour vous-même")
     return subscription_service.create_subscription(
         request.user_id,
         request.session_id,
@@ -102,13 +97,8 @@ def delete_subscription(user_id: int, session_id: int, subscription_service: Sub
     :param subscription_service: Injected subscription service.
     :param current_user: Currently authenticated user.
     :return: Confirmation message on success.
-    :raises HTTPException 403: If the current user is not the owner.
-    :raises HTTPException 404: If no subscription exists for the given pair.
     """
     if current_user.id != user_id:
-        raise HTTPException(status_code=403, detail="Forbidden: You can only delete your own subscriptions")
-    success = subscription_service.delete_subscription(user_id, session_id)
-    if success:
-        return {"message": "Subscription deleted successfully"}
-    else:
-        raise HTTPException(status_code=404, detail="Subscription not found")
+        raise ForbiddenError("Vous ne pouvez supprimer que vos propres inscriptions")
+    subscription_service.delete_subscription(user_id, session_id)
+    return {"message": "Inscription supprimée avec succès"}

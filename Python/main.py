@@ -24,6 +24,24 @@ from models.Evaluation import Evaluation
 from models.AIRecommandation import AIRecommandation
 from models.ModuleUsage import t_ModuleUsage
 
+from exceptions import (
+    NotFoundError,
+    DuplicateError,
+    UnauthorizedError,
+    ForbiddenError,
+    ValidationError
+)
+from error_handlers import (
+    not_found_handler,
+    duplicate_handler,
+    unauthorized_handler,
+    forbidden_handler,
+    validation_handler,
+    integrity_error_handler,
+    sqlalchemy_error_handler,
+    general_exception_handler
+)
+
 app = FastAPI(
     title="API de gestion de formations - Python",
     description="API pour gérer les formations",
@@ -37,64 +55,30 @@ def startup_event():
     # Base.metadata.create_all(bind=engine)
 
 
+# Enregistrement des handlers d'exceptions personnalisées
+app.add_exception_handler(NotFoundError, not_found_handler)
+app.add_exception_handler(DuplicateError, duplicate_handler)
+app.add_exception_handler(UnauthorizedError, unauthorized_handler)
+app.add_exception_handler(ForbiddenError, forbidden_handler)
+app.add_exception_handler(ValidationError, validation_handler)
+
+# Enregistrement des handlers d'exceptions de base de données
+app.add_exception_handler(IntegrityError, integrity_error_handler)
+app.add_exception_handler(SQLAlchemyError, sqlalchemy_error_handler)
+
+# Handler catch-all pour toutes les autres exceptions
+app.add_exception_handler(Exception, general_exception_handler)
+
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
-    """Gestion des erreurs de validation des données"""
+    """Gestion des erreurs de validation des données de requête FastAPI"""
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content={
             "error": "Erreur de validation",
             "detail": exc.errors(),
             "body": exc.body
-        }
-    )
-
-
-@app.exception_handler(IntegrityError)
-async def integrity_exception_handler(request: Request, exc: IntegrityError):
-    """Gestion des erreurs d'intégrité de la base de données (ex: violations de contraintes)"""
-    return JSONResponse(
-        status_code=status.HTTP_409_CONFLICT,
-        content={
-            "error": "Conflit de données",
-            "detail": "Les données fournies violent une contrainte d'intégrité (ex: email déjà existant)"
-        }
-    )
-
-
-@app.exception_handler(SQLAlchemyError)
-async def sqlalchemy_exception_handler(request: Request, exc: SQLAlchemyError):
-    """Gestion des erreurs SQLAlchemy génériques"""
-    return JSONResponse(
-        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        content={
-            "error": "Erreur de base de données",
-            "detail": str(exc)
-        }
-    )
-
-
-@app.exception_handler(ValueError)
-async def value_error_handler(request: Request, exc: ValueError):
-    """Gestion des erreurs de valeur (données invalides)"""
-    return JSONResponse(
-        status_code=status.HTTP_400_BAD_REQUEST,
-        content={
-            "error": "Données invalides",
-            "detail": str(exc)
-        }
-    )
-
-
-@app.exception_handler(Exception)
-async def general_exception_handler(request: Request, exc: Exception):
-    """Gestion des erreurs non gérées (catch-all)"""
-    return JSONResponse(
-        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        content={
-            "error": "Erreur interne du serveur",
-            "detail": "Une erreur inattendue s'est produite"
         }
     )
 

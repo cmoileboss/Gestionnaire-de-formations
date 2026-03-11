@@ -1,7 +1,7 @@
 """Router for user endpoints: CRUD operations, session subscriptions, and evaluation enrollments."""
 
 
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, Response
 from sqlalchemy.orm import Session
 from typing import Annotated
 
@@ -23,6 +23,8 @@ from apiresponses.UserResponse import UserResponse
 from apiresponses.SessionResponse import SessionResponse
 from apiresponses.EvaluationResponse import EvaluationResponse
 
+from exceptions import ForbiddenError
+
 
 def get_user_service(db: Session = Depends(get_db)) -> UserService:
     """Get a UserService instance with the database session"""
@@ -39,11 +41,8 @@ LDAPServiceDep = Annotated[LDAPService, Depends(get_ldap_service)]
 
 @users_router.post("/login", response_model=UserResponse)
 def login(response: Response, request: LoginRegisterRequest, user_service: UserServiceDep) -> User:
-    """Endpoint de login utilisateur avec création de JWT."""
-    try:
-        user = user_service.login(request.email, request.password)
-    except ValueError:
-        raise HTTPException(status_code=401, detail="Email ou mot de passe invalide")
+    """Endpoint de login utilisateur avec création de JWT. Lève UnauthorizedError si identifiants invalides."""
+    user = user_service.login(request.email, request.password)
     token = SecurityService.create_access_token(user.email)
     response.set_cookie(
         key="access_token",
@@ -84,26 +83,22 @@ def read_users(user_service: UserServiceDep, current_user: User = Depends(Securi
     users = user_service.get_all_users()
     return users
 
-@users_router.get("/{user_id}", response_model=UserResponse|dict)
-def read_user(user_id: int, user_service: UserServiceDep, current_user: User = Depends(SecurityService.get_current_user)) -> User | dict:
+@users_router.get("/{user_id}", response_model=UserResponse)
+def read_user(user_id: int, user_service: UserServiceDep, current_user: User = Depends(SecurityService.get_current_user)) -> User:
     """Return a single user by their identifier.
 
     :param user_id: Primary key of the user to retrieve.
     :param user_service: Injected user service.
     :param current_user: Currently authenticated user.
     :return: The matching User record.
-    :raises HTTPException 404: If no user exists with the given ID.
     """
     if current_user.id != user_id:
-        raise HTTPException(status_code=403, detail="Forbidden: You can only access your own user information")
-    user = user_service.get_user(user_id)
-    if user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user
+        raise ForbiddenError("Vous ne pouvez accéder qu'à vos propres informations")
+    return user_service.get_user(user_id)
 
 
-@users_router.put("/{user_id}", response_model=UserResponse|dict)
-def update_user(user_id: int, request: UserCreationRequest, user_service: UserServiceDep, current_user: User = Depends(SecurityService.get_current_user)) -> User | dict:
+@users_router.put("/{user_id}", response_model=UserResponse)
+def update_user(user_id: int, request: UserCreationRequest, user_service: UserServiceDep, current_user: User = Depends(SecurityService.get_current_user)) -> User:
     """Update an existing user's information.
 
     :param user_id: Primary key of the user to update.
@@ -111,14 +106,10 @@ def update_user(user_id: int, request: UserCreationRequest, user_service: UserSe
     :param user_service: Injected user service.
     :param current_user: Currently authenticated user.
     :return: The updated User record.
-    :raises HTTPException 404: If no user exists with the given ID.
     """
     if current_user.id != user_id:
-        raise HTTPException(status_code=403, detail="Forbidden: You can only update your own user information")
-    updated_user = user_service.update_user(user_id, request.email, request.password, request.address)
-    if updated_user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    return updated_user
+        raise ForbiddenError("Vous ne pouvez modifier que vos propres informations")
+    return user_service.update_user(user_id, request.email, request.password, request.address)
 
 @users_router.delete("/{user_id}", response_model=dict)
 def delete_user(user_id: int, user_service: UserServiceDep, current_user: User = Depends(SecurityService.get_current_user)) -> dict:
@@ -128,15 +119,11 @@ def delete_user(user_id: int, user_service: UserServiceDep, current_user: User =
     :param user_service: Injected user service.
     :param current_user: Currently authenticated user.
     :return: Confirmation message on success.
-    :raises HTTPException 404: If no user exists with the given ID.
     """
     if current_user.id != user_id:
-        raise HTTPException(status_code=403, detail="Forbidden: You can only delete your own user account")
-    success = user_service.delete_user(user_id)
-    if success:
-        return {"message": "User deleted successfully"}
-    else:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise ForbiddenError("Vous ne pouvez supprimer que votre propre compte")
+    user_service.delete_user(user_id)
+    return {"message": "Utilisateur supprimé avec succès"}
 
 # Endpoints for managing user sessions (subscriptions)
 
@@ -148,13 +135,9 @@ def get_user_sessions(user_id: int, user_service: UserServiceDep, current_user: 
     :param user_service: Injected user service.
     :param current_user: Currently authenticated user.
     :return: List of Session records the user is subscribed to.
-    :raises HTTPException 404: If no user exists with the given ID.
     """
     if current_user.id != user_id:
-        raise HTTPException(status_code=403, detail="Forbidden: You can only access your own session information")
-    user = user_service.get_user(user_id)
-    if user is None:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise ForbiddenError("Vous ne pouvez accéder qu'à vos propres informations de session")
     return user_service.get_user_sessions(user_id)
 
 @users_router.post("/{user_id}/sessions/{session_id}", response_model=dict)
@@ -166,21 +149,11 @@ def subscribe_user_to_session(user_id: int, session_id: int, user_service: UserS
     :param user_service: Injected user service.
     :param current_user: Currently authenticated user.
     :return: Confirmation message on success.
-    :raises HTTPException 404: If the user or session does not exist.
-    :raises HTTPException 400: If the user is already subscribed to the session.
     """
     if current_user.id != user_id:
-        raise HTTPException(status_code=403, detail="Forbidden: You can only manage your own session subscriptions")
-    user = user_service.get_user(user_id)
-    if user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    try:
-        result = user_service.subscribe_to_session(user_id, session_id)
-    except ValueError:
-        raise HTTPException(status_code=400, detail="User already subscribed to this session")
-    if result is None:
-        raise HTTPException(status_code=404, detail="Session not found")
-    return {"message": "User subscribed to session successfully"}
+        raise ForbiddenError("Vous ne pouvez gérer que vos propres inscriptions")
+    user_service.subscribe_to_session(user_id, session_id)
+    return {"message": "Utilisateur inscrit à la session avec succès"}
 
 @users_router.delete("/{user_id}/sessions/{session_id}", response_model=dict)
 def unsubscribe_user_from_session(user_id: int, session_id: int, user_service: UserServiceDep, current_user: User = Depends(SecurityService.get_current_user)) -> dict:
@@ -191,18 +164,11 @@ def unsubscribe_user_from_session(user_id: int, session_id: int, user_service: U
     :param user_service: Injected user service.
     :param current_user: Currently authenticated user.
     :return: Confirmation message on success.
-    :raises HTTPException 404: If the user or subscription does not exist.
     """
     if current_user.id != user_id:
-        raise HTTPException(status_code=403, detail="Forbidden: You can only manage your own session subscriptions")
-    user = user_service.get_user(user_id)
-    if user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    success = user_service.unsubscribe_from_session(user_id, session_id)
-    if success:
-        return {"message": "User unsubscribed from session successfully"}
-    else:
-        raise HTTPException(status_code=404, detail="Subscription not found")
+        raise ForbiddenError("Vous ne pouvez gérer que vos propres inscriptions")
+    user_service.unsubscribe_from_session(user_id, session_id)
+    return {"message": "Utilisateur désinscrit de la session avec succès"}
 
 # Endpoints for managing user evaluations
 
@@ -214,13 +180,9 @@ def get_user_evaluations(user_id: int, user_service: UserServiceDep, current_use
     :param user_service: Injected user service.
     :param current_user: Currently authenticated user.
     :return: List of Evaluation records the user participates in.
-    :raises HTTPException 404: If no user exists with the given ID.
     """
     if current_user.id != user_id:
-        raise HTTPException(status_code=403, detail="Forbidden: You can only access your own evaluation information")
-    user = user_service.get_user(user_id)
-    if user is None:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise ForbiddenError("Vous ne pouvez accéder qu'à vos propres informations d'évaluation")
     return user_service.get_user_evaluations(user_id)
 
 @users_router.post("/{user_id}/evaluations/{evaluation_id}", response_model=dict)
@@ -232,15 +194,11 @@ def enroll_user_in_evaluation(user_id: int, evaluation_id: int, user_service: Us
     :param user_service: Injected user service.
     :param current_user: Currently authenticated user.
     :return: Confirmation message on success.
-    :raises HTTPException 404: If the user or evaluation does not exist.
     """
     if current_user.id != user_id:
-        raise HTTPException(status_code=403, detail="Forbidden: You can only manage your own evaluations")
-    user = user_service.get_user(user_id)
-    if user is None:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise ForbiddenError("Vous ne pouvez gérer que vos propres évaluations")
     user_service.enroll_in_evaluation(user_id, evaluation_id)
-    return {"message": "User enrolled in evaluation successfully"}
+    return {"message": "Utilisateur inscrit à l'évaluation avec succès"}
 
 
 @users_router.delete("/{user_id}/evaluations/{evaluation_id}", response_model=dict)
@@ -252,13 +210,9 @@ def unenroll_user_from_evaluation(user_id: int, evaluation_id: int, user_service
     :param user_service: Injected user service.
     :param current_user: Currently authenticated user.
     :return: Confirmation message on success.
-    :raises HTTPException 404: If the user or enrollment does not exist.
     """
     if current_user.id != user_id:
-        raise HTTPException(status_code=403, detail="Forbidden: You can only manage your own evaluations")
-    user = user_service.get_user(user_id)
-    if user is None:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise ForbiddenError("Vous ne pouvez gérer que vos propres évaluations")
     user_service.unenroll_from_evaluation(user_id, evaluation_id)
-    return {"message": "User unenrolled from evaluation successfully"}
+    return {"message": "Utilisateur désinscrit de l'évaluation avec succès"}
 
