@@ -2,6 +2,7 @@ using AutoMapper;
 using NetCoreAPI.DTOs;
 using NetCoreAPI.Models;
 using NetCoreAPI.Repositories;
+using NetCoreAPI.Utils;
 
 namespace NetCoreAPI.Services;
 
@@ -24,46 +25,81 @@ public class EvaluationService : IEvaluationService
         _mapper = mapper;
     }
 
-    public async Task<IEnumerable<EvaluationDto>> GetAllAsync()
+    public async Task<Result<IEnumerable<EvaluationDto>>> GetAllAsync()
     {
-        var evaluations = await _evaluationRepository.GetAllAsync();
-        return _mapper.Map<IEnumerable<EvaluationDto>>(evaluations);
+        try
+        {
+            var evaluations = await _evaluationRepository.GetAllAsync();
+            return Result<IEnumerable<EvaluationDto>>.Success(_mapper.Map<IEnumerable<EvaluationDto>>(evaluations));
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException("An error occurred while retrieving evaluations.", ex);
+        }
     }
 
-    public async Task<EvaluationDto?> GetByIdAsync(int id)
+    public async Task<Result<EvaluationDto>> GetByIdAsync(int id)
     {
-        var evaluation = await _evaluationRepository.GetByIdAsync(id);
-        if (evaluation == null)
-            throw new KeyNotFoundException($"Évaluation avec l'ID {id} non trouvée.");
-        return _mapper.Map<EvaluationDto>(evaluation);
+        try
+        {
+            var evaluation = await _evaluationRepository.GetByIdAsync(id);
+            if (evaluation == null)
+                return Result<EvaluationDto>.Failure($"Évaluation avec l'ID {id} non trouvée.");
+            return Result<EvaluationDto>.Success(_mapper.Map<EvaluationDto>(evaluation));
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"An error occurred while retrieving evaluation {id}.", ex);
+        }
     }
 
-    public async Task<EvaluationDto> CreateAsync(EvaluationDto dto)
+    public async Task<Result<EvaluationDto>> CreateAsync(EvaluationDto dto)
     {
-        var evaluation = _mapper.Map<Evaluation>(dto);
-        await _evaluationRepository.AddAsync(evaluation);
-        return _mapper.Map<EvaluationDto>(evaluation);
+        try
+        {
+            var evaluation = _mapper.Map<Evaluation>(dto);
+            await _evaluationRepository.AddAsync(evaluation);
+            return Result<EvaluationDto>.Success(_mapper.Map<EvaluationDto>(evaluation));
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException("An error occurred while creating evaluation.", ex);
+        }
     }
 
-    public async Task<EvaluationDto> UpdateAsync(int id, EvaluationDto dto)
+    public async Task<Result<EvaluationDto>> UpdateAsync(int id, EvaluationDto dto)
     {
-        var existing = await _evaluationRepository.GetByIdAsync(id);
-        if (existing == null)
-            throw new KeyNotFoundException($"Évaluation avec l'ID {id} non trouvée.");
+        try
+        {
+            var existing = await _evaluationRepository.GetByIdAsync(id);
+            if (existing == null)
+                return Result<EvaluationDto>.Failure($"Évaluation avec l'ID {id} non trouvée.");
 
-        _mapper.Map(dto, existing);
-        existing.EvaluationId = id;
-        await _evaluationRepository.UpdateAsync(existing);
-        return _mapper.Map<EvaluationDto>(existing);
+            _mapper.Map(dto, existing);
+            existing.EvaluationId = id;
+            await _evaluationRepository.UpdateAsync(existing);
+            return Result<EvaluationDto>.Success(_mapper.Map<EvaluationDto>(existing));
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"An error occurred while updating evaluation {id}.", ex);
+        }
     }
 
-    public async Task<bool> DeleteAsync(int id)
+    public async Task<Result<bool>> DeleteAsync(int id)
     {
-        var existing = await _evaluationRepository.GetByIdAsync(id);
-        if (existing == null)
-            throw new KeyNotFoundException($"Évaluation avec l'ID {id} non trouvée.");
+        try
+        {
+            var existing = await _evaluationRepository.GetByIdAsync(id);
+            if (existing == null)
+                return Result<bool>.Failure($"Évaluation avec l'ID {id} non trouvée.");
 
-        await _evaluationRepository.DeleteAsync(id);
-        return true;
+            await _evaluationRepository.DeleteAsync(id);
+            return Result<bool>.Success(true);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"An error occurred while deleting evaluation {id}.", ex);
+        }
     }
 }

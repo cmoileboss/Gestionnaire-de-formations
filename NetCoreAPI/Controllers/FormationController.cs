@@ -87,7 +87,9 @@ namespace NetCoreAPI.Controllers
         public async Task<ActionResult<FormationDto>> Create([FromBody] FormationCreationUpdateDto formationDto)
         {
             var created = await _formationService.CreateAsync(formationDto);
-            return CreatedAtAction(nameof(GetById), new { id = created.FormationId }, created);
+            if (!created.IsSuccess)
+                return BadRequest(new { error = created.Error });
+            return CreatedAtAction(nameof(GetById), new { id = created.Value!.FormationId }, created.Value);
         }
 
         /// <summary>

@@ -72,7 +72,9 @@ namespace NetCoreAPI.Controllers
         public async Task<ActionResult<AirecommandationDto>> Create([FromBody] AirecommandationDto dto)
         {
             var created = await _airecommandationService.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetById), new { id = created.RecommendationId }, created);
+            if (!created.IsSuccess)
+                return BadRequest(new { error = created.Error });
+            return CreatedAtAction(nameof(GetById), new { id = created.Value!.RecommendationId }, created.Value);
         }
 
         /// <summary>

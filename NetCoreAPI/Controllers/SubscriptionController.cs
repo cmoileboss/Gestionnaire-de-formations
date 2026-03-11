@@ -72,7 +72,9 @@ namespace NetCoreAPI.Controllers
         public async Task<ActionResult<SubscriptionDto>> Create([FromBody] SubscriptionDto dto)
         {
             var created = await _subscriptionService.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetById), new { id = created.UserId }, created);
+            if (!created.IsSuccess)
+                return BadRequest(new { error = created.Error });
+            return CreatedAtAction(nameof(GetById), new { id = created.Value!.UserId }, created.Value);
         }
 
         /// <summary>

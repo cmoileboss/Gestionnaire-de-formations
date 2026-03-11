@@ -1,4 +1,5 @@
 using NetCoreAPI.DTOs;
+using NetCoreAPI.Utils;
 
 namespace NetCoreAPI.Services;
 
@@ -8,22 +9,22 @@ namespace NetCoreAPI.Services;
 public interface IModuleService
 {
     /// <summary>Récupère tous les modules.</summary>
-    Task<IEnumerable<ModuleDto>> GetAllAsync();
+    Task<Result<IEnumerable<ModuleDto>>> GetAllAsync();
 
     /// <summary>Récupère un module par son identifiant.</summary>
     /// <param name="id">Identifiant du module.</param>
-    Task<ModuleDto?> GetByIdAsync(int id);
+    Task<Result<ModuleDto>> GetByIdAsync(int id);
 
     /// <summary>Crée un nouveau module.</summary>
     /// <param name="dto">DTO du module à créer.</param>
-    Task<ModuleDto> CreateAsync(ModuleDto dto);
+    Task<Result<ModuleDto>> CreateAsync(ModuleDto dto);
 
     /// <summary>Met à jour un module existant.</summary>
     /// <param name="id">Identifiant du module.</param>
     /// <param name="dto">DTO avec les nouvelles données.</param>
-    Task<ModuleDto> UpdateAsync(int id, ModuleDto dto);
+    Task<Result<ModuleDto>> UpdateAsync(int id, ModuleDto dto);
 
     /// <summary>Supprime un module par son identifiant.</summary>
     /// <param name="id">Identifiant du module à supprimer.</param>
-    Task<bool> DeleteAsync(int id);
+    Task<Result<bool>> DeleteAsync(int id);
 }

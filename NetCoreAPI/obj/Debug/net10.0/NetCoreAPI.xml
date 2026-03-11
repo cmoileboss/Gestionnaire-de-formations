@@ -1538,7 +1538,7 @@
             Vérifie que l'email existe et que le mot de passe est correct, puis génère un token JWT contenant les claims de l'utilisateur.
             </summary>
             <param name="loginDto">Données de connexion de l'utilisateur.</param>
-            <returns>Token JWT si l'authentification réussit, sinon null.</returns>
+            <returns>Result contenant le token JWT en cas de succès, ou un message d'erreur en cas d'échec.</returns>
         </member>
         <member name="M:NetCoreAPI.Services.AuthService.Register(NetCoreAPI.DTOs.AuthDto)">
             <summary>
@@ -1546,7 +1546,7 @@
             Vérifie que l'email n'est pas déjà utilisé, puis crée l'utilisateur et retourne ses données.
             </summary>
             <param name="registerDto">Données d'inscription de l'utilisateur.</param>
-            <returns>Utilisateur créé si l'inscription réussit, sinon null.</returns>
+            <returns>Result contenant l'utilisateur créé en cas de succès, ou un message d'erreur en cas d'échec.</returns>
         </member>
         <member name="T:NetCoreAPI.Services.EvaluationService">
             <summary>
@@ -1608,14 +1608,14 @@
             Authentifie un utilisateur avec ses identifiants et génère un token JWT.
             </summary>
             <param name="loginDto">Données de connexion de l'utilisateur.</param>
-            <returns>Token JWT si l'authentification réussit, sinon null.</returns>
+            <returns>Result contenant le token JWT en cas de succès, ou un message d'erreur en cas d'échec.</returns>
         </member>
         <member name="M:NetCoreAPI.Services.IAuthService.Register(NetCoreAPI.DTOs.AuthDto)">
             <summary>
             Crée un utilisateur avec ses identifiants.
             </summary>
             <param name="registerDto">Données d'inscription de l'utilisateur.</param>
-            <returns>Utilisateur créé si l'inscription réussit, sinon null.</returns>
+            <returns>Result contenant l'utilisateur créé en cas de succès, ou un message d'erreur en cas d'échec.</returns>
         </member>
         <member name="T:NetCoreAPI.Services.IEvaluationService">
             <summary>
@@ -1651,21 +1651,21 @@
             <summary>
             Récupère toutes les formations.
             </summary>
-            <returns>Liste des DTO formations.</returns>
+            <returns>Result contenant la liste des DTO formations.</returns>
         </member>
         <member name="M:NetCoreAPI.Services.IFormationService.GetByIdAsync(System.Int32)">
             <summary>
             Récupère une formation par son identifiant.
             </summary>
             <param name="id">Identifiant de la formation.</param>
-            <returns>Le DTO formation ou null.</returns>
+            <returns>Result contenant le DTO formation ou un message d'erreur.</returns>
         </member>
         <member name="M:NetCoreAPI.Services.IFormationService.CreateAsync(NetCoreAPI.DTOs.FormationCreationUpdateDto)">
             <summary>
             Crée une nouvelle formation.
             </summary>
             <param name="formationDto">DTO formation à créer.</param>
-            <returns>Le DTO formation créé.</returns>
+            <returns>Result contenant le DTO formation créé ou un message d'erreur.</returns>
         </member>
         <member name="M:NetCoreAPI.Services.IFormationService.UpdateAsync(System.Int32,NetCoreAPI.DTOs.FormationCreationUpdateDto)">
             <summary>
@@ -1673,14 +1673,14 @@
             </summary>
             <param name="id">Identifiant de la formation à mettre à jour.</param>
             <param name="formationDto">DTO formation à mettre à jour.</param>
-            <returns>Le DTO formation mis à jour.</returns>
+            <returns>Result contenant le DTO formation mis à jour ou un message d'erreur.</returns>
         </member>
         <member name="M:NetCoreAPI.Services.IFormationService.DeleteAsync(System.Int32)">
             <summary>
             Supprime une formation par son identifiant.
             </summary>
             <param name="id">Identifiant de la formation à supprimer.</param>
-            <returns>True si supprimé, sinon false.</returns>
+            <returns>Result indiquant le succès ou l'échec de la suppression.</returns>
         </member>
         <member name="T:NetCoreAPI.Services.IModuleService">
             <summary>
@@ -1801,21 +1801,21 @@
             Récupère un utilisateur par son identifiant.
             </summary>
             <param name="id">Identifiant de l'utilisateur.</param>
-            <returns>Le DTO utilisateur ou null.</returns>
+            <returns>Result contenant le DTO utilisateur ou un message d'erreur.</returns>
         </member>
         <member name="M:NetCoreAPI.Services.IUserService.GetByEmailAsync(System.String)">
             <summary>
             Récupère un utilisateur par son email.
             </summary>
             <param name="email">Email de l'utilisateur.</param>
-            <returns>Le DTO utilisateur ou null.</returns>
+            <returns>Result contenant le DTO utilisateur ou un message d'erreur.</returns>
         </member>
         <member name="M:NetCoreAPI.Services.IUserService.CreateAsync(NetCoreAPI.DTOs.UserCreationUpdateDto)">
             <summary>
             Crée un nouvel utilisateur.
             </summary>
             <param name="userDto">DTO utilisateur à créer.</param>
-            <returns>Le DTO utilisateur créé.</returns>
+            <returns>Result contenant le DTO utilisateur créé ou un message d'erreur.</returns>
         </member>
         <member name="M:NetCoreAPI.Services.IUserService.UpdateAsync(System.Int32,NetCoreAPI.DTOs.UserCreationUpdateDto)">
             <summary>
@@ -1823,14 +1823,14 @@
             </summary>
             <param name="id">Identifiant de l'utilisateur à mettre à jour.</param>
             <param name="userDto">DTO utilisateur à mettre à jour.</param>
-            <returns>Le DTO utilisateur mis à jour.</returns>
+            <returns>Result contenant le DTO utilisateur mis à jour ou un message d'erreur.</returns>
         </member>
         <member name="M:NetCoreAPI.Services.IUserService.DeleteAsync(System.Int32)">
             <summary>
             Supprime un utilisateur par son identifiant.
             </summary>
             <param name="id">Identifiant de l'utilisateur à supprimer.</param>
-            <returns>True si supprimé, sinon false.</returns>
+            <returns>Result indiquant le succès ou l'échec de la suppression.</returns>
         </member>
         <member name="T:NetCoreAPI.Services.LDAPService">
             <summary>
@@ -1902,28 +1902,28 @@
             <summary>
             Récupère tous les utilisateurs.
             </summary>
-            <returns>Liste des DTO utilisateurs.</returns>
+            <returns>Result contenant la liste des DTO utilisateurs.</returns>
         </member>
         <member name="M:NetCoreAPI.Services.UserService.GetByIdAsync(System.Int32)">
             <summary>
             Récupère un utilisateur par son identifiant.
             </summary>
             <param name="id">Identifiant de l'utilisateur.</param>
-            <returns>Le DTO utilisateur ou null.</returns>
+            <returns>Result contenant le DTO utilisateur ou un message d'erreur.</returns>
         </member>
         <member name="M:NetCoreAPI.Services.UserService.GetByEmailAsync(System.String)">
             <summary>
             Récupère un utilisateur par son email.
             </summary>
             <param name="email">Email de l'utilisateur.</param>
-            <returns>Le DTO utilisateur ou null.</returns>
+            <returns>Result contenant le DTO utilisateur ou un message d'erreur.</returns>
         </member>
         <member name="M:NetCoreAPI.Services.UserService.CreateAsync(NetCoreAPI.DTOs.UserCreationUpdateDto)">
             <summary>
             Crée un nouvel utilisateur.
             </summary>
             <param name="userDto">DTO utilisateur à créer.</param>
-            <returns>Le DTO utilisateur créé.</returns>
+            <returns>Result contenant le DTO utilisateur créé ou un message d'erreur.</returns>
         </member>
         <member name="M:NetCoreAPI.Services.UserService.UpdateAsync(System.Int32,NetCoreAPI.DTOs.UserCreationUpdateDto)">
             <summary>
@@ -1931,14 +1931,50 @@
             </summary>
             <param name="id">Identifiant de l'utilisateur à mettre à jour.</param>
             <param name="userDto">DTO utilisateur à mettre à jour.</param>
-            <returns>Le DTO utilisateur mis à jour.</returns>
+            <returns>Result contenant le DTO utilisateur mis à jour ou un message d'erreur.</returns>
         </member>
         <member name="M:NetCoreAPI.Services.UserService.DeleteAsync(System.Int32)">
             <summary>
             Supprime un utilisateur par son identifiant.
             </summary>
             <param name="id">Identifiant de l'utilisateur à supprimer.</param>
-            <returns>True si supprimé, sinon false.</returns>
+            <returns>Result indiquant le succès ou l'échec de la suppression.</returns>
+        </member>
+        <member name="T:NetCoreAPI.Utils.Result`1">
+            <summary>
+            Classe générique pour représenter le résultat d'une opération qui peut réussir ou échouer.
+            Permet d'éviter l'utilisation d'exceptions pour la logique métier normale.
+            </summary>
+            <typeparam name="T">Type de la valeur retournée en cas de succès.</typeparam>
+        </member>
+        <member name="P:NetCoreAPI.Utils.Result`1.IsSuccess">
+            <summary>
+            Indique si l'opération a réussi.
+            </summary>
+        </member>
+        <member name="P:NetCoreAPI.Utils.Result`1.Value">
+            <summary>
+            Valeur retournée en cas de succès.
+            </summary>
+        </member>
+        <member name="P:NetCoreAPI.Utils.Result`1.Error">
+            <summary>
+            Message d'erreur en cas d'échec.
+            </summary>
+        </member>
+        <member name="M:NetCoreAPI.Utils.Result`1.Success(`0)">
+            <summary>
+            Crée un résultat de succès avec une valeur.
+            </summary>
+            <param name="value">Valeur à retourner.</param>
+            <returns>Instance de Result représentant un succès.</returns>
+        </member>
+        <member name="M:NetCoreAPI.Utils.Result`1.Failure(System.String)">
+            <summary>
+            Crée un résultat d'échec avec un message d'erreur.
+            </summary>
+            <param name="error">Message d'erreur.</param>
+            <returns>Instance de Result représentant un échec.</returns>
         </member>
         <member name="M:AuthController.Login(NetCoreAPI.DTOs.AuthDto)">
             <summary>

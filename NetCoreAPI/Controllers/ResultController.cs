@@ -74,15 +74,10 @@ namespace NetCoreAPI.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<ResultDto>> Create([FromBody] ResultDto dto)
         {
-            try
-            {
-                var created = await _resultService.CreateAsync(dto);
-                return CreatedAtAction(nameof(GetById), new { userId = created.UserId, evaluationId = created.EvaluationId }, created);
-            }
-            catch (InvalidOperationException ex)
-            {
-                return Conflict(new { message = ex.Message });
-            }
+            var created = await _resultService.CreateAsync(dto);
+            if (!created.IsSuccess)
+                return BadRequest(new { error = created.Error });
+            return CreatedAtAction(nameof(GetById), new { userId = created.Value!.UserId, evaluationId = created.Value.EvaluationId }, created.Value);
         }
 
         /// <summary>

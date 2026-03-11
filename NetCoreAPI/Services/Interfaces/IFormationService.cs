@@ -1,4 +1,5 @@
 using NetCoreAPI.DTOs;
+using NetCoreAPI.Utils;
 
 namespace NetCoreAPI.Services;
 
@@ -10,35 +11,35 @@ public interface IFormationService
     /// <summary>
     /// Récupère toutes les formations.
     /// </summary>
-    /// <returns>Liste des DTO formations.</returns>
-    Task<IEnumerable<FormationDto>> GetAllAsync();
+    /// <returns>Result contenant la liste des DTO formations.</returns>
+    Task<Result<IEnumerable<FormationDto>>> GetAllAsync();
 
     /// <summary>
     /// Récupère une formation par son identifiant.
     /// </summary>
     /// <param name="id">Identifiant de la formation.</param>
-    /// <returns>Le DTO formation ou null.</returns>
-    Task<FormationDto?> GetByIdAsync(int id);
+    /// <returns>Result contenant le DTO formation ou un message d'erreur.</returns>
+    Task<Result<FormationDto>> GetByIdAsync(int id);
 
     /// <summary>
     /// Crée une nouvelle formation.
     /// </summary>
     /// <param name="formationDto">DTO formation à créer.</param>
-    /// <returns>Le DTO formation créé.</returns>
-    Task<FormationDto> CreateAsync(FormationCreationUpdateDto formationDto);
+    /// <returns>Result contenant le DTO formation créé ou un message d'erreur.</returns>
+    Task<Result<FormationDto>> CreateAsync(FormationCreationUpdateDto formationDto);
 
     /// <summary>
     /// Met à jour une formation existante.
     /// </summary>
     /// <param name="id">Identifiant de la formation à mettre à jour.</param>
     /// <param name="formationDto">DTO formation à mettre à jour.</param>
-    /// <returns>Le DTO formation mis à jour.</returns>
-    Task<FormationDto> UpdateAsync(int id, FormationCreationUpdateDto formationDto);
+    /// <returns>Result contenant le DTO formation mis à jour ou un message d'erreur.</returns>
+    Task<Result<FormationDto>> UpdateAsync(int id, FormationCreationUpdateDto formationDto);
 
     /// <summary>
     /// Supprime une formation par son identifiant.
     /// </summary>
     /// <param name="id">Identifiant de la formation à supprimer.</param>
-    /// <returns>True si supprimé, sinon false.</returns>
-    Task<bool> DeleteAsync(int id);
+    /// <returns>Result indiquant le succès ou l'échec de la suppression.</returns>
+    Task<Result<bool>> DeleteAsync(int id);
 }

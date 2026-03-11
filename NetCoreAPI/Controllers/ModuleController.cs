@@ -72,7 +72,9 @@ namespace NetCoreAPI.Controllers
         public async Task<ActionResult<ModuleDto>> Create([FromBody] ModuleDto dto)
         {
             var created = await _moduleService.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetById), new { id = created.ModuleId }, created);
+            if (!created.IsSuccess)
+                return BadRequest(new { error = created.Error });
+            return CreatedAtAction(nameof(GetById), new { id = created.Value!.ModuleId }, created.Value);
         }
 
         /// <summary>

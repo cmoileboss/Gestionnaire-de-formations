@@ -6,6 +6,7 @@ namespace NetCoreAPI.Controllers
     using Microsoft.AspNetCore.Mvc;
     using NetCoreAPI.DTOs;
     using NetCoreAPI.Services;
+    using NetCoreAPI.Utils;
 
     /// <summary>
     /// Contrôleur REST exposé sous la route <c>/users</c>.
@@ -36,7 +37,11 @@ namespace NetCoreAPI.Controllers
         [ProducesResponseType(typeof(IEnumerable<UserDto>), StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<UserDto>>> Get()
         {
-            return Ok(await _userService.GetAllAsync());
+            var result = await _userService.GetAllAsync();
+            if (!result.IsSuccess)
+                return BadRequest(new { error = result.Error });
+            
+            return Ok(result.Value);
         }
 
         /// <summary>
@@ -54,11 +59,11 @@ namespace NetCoreAPI.Controllers
             if (currentUserId != id)
                 return Forbid();
 
-            var user = await _userService.GetByIdAsync(id);
-            if (user == null)
-                return NotFound();
+            var result = await _userService.GetByIdAsync(id);
+            if (!result.IsSuccess)
+                return NotFound(new { error = result.Error });
  
-            return Ok(user);
+            return Ok(result.Value);
         }
 
 
@@ -78,8 +83,12 @@ namespace NetCoreAPI.Controllers
             var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
             if (currentUserId != id)
                 return Forbid();
-            var updatedUser = await _userService.UpdateAsync(id, userDto);
-            return Ok(updatedUser);
+
+            var result = await _userService.UpdateAsync(id, userDto);
+            if (!result.IsSuccess)
+                return NotFound(new { error = result.Error });
+
+            return Ok(result.Value);
         }
 
         /// <summary>
@@ -97,11 +106,11 @@ namespace NetCoreAPI.Controllers
             if (currentUserId != id)
                 return Forbid();
 
-            var deleted = await _userService.DeleteAsync(id);
-            if (deleted)
-                return NoContent();
-            else
-                return NotFound();
+            var result = await _userService.DeleteAsync(id);
+            if (!result.IsSuccess)
+                return NotFound(new { error = result.Error });
+
+            return NoContent();
         }
     }
 }

@@ -103,6 +103,36 @@ builder.Services.AddScoped<IEvaluationRepository, EvaluationRepository>();
 builder.Services.AddScoped<IAirecommandationRepository, AirecommandationRepository>();
 
 var app = builder.Build();
+
+// Middleware global de gestion des erreurs
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        context.Response.ContentType = "application/json";
+
+        var exceptionHandlerFeature = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>();
+        if (exceptionHandlerFeature != null)
+        {
+            var exception = exceptionHandlerFeature.Error;
+            
+            // Logger l'exception (vous pouvez ajouter un logger ici)
+            Console.WriteLine($"Unhandled exception: {exception.Message}");
+            Console.WriteLine($"Stack trace: {exception.StackTrace}");
+
+            var response = new
+            {
+                error = "An internal server error occurred.",
+                message = app.Environment.IsDevelopment() ? exception.Message : null,
+                stackTrace = app.Environment.IsDevelopment() ? exception.StackTrace : null
+            };
+
+            await context.Response.WriteAsJsonAsync(response);
+        }
+    });
+});
+
 app.UseSwagger();
 app.UseSwaggerUI(options =>
 {

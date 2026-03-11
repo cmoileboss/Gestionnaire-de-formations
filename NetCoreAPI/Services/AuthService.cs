@@ -36,27 +36,33 @@ public class AuthService : IAuthService
     /// Vérifie que l'email existe et que le mot de passe est correct, puis génère un token JWT contenant les claims de l'utilisateur.
     /// </summary>
     /// <param name="loginDto">Données de connexion de l'utilisateur.</param>
-    /// <returns>Token JWT si l'authentification réussit, sinon null.</returns>
-    public Task<string?> Login(AuthDto loginDto)
+    /// <returns>Result contenant le token JWT en cas de succès, ou un message d'erreur en cas d'échec.</returns>
+    public async Task<Result<string>> Login(AuthDto loginDto)
     {
         try
         {
-            // On vérifie que l'email existe et que le mot de passe est correct'
-            var user = _userRepository.GetByEmailAsync(loginDto.Email).Result;
+            // On vérifie que l'email existe
+            var user = await _userRepository.GetByEmailAsync(loginDto.Email);
             if (user == null)
-                throw new UnauthorizedAccessException("Invalid email or password.");
+                return Result<string>.Failure("Invalid email or password.");
 
             // Vérifier le mot de passe avec BCrypt
             if (!BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash))
-                throw new UnauthorizedAccessException("Invalid email or password.");
+                return Result<string>.Failure("Invalid email or password.");
 
             // Génération du token JWT
             var tokenString = TokenManager.CreateToken(user, this._config);
-            return Task.FromResult<string?>(tokenString);
+            return Result<string>.Success(tokenString);
         }
-        catch (SaltParseException ex)
+        catch (SaltParseException)
         {
-            throw new SaltParseException($"Invalid BCrypt hash for user {loginDto.Email}: {ex.Message}");
+            // Le hash en base de données n'est pas un hash BCrypt valide
+            return Result<string>.Failure("Invalid password hash in database. Please contact an administrator.");
+        }
+        catch (Exception ex)
+        {
+            // Erreur inattendue (base de données inaccessible, etc.)
+            throw new InvalidOperationException("An error occurred during login.", ex);
         }
     }
 
@@ -65,19 +71,34 @@ public class AuthService : IAuthService
     /// Vérifie que l'email n'est pas déjà utilisé, puis crée l'utilisateur et retourne ses données.
     /// </summary>
     /// <param name="registerDto">Données d'inscription de l'utilisateur.</param>
-    /// <returns>Utilisateur créé si l'inscription réussit, sinon null.</returns>
-    public Task<UserDto> Register(AuthDto registerDto)
+    /// <returns>Result contenant l'utilisateur créé en cas de succès, ou un message d'erreur en cas d'échec.</returns>
+    public async Task<Result<UserDto>> Register(AuthDto registerDto)
     {
-        if (_userRepository.GetByEmailAsync(registerDto.Email).Result != null)
-            throw new InvalidOperationException("Email already in use.");
-
-        string hash = BCrypt.Net.BCrypt.HashPassword(registerDto.Password);
-        var user = new User
+        try
         {
-            Email = registerDto.Email,
-            PasswordHash = hash
-        };
-        var createdUser = _userRepository.CreateAsync(user).Result;
-        return Task.FromResult(_mapper.Map<UserDto>(createdUser));
+            // Vérifier si l'email est déjà utilisé
+            var existingUser = await _userRepository.GetByEmailAsync(registerDto.Email);
+            if (existingUser != null)
+                return Result<UserDto>.Failure("Email already in use.");
+
+            // Hasher le mot de passe
+            string hash = BCrypt.Net.BCrypt.HashPassword(registerDto.Password);
+            var user = new User
+            {
+                Email = registerDto.Email,
+                PasswordHash = hash
+            };
+            
+            // Créer l'utilisateur
+            var createdUser = await _userRepository.CreateAsync(user);
+            var userDto = _mapper.Map<UserDto>(createdUser);
+            
+            return Result<UserDto>.Success(userDto);
+        }
+        catch (Exception ex)
+        {
+            // Erreur inattendue (base de données inaccessible, etc.)
+            throw new InvalidOperationException("An error occurred during registration.", ex);
+        }
     }
 }

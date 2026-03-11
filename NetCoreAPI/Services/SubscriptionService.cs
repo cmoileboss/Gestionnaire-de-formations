@@ -2,6 +2,7 @@ using AutoMapper;
 using NetCoreAPI.DTOs;
 using NetCoreAPI.Models;
 using NetCoreAPI.Repositories;
+using NetCoreAPI.Utils;
 
 namespace NetCoreAPI.Services;
 
@@ -24,45 +25,80 @@ public class SubscriptionService : ISubscriptionService
         _mapper = mapper;
     }
 
-    public async Task<IEnumerable<SubscriptionDto>> GetAllAsync()
+    public async Task<Result<IEnumerable<SubscriptionDto>>> GetAllAsync()
     {
-        var subscriptions = await _subscriptionRepository.GetAllAsync();
-        return _mapper.Map<IEnumerable<SubscriptionDto>>(subscriptions);
+        try
+        {
+            var subscriptions = await _subscriptionRepository.GetAllAsync();
+            return Result<IEnumerable<SubscriptionDto>>.Success(_mapper.Map<IEnumerable<SubscriptionDto>>(subscriptions));
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException("An error occurred while retrieving subscriptions.", ex);
+        }
     }
 
-    public async Task<SubscriptionDto?> GetByIdAsync(int id)
+    public async Task<Result<SubscriptionDto>> GetByIdAsync(int id)
     {
-        var subscription = await _subscriptionRepository.GetByIdAsync(id);
-        if (subscription == null)
-            throw new KeyNotFoundException($"Abonnement avec l'ID {id} non trouvé.");
-        return _mapper.Map<SubscriptionDto>(subscription);
+        try
+        {
+            var subscription = await _subscriptionRepository.GetByIdAsync(id);
+            if (subscription == null)
+                return Result<SubscriptionDto>.Failure($"Abonnement avec l'ID {id} non trouvé.");
+            return Result<SubscriptionDto>.Success(_mapper.Map<SubscriptionDto>(subscription));
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"An error occurred while retrieving subscription {id}.", ex);
+        }
     }
 
-    public async Task<SubscriptionDto> CreateAsync(SubscriptionDto dto)
+    public async Task<Result<SubscriptionDto>> CreateAsync(SubscriptionDto dto)
     {
-        var subscription = _mapper.Map<Subscription>(dto);
-        await _subscriptionRepository.AddAsync(subscription);
-        return _mapper.Map<SubscriptionDto>(subscription);
+        try
+        {
+            var subscription = _mapper.Map<Subscription>(dto);
+            await _subscriptionRepository.AddAsync(subscription);
+            return Result<SubscriptionDto>.Success(_mapper.Map<SubscriptionDto>(subscription));
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException("An error occurred while creating subscription.", ex);
+        }
     }
 
-    public async Task<SubscriptionDto> UpdateAsync(int id, SubscriptionDto dto)
+    public async Task<Result<SubscriptionDto>> UpdateAsync(int id, SubscriptionDto dto)
     {
-        var existing = await _subscriptionRepository.GetByIdAsync(id);
-        if (existing == null)
-            throw new KeyNotFoundException($"Abonnement avec l'ID {id} non trouvé.");
+        try
+        {
+            var existing = await _subscriptionRepository.GetByIdAsync(id);
+            if (existing == null)
+                return Result<SubscriptionDto>.Failure($"Abonnement avec l'ID {id} non trouvé.");
 
-        _mapper.Map(dto, existing);
-        await _subscriptionRepository.UpdateAsync(existing);
-        return _mapper.Map<SubscriptionDto>(existing);
+            _mapper.Map(dto, existing);
+            await _subscriptionRepository.UpdateAsync(existing);
+            return Result<SubscriptionDto>.Success(_mapper.Map<SubscriptionDto>(existing));
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"An error occurred while updating subscription {id}.", ex);
+        }
     }
 
-    public async Task<bool> DeleteAsync(int id)
+    public async Task<Result<bool>> DeleteAsync(int id)
     {
-        var existing = await _subscriptionRepository.GetByIdAsync(id);
-        if (existing == null)
-            throw new KeyNotFoundException($"Abonnement avec l'ID {id} non trouvé.");
+        try
+        {
+            var existing = await _subscriptionRepository.GetByIdAsync(id);
+            if (existing == null)
+                return Result<bool>.Failure($"Abonnement avec l'ID {id} non trouvé.");
 
-        await _subscriptionRepository.DeleteAsync(id);
-        return true;
+            await _subscriptionRepository.DeleteAsync(id);
+            return Result<bool>.Success(true);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"An error occurred while deleting subscription {id}.", ex);
+        }
     }
 }

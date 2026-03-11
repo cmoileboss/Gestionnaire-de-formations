@@ -2,6 +2,7 @@ using AutoMapper;
 using NetCoreAPI.DTOs;
 using NetCoreAPI.Models;
 using NetCoreAPI.Repositories;
+using NetCoreAPI.Utils;
 
 namespace NetCoreAPI.Services;
 
@@ -24,46 +25,81 @@ public class SessionService : ISessionService
         _mapper = mapper;
     }
 
-    public async Task<IEnumerable<SessionDto>> GetAllAsync()
+    public async Task<Result<IEnumerable<SessionDto>>> GetAllAsync()
     {
-        var sessions = await _sessionRepository.GetAllAsync();
-        return _mapper.Map<IEnumerable<SessionDto>>(sessions);
+        try
+        {
+            var sessions = await _sessionRepository.GetAllAsync();
+            return Result<IEnumerable<SessionDto>>.Success(_mapper.Map<IEnumerable<SessionDto>>(sessions));
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException("An error occurred while retrieving sessions.", ex);
+        }
     }
 
-    public async Task<SessionDto?> GetByIdAsync(int id)
+    public async Task<Result<SessionDto>> GetByIdAsync(int id)
     {
-        var session = await _sessionRepository.GetByIdAsync(id);
-        if (session == null)
-            throw new KeyNotFoundException($"Session avec l'ID {id} non trouvée.");
-        return _mapper.Map<SessionDto>(session);
+        try
+        {
+            var session = await _sessionRepository.GetByIdAsync(id);
+            if (session == null)
+                return Result<SessionDto>.Failure($"Session avec l'ID {id} non trouvée.");
+            return Result<SessionDto>.Success(_mapper.Map<SessionDto>(session));
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"An error occurred while retrieving session {id}.", ex);
+        }
     }
 
-    public async Task<SessionDto> CreateAsync(SessionDto dto)
+    public async Task<Result<SessionDto>> CreateAsync(SessionDto dto)
     {
-        var session = _mapper.Map<Session>(dto);
-        await _sessionRepository.AddAsync(session);
-        return _mapper.Map<SessionDto>(session);
+        try
+        {
+            var session = _mapper.Map<Session>(dto);
+            await _sessionRepository.AddAsync(session);
+            return Result<SessionDto>.Success(_mapper.Map<SessionDto>(session));
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException("An error occurred while creating session.", ex);
+        }
     }
 
-    public async Task<SessionDto> UpdateAsync(int id, SessionDto dto)
+    public async Task<Result<SessionDto>> UpdateAsync(int id, SessionDto dto)
     {
-        var existing = await _sessionRepository.GetByIdAsync(id);
-        if (existing == null)
-            throw new KeyNotFoundException($"Session avec l'ID {id} non trouvée.");
+        try
+        {
+            var existing = await _sessionRepository.GetByIdAsync(id);
+            if (existing == null)
+                return Result<SessionDto>.Failure($"Session avec l'ID {id} non trouvée.");
 
-        _mapper.Map(dto, existing);
-        existing.SessionId = id;
-        await _sessionRepository.UpdateAsync(existing);
-        return _mapper.Map<SessionDto>(existing);
+            _mapper.Map(dto, existing);
+            existing.SessionId = id;
+            await _sessionRepository.UpdateAsync(existing);
+            return Result<SessionDto>.Success(_mapper.Map<SessionDto>(existing));
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"An error occurred while updating session {id}.", ex);
+        }
     }
 
-    public async Task<bool> DeleteAsync(int id)
+    public async Task<Result<bool>> DeleteAsync(int id)
     {
-        var existing = await _sessionRepository.GetByIdAsync(id);
-        if (existing == null)
-            throw new KeyNotFoundException($"Session avec l'ID {id} non trouvée.");
+        try
+        {
+            var existing = await _sessionRepository.GetByIdAsync(id);
+            if (existing == null)
+                return Result<bool>.Failure($"Session avec l'ID {id} non trouvée.");
 
-        await _sessionRepository.DeleteAsync(id);
-        return true;
+            await _sessionRepository.DeleteAsync(id);
+            return Result<bool>.Success(true);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"An error occurred while deleting session {id}.", ex);
+        }
     }
 }

@@ -72,7 +72,9 @@ namespace NetCoreAPI.Controllers
         public async Task<ActionResult<SessionDto>> Create([FromBody] SessionDto dto)
         {
             var created = await _sessionService.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetById), new { id = created.SessionId }, created);
+            if (!created.IsSuccess)
+                return BadRequest(new { error = created.Error });
+            return CreatedAtAction(nameof(GetById), new { id = created.Value!.SessionId }, created.Value);
         }
 
         /// <summary>

@@ -3,6 +3,7 @@ using BCrypt.Net;
 using Microsoft.AspNetCore.Mvc;
 using NetCoreAPI.DTOs;
 using NetCoreAPI.Services;
+using NetCoreAPI.Utils;
 
 [ApiController]
 [Route("")]
@@ -28,29 +29,20 @@ public class AuthController : ControllerBase
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Login([FromBody] AuthDto loginDto)
         {
-            try
+            var result = await _authService.Login(loginDto);
+            
+            if (!result.IsSuccess)
+                return Unauthorized(new { error = result.Error });
+
+            Response.Cookies.Append("access_token", result.Value!, new CookieOptions
             {
-                var token = await _authService.Login(loginDto);
-                if (token == null)
-                    return Unauthorized("Invalid email or password.");
-    
-                Response.Cookies.Append("access_token", token, new CookieOptions
-                {
-                    HttpOnly = true,   // non accessible en JS
-                    Secure = true,     // HTTPS uniquement
-                    SameSite = SameSiteMode.Strict,
-                    Expires = DateTimeOffset.UtcNow.AddHours(1)
-                });
-                return Ok(token);
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return Unauthorized("Invalid email or password.");
-            }
-            catch (SaltParseException ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
+                HttpOnly = true,   // non accessible en JS
+                Secure = true,     // HTTPS uniquement
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTimeOffset.UtcNow.AddHours(1)
+            });
+            
+            return Ok(result.Value);
         }
 
         /// <summary>
@@ -63,8 +55,12 @@ public class AuthController : ControllerBase
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<UserDto>> Register([FromBody] AuthDto registerDto)
         {
-            var user = await _authService.Register(registerDto);
-            return Ok(user);
+            var result = await _authService.Register(registerDto);
+            
+            if (!result.IsSuccess)
+                return BadRequest(new { error = result.Error });
+            
+            return Ok(result.Value);
         }
 
         /// <summary>

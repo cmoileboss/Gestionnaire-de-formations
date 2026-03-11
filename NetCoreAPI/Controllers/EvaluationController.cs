@@ -72,7 +72,9 @@ namespace NetCoreAPI.Controllers
         public async Task<ActionResult<EvaluationDto>> Create([FromBody] EvaluationDto dto)
         {
             var created = await _evaluationService.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetById), new { id = created.EvaluationId }, created);
+            if (!created.IsSuccess)
+                return BadRequest(new { error = created.Error });
+            return CreatedAtAction(nameof(GetById), new { id = created.Value!.EvaluationId }, created.Value);
         }
 
         /// <summary>
