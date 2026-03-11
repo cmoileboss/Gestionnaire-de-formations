@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, Response
 from sqlalchemy.orm import Session
 from typing import Annotated
 
+from services.ResultService import ResultService
 from services.UserService import UserService
 from services.SecurityService import SecurityService
 from services.LDAPService import LDAPService
@@ -34,10 +35,16 @@ def get_ldap_service() -> LDAPService:
     """Get a UserService instance with the .env values"""
     return LDAPService(389)  # Port 389 pour LDAP sans SSL, port 636 pour LDAPS avec SSL
 
+def get_result_service() -> ResultService:
+    """Get a ResultService instance with the database session"""
+    db = get_db()
+    return ResultService(db)
+
 users_router = APIRouter(prefix="/users", tags=["Users"])
 
 UserServiceDep = Annotated[UserService, Depends(get_user_service)]
 LDAPServiceDep = Annotated[LDAPService, Depends(get_ldap_service)]
+ResultServiceDep = Annotated[ResultService, Depends(get_result_service)]
 
 @users_router.post("/login", response_model=UserResponse)
 def login(response: Response, request: LoginRegisterRequest, user_service: UserServiceDep) -> User:
@@ -186,7 +193,7 @@ def get_user_evaluations(user_id: int, user_service: UserServiceDep, current_use
     return user_service.get_user_evaluations(user_id)
 
 @users_router.post("/{user_id}/evaluations/{evaluation_id}", response_model=dict)
-def enroll_user_in_evaluation(user_id: int, evaluation_id: int, user_service: UserServiceDep, current_user: User = Depends(SecurityService.get_current_user)) -> dict:
+def enroll_user_in_evaluation(user_id: int, evaluation_id: int, result_service: ResultServiceDep, current_user: User = Depends(SecurityService.get_current_user)) -> dict:
     """Enroll a user in a specific evaluation.
 
     :param user_id: Primary key of the user to enroll.
@@ -197,22 +204,22 @@ def enroll_user_in_evaluation(user_id: int, evaluation_id: int, user_service: Us
     """
     if current_user.id != user_id:
         raise ForbiddenError("Vous ne pouvez gérer que vos propres évaluations")
-    user_service.enroll_in_evaluation(user_id, evaluation_id)
+    result_service.create_result(user_id, evaluation_id)
     return {"message": "Utilisateur inscrit à l'évaluation avec succès"}
 
 
 @users_router.delete("/{user_id}/evaluations/{evaluation_id}", response_model=dict)
-def unenroll_user_from_evaluation(user_id: int, evaluation_id: int, user_service: UserServiceDep, current_user: User = Depends(SecurityService.get_current_user)) -> dict:
+def unenroll_user_from_evaluation(user_id: int, evaluation_id: int, result_service: ResultServiceDep, current_user: User = Depends(SecurityService.get_current_user)) -> dict:
     """Remove a user's enrollment from an evaluation.
 
     :param user_id: Primary key of the user.
     :param evaluation_id: Primary key of the evaluation.
-    :param user_service: Injected user service.
+    :param result_service: Injected result service.
     :param current_user: Currently authenticated user.
     :return: Confirmation message on success.
     """
     if current_user.id != user_id:
         raise ForbiddenError("Vous ne pouvez gérer que vos propres évaluations")
-    user_service.unenroll_from_evaluation(user_id, evaluation_id)
+    result_service.delete_result(user_id, evaluation_id)
     return {"message": "Utilisateur désinscrit de l'évaluation avec succès"}
 

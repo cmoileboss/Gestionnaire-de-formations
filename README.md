@@ -405,5 +405,4 @@ Le système est prêt pour un déploiement en production et peut facilement êtr
 
 **Date de livraison** : Mars 2026  
 **Versions** : .NET Core 10.0 / Python 3.11 + FastAPI  
-**Base de données** : SQL Server 2025
-**Status** : ✅ Production-ready
+**Base de données** : Microsoft SQL Server 2025

@@ -1,5 +1,6 @@
 namespace NetCoreAPI.Controllers
 {
+    using System.Security.Claims;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using NetCoreAPI.DTOs;
@@ -69,8 +70,13 @@ namespace NetCoreAPI.Controllers
         [ProducesResponseType(typeof(SubscriptionDto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<SubscriptionDto>> Create([FromBody] SubscriptionDto dto)
         {
+            var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            if (currentUserId != dto.UserId)
+                return Forbid();
+
             var created = await _subscriptionService.CreateAsync(dto);
             if (!created.IsSuccess)
                 return BadRequest(new { error = created.Error });
@@ -131,8 +137,13 @@ namespace NetCoreAPI.Controllers
         [HttpGet("user/{userId}")]
         [ProducesResponseType(typeof(IEnumerable<SubscriptionDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<IEnumerable<SubscriptionDto>>> GetByUserId(int userId)
         {
+            var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            if (currentUserId != userId)
+                return Forbid();
+
             var result = await _subscriptionService.GetByUserIdAsync(userId);
             if (!result.IsSuccess)
                 return BadRequest(new { error = result.Error });
@@ -167,8 +178,13 @@ namespace NetCoreAPI.Controllers
         [ProducesResponseType(typeof(SubscriptionDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<SubscriptionDto>> GetByUserAndSession(int userId, int sessionId)
         {
+            var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            if (currentUserId != userId)
+                return Forbid();
+
             var result = await _subscriptionService.GetByUserAndSessionAsync(userId, sessionId);
             if (!result.IsSuccess)
                 return NotFound(new { error = result.Error });
@@ -186,8 +202,13 @@ namespace NetCoreAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> DeleteByUserAndSession(int userId, int sessionId)
         {
+            var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            if (currentUserId != userId)
+                return Forbid();
+
             var result = await _subscriptionService.DeleteByUserAndSessionAsync(userId, sessionId);
             if (!result.IsSuccess)
                 return NotFound(new { error = result.Error });

@@ -3,12 +3,10 @@ from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, ConfigDict
 
-class ResultCreationRequest(BaseModel):
-    """Request body for creating a new evaluation result."""
+class ResultUpdateRequest(BaseModel):
+    """Request body for updating an existing evaluation result."""
     model_config = ConfigDict(extra="forbid")
 
-    user_id: int
-    evaluation_id: int
     score: Optional[float] = None
     success: Optional[bool] = None
     date: Optional[datetime] = None

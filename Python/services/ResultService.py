@@ -13,7 +13,7 @@ class ResultService:
         """Retourne la liste de tous les résultats d'évaluation."""
         return self.result_repository.get_all()
     
-    def create_result(self, user_id: int, evaluation_id: int, score: float, success: bool, date=None):
+    def create_result(self, user_id: int, evaluation_id: int, score: float = None, success: bool = None, date=None):
         """Crée un nouveau résultat d'évaluation."""
         return self.result_repository.create(user_id, evaluation_id, score, success, date)
     
@@ -26,6 +26,13 @@ class ResultService:
     def get_result(self, user_id: int, evaluation_id: int):
         """Retourne un résultat d'évaluation par sa clé composite, ou lève NotFoundError."""
         result = self.result_repository.get_by_composite_key(user_id, evaluation_id)
+        if result is None:
+            raise NotFoundError("Résultat", f"user_id={user_id}, evaluation_id={evaluation_id}")
+        return result
+    
+    def update_result(self, user_id: int, evaluation_id: int, score: float = None, success: bool = None, date=None):
+        """Met à jour un résultat d'évaluation. Lève NotFoundError si introuvable."""
+        result = self.result_repository.update(user_id, evaluation_id, score, success, date)
         if result is None:
             raise NotFoundError("Résultat", f"user_id={user_id}, evaluation_id={evaluation_id}")
         return result

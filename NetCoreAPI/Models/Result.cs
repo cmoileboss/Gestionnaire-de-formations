@@ -26,17 +26,14 @@ public partial class Result
     public int EvaluationId { get; set; }
 
     /// <summary>Score numérique obtenu par l'utilisateur.</summary>
-    [Required(ErrorMessage = "Le score est obligatoire")]
     [Column("score")]
     public double Score { get; set; }
 
     /// <summary>Indique si l'utilisateur a réussi l'évaluation.</summary>
-    [Required(ErrorMessage = "Le succès est obligatoire")]
     [Column("success")]
     public bool Success { get; set; }
 
     /// <summary>Date à laquelle le résultat a été enregistré.</summary>
-    [Required(ErrorMessage = "La date est obligatoire")]
     [Column("date")]
     public DateTime Date { get; set; }
 

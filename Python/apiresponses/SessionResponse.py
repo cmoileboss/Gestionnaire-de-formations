@@ -1,4 +1,5 @@
 from pydantic import BaseModel, ConfigDict
+from datetime import datetime
 
 class SessionResponse(BaseModel):
     """Pydantic response model for a training session.
@@ -13,10 +14,8 @@ class SessionResponse(BaseModel):
     #: Identifier of the associated formation.
     formation_id: int
     #: Start date of the session (ISO 8601 string).
-    start_date: str
+    start_date: datetime
     #: End date of the session (ISO 8601 string).
-    end_date: str
+    end_date: datetime
     #: Name or description of the session location.
     place: str
-    #: Full postal address of the session venue.
-    address: str

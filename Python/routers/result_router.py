@@ -7,6 +7,7 @@ from database_connection import get_db
 from models.User import User
 
 from apirequests.ResultCreationRequest import ResultCreationRequest
+from apirequests.ResultUpdateRequest import ResultUpdateRequest
 from apiresponses.ResultResponse import ResultResponse
 
 from services.ResultService import ResultService
@@ -58,6 +59,22 @@ def read_result(user_id: int, evaluation_id: int, result_service: ResultServiceD
     if current_user.id != user_id:
         raise ForbiddenError("Vous ne pouvez accéder qu'à vos propres résultats")
     result = result_service.get_result(user_id, evaluation_id)
+    return result
+
+@result_router.put("/{user_id}/{evaluation_id}", response_model=ResultResponse)
+def update_result(user_id: int, evaluation_id: int, result_request: ResultUpdateRequest, result_service: ResultServiceDep, current_user: User = Depends(SecurityService.get_current_user)) -> ResultResponse:
+    """Update an existing evaluation result by its composite key.
+
+    :param user_id: User identifier (part of composite key).
+    :param evaluation_id: Evaluation identifier (part of composite key).
+    :param result_request: Request body containing the fields to update.
+    :param result_service: Injected result service.
+    :param current_user: Currently authenticated user.
+    :return: The updated Result record.
+    """
+    if current_user.id != user_id:
+        raise ForbiddenError("Vous ne pouvez modifier que vos propres résultats")
+    result = result_service.update_result(user_id, evaluation_id, result_request.score, result_request.success, result_request.date)
     return result
 
 @result_router.delete("/{user_id}/{evaluation_id}", response_model=dict)

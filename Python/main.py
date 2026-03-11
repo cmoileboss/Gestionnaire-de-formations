@@ -52,7 +52,7 @@ app = FastAPI(
 def startup_event():
     """Créer les tables de la base de données au démarrage"""
     # Base.metadata.drop_all(bind=engine)  # Supprime toutes les tables
-    # Base.metadata.create_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
 
 
 # Enregistrement des handlers d'exceptions personnalisées

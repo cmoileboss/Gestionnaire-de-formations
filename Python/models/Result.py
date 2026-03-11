@@ -17,9 +17,9 @@ class Result(Base):
 
     user_id = mapped_column(Integer, primary_key=True)         #: Identifiant utilisateur
     evaluation_id = mapped_column(Integer, primary_key=True)   #: Identifiant évaluation
-    score = mapped_column(Float(53), nullable=False)           #: Score obtenu
-    success = mapped_column(Boolean, nullable=False)           #: Succès ou échec
-    date = mapped_column(DateTime, nullable=False)             #: Date du résultat
+    score = mapped_column(Float(53), nullable=True)           #: Score obtenu
+    success = mapped_column(Boolean, nullable=True)           #: Succès ou échec
+    date = mapped_column(DateTime, nullable=True)             #: Date du résultat
 
     user = relationship('User', back_populates='results')      #: Utilisateur concerné
     evaluation = relationship('Evaluation', back_populates='results') #: Évaluation concernée

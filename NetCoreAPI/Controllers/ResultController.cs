@@ -1,5 +1,6 @@
 namespace NetCoreAPI.Controllers
 {
+    using System.Security.Claims;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using NetCoreAPI.DTOs;
@@ -49,8 +50,13 @@ namespace NetCoreAPI.Controllers
         [ProducesResponseType(typeof(ResultDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<ResultDto>> GetById(int userId, int evaluationId)
         {
+            var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            if (currentUserId != userId)
+                return Forbid();
+
             try
             {
                 var result = await _resultService.GetByIdAsync(userId, evaluationId);
@@ -72,8 +78,13 @@ namespace NetCoreAPI.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<ResultDto>> Create([FromBody] ResultDto dto)
         {
+            var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            if (currentUserId != dto.UserId)
+                return Forbid();
+
             var created = await _resultService.CreateAsync(dto);
             if (!created.IsSuccess)
                 return BadRequest(new { error = created.Error });
@@ -92,8 +103,13 @@ namespace NetCoreAPI.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<ResultDto>> Update(int userId, int evaluationId, [FromBody] ResultDto dto)
         {
+            var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            if (currentUserId != userId)
+                return Forbid();
+
             try
             {
                 var updated = await _resultService.UpdateAsync(userId, evaluationId, dto);
@@ -115,8 +131,13 @@ namespace NetCoreAPI.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult> Delete(int userId, int evaluationId)
         {
+            var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            if (currentUserId != userId)
+                return Forbid();
+
             try
             {
                 await _resultService.DeleteAsync(userId, evaluationId);
