@@ -1,9 +1,7 @@
 
-using BCrypt.Net;
 using Microsoft.AspNetCore.Mvc;
 using NetCoreAPI.DTOs;
 using NetCoreAPI.Services;
-using NetCoreAPI.Utils;
 
 [ApiController]
 [Route("")]
@@ -11,9 +9,9 @@ using NetCoreAPI.Utils;
 public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
-        private readonly LDAPService _ldapService;
+        private readonly ILDAPService _ldapService;
 
-        public AuthController(IAuthService authService, LDAPService ldapService)
+        public AuthController(IAuthService authService, ILDAPService ldapService)
         {
             _authService = authService;
             _ldapService = ldapService;

@@ -10,6 +10,9 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
 
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
+
 var builder = WebApplication.CreateBuilder(args);
 DotNetEnv.Env.Load();
 
@@ -49,6 +52,20 @@ builder.Services.AddSwaggerGen(options =>
             new List<string>()
         }
     });
+});
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddPolicy("Limiter100PerMinute", context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: context.Request.Path.ToString(),
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 100, // 100 requêtes
+                Window = TimeSpan.FromMinutes(1), // par minute
+                QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                QueueLimit = 0
+            }));
 });
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -104,6 +121,7 @@ builder.Services.AddScoped<IEvaluationRepository, EvaluationRepository>();
 builder.Services.AddScoped<IAirecommandationRepository, AirecommandationRepository>();
 
 var app = builder.Build();
+app.UseRateLimiter();
 
 // Middleware global de gestion des erreurs
 app.UseExceptionHandler(errorApp =>
@@ -149,6 +167,6 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
 }
-app.MapControllers();
+app.MapControllers().RequireRateLimiting("Limiter100PerMinute");
 
 app.Run();

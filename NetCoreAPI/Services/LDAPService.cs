@@ -9,7 +9,7 @@ namespace NetCoreAPI.Services;
 /// Service métier pour la gestion des authentifications au serveur LDAP.
 /// Les informations importantes sont contenus dans le fichier .env.
 /// </summary>
-public class LDAPService
+public class LDAPService : ILDAPService
 {
     private readonly string _server;
     private readonly int _port;
