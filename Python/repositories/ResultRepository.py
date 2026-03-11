@@ -38,14 +38,16 @@ class ResultRepository:
         self.db.refresh(result)
         return result
 
-    def get_by_id(self, result_id: int) -> Result:
+    def get_by_composite_key(self, user_id: int, evaluation_id: int) -> Result:
         """
-        Récupère un résultat par son identifiant unique.
-        :param result_id: Identifiant résultat
+        Récupère un résultat par sa clé composite (user_id, evaluation_id).
+        :param user_id: Identifiant de l'utilisateur
+        :param evaluation_id: Identifiant de l'évaluation
         :return: Le résultat ou None
         """
         return self.db.query(Result).filter(
-            Result.result_id == result_id
+            Result.user_id == user_id,
+            Result.evaluation_id == evaluation_id
         ).first()
 
     def get_all(self) -> list[Result]:
@@ -57,17 +59,18 @@ class ResultRepository:
         """
         return self.db.query(Result).all()
 
-    def update(self, result_id: int, score: float = None, success: bool = None, 
-               date: datetime = None) -> Result:
+    def update(self, user_id: int, evaluation_id: int, score: float = None, 
+               success: bool = None, date: datetime = None) -> Result:
         """
         Met à jour un résultat existant.
-        :param result_id: Identifiant résultat
+        :param user_id: Identifiant de l'utilisateur
+        :param evaluation_id: Identifiant de l'évaluation
         :param score: Nouveau score (optionnel)
         :param success: Nouveau statut de réussite (optionnel)
         :param date: Nouvelle date (optionnel)
         :return: Le résultat mis à jour ou None
         """
-        result = self.get_by_id(result_id)
+        result = self.get_by_composite_key(user_id, evaluation_id)
         if result:
             if score is not None:
                 result.score = score
@@ -79,13 +82,14 @@ class ResultRepository:
             self.db.refresh(result)
         return result
 
-    def delete(self, result_id: int) -> bool:
+    def delete(self, user_id: int, evaluation_id: int) -> bool:
         """
         Supprime un résultat de la base.
-        :param result_id: Identifiant résultat
+        :param user_id: Identifiant de l'utilisateur
+        :param evaluation_id: Identifiant de l'évaluation
         :return: True si supprimé, False sinon
         """
-        result = self.get_by_id(result_id)
+        result = self.get_by_composite_key(user_id, evaluation_id)
         if result:
             self.db.delete(result)
             self.db.commit()

@@ -45,31 +45,32 @@ def create_result(result_service: ResultServiceDep, result_request: ResultCreati
         raise ForbiddenError("Vous ne pouvez créer des résultats que pour vous-même")
     return result_service.create_result(result_request.user_id, result_request.evaluation_id, result_request.score, result_request.success, result_request.date)
 
-@result_router.get("/{result_id}", response_model=ResultResponse)
-def read_result(result_id: int, result_service: ResultServiceDep, current_user: User = Depends(SecurityService.get_current_user)) -> ResultResponse:
-    """Return a single evaluation result by its identifier.
+@result_router.get("/{user_id}/{evaluation_id}", response_model=ResultResponse)
+def read_result(user_id: int, evaluation_id: int, result_service: ResultServiceDep, current_user: User = Depends(SecurityService.get_current_user)) -> ResultResponse:
+    """Return a single evaluation result by its composite key.
 
-    :param result_id: Primary key of the result to retrieve.
+    :param user_id: User identifier (part of composite key).
+    :param evaluation_id: Evaluation identifier (part of composite key).
     :param result_service: Injected result service.
     :param current_user: Currently authenticated user.
     :return: The matching Result record.
     """
-    result = result_service.get_result(result_id)
-    if current_user.id != result.user_id:
+    if current_user.id != user_id:
         raise ForbiddenError("Vous ne pouvez accéder qu'à vos propres résultats")
+    result = result_service.get_result(user_id, evaluation_id)
     return result
 
-@result_router.delete("/{result_id}", response_model=dict)
-def delete_result(result_id: int, result_service: ResultServiceDep, current_user: User = Depends(SecurityService.get_current_user)) -> dict:
-    """Delete an evaluation result by its identifier.
+@result_router.delete("/{user_id}/{evaluation_id}", response_model=dict)
+def delete_result(user_id: int, evaluation_id: int, result_service: ResultServiceDep, current_user: User = Depends(SecurityService.get_current_user)) -> dict:
+    """Delete an evaluation result by its composite key.
 
-    :param result_id: Primary key of the result to delete.
+    :param user_id: User identifier (part of composite key).
+    :param evaluation_id: Evaluation identifier (part of composite key).
     :param result_service: Injected result service.
     :param current_user: Currently authenticated user.
     :return: Confirmation message on success.
     """
-    result = result_service.get_result(result_id)
-    if current_user.id != result.user_id:
+    if current_user.id != user_id:
         raise ForbiddenError("Vous ne pouvez supprimer que vos propres résultats")
-    result_service.delete_result(result_id)
+    result_service.delete_result(user_id, evaluation_id)
     return {"message": "Résultat supprimé avec succès"}
