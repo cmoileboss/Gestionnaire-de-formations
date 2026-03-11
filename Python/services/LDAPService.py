@@ -3,6 +3,7 @@ from ldap3.core.exceptions import LDAPException
 import ssl
 import getpass
 
+
 from dotenv import load_dotenv
 import os
 

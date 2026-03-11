@@ -517,6 +517,22 @@
         <member name="P:NetCoreAPI.DTOs.FormationDto.Sessions">
             <summary>Liste des sessions planifiées pour cette formation.</summary>
         </member>
+        <member name="T:NetCoreAPI.DTOs.LDAPDto">
+            <summary>
+            DTO pour l'authentification des utilisateurs sur le serveur LDAP.
+            Contient les propriétés nécessaires pour la connexion
+            </summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.LDAPDto.Username">
+            <summary>
+            Nom d'utilisateur de l'utilisateur.
+            </summary>
+        </member>
+        <member name="P:NetCoreAPI.DTOs.LDAPDto.Password">
+            <summary>
+            Mot de passe de l'utilisateur.
+            </summary>
+        </member>
         <member name="T:NetCoreAPI.DTOs.ModuleDto">
             <summary>
             DTO représentant un module pédagogique.
@@ -1815,6 +1831,12 @@
             </summary>
             <param name="id">Identifiant de l'utilisateur à supprimer.</param>
             <returns>True si supprimé, sinon false.</returns>
+        </member>
+        <member name="T:NetCoreAPI.Services.LDAPService">
+            <summary>
+            Service métier pour la gestion des authentifications au serveur LDAP.
+            Les informations importantes sont contenus dans le fichier .env.
+            </summary>
         </member>
         <member name="T:NetCoreAPI.Services.ModuleService">
             <summary>

@@ -14,7 +14,7 @@ namespace NetCoreAPI.Services
         /// </summary>
         /// <param name="loginDto">Données de connexion de l'utilisateur.</param>
         /// <returns>Token JWT si l'authentification réussit, sinon null.</returns>
-        Task<string> Login(AuthDto loginDto);
+        Task<string?> Login(AuthDto loginDto);
 
         /// <summary>
         /// Crée un utilisateur avec ses identifiants.

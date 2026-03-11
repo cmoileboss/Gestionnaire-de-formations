@@ -3,6 +3,7 @@ using NetCoreAPI.DTOs;
 using NetCoreAPI.Repositories;
 using NetCoreAPI.Models;
 using NetCoreAPI.Utils;
+using BCrypt.Net;
 
 namespace NetCoreAPI.Services;
 
@@ -36,16 +37,27 @@ public class AuthService : IAuthService
     /// </summary>
     /// <param name="loginDto">Données de connexion de l'utilisateur.</param>
     /// <returns>Token JWT si l'authentification réussit, sinon null.</returns>
-    public Task<string> Login(AuthDto loginDto)
+    public Task<string?> Login(AuthDto loginDto)
     {
-        // On vérifie que l'email existe et que le mot de passe est correct'
-        var user = _userRepository.GetByEmailAsync(loginDto.Email).Result;
-        if (user == null || !BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash))
-            throw new UnauthorizedAccessException("Invalid email or password.");
+        try
+        {
+            // On vérifie que l'email existe et que le mot de passe est correct'
+            var user = _userRepository.GetByEmailAsync(loginDto.Email).Result;
+            if (user == null)
+                throw new UnauthorizedAccessException("Invalid email or password.");
 
-        // Génération du token JWT
-        var tokenString = TokenManager.CreateToken(user, this._config);
-        return Task.FromResult(tokenString);
+            // Vérifier le mot de passe avec BCrypt
+            if (!BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash))
+                throw new UnauthorizedAccessException("Invalid email or password.");
+
+            // Génération du token JWT
+            var tokenString = TokenManager.CreateToken(user, this._config);
+            return Task.FromResult<string?>(tokenString);
+        }
+        catch (SaltParseException ex)
+        {
+            throw new SaltParseException($"Invalid BCrypt hash for user {loginDto.Email}: {ex.Message}");
+        }
     }
 
     /// <summary>

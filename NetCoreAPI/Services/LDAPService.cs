@@ -37,8 +37,9 @@ public class LDAPService
         var credentials = new NetworkCredential(userPrincipalName, password);
         
         // Créer la connexion LDAP
-        using (var connection = new LdapConnection(identifier, credentials))
+        try
         {
+            var connection = new LdapConnection(identifier, credentials);
             // AuthType selon votre AD : Basic, Negotiate, Kerberos
             connection.AuthType = AuthType.Basic;
             
@@ -49,7 +50,15 @@ public class LDAPService
             var token = TokenManager.CreateLDAPToken(username, _config);
             return token;
         }
-        return null;
-   
+        catch (LdapException ex)
+        {
+            Console.WriteLine($"LDAP authentication failed for user {username}: {ex.Message}");   
+            return null;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Authentification LDAP a échoué pour l'utilisateur {username}: {e}");
+            return null;
+        }
     }
 }

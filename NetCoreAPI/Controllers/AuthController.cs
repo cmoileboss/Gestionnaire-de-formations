@@ -1,4 +1,5 @@
 
+using BCrypt.Net;
 using Microsoft.AspNetCore.Mvc;
 using NetCoreAPI.DTOs;
 using NetCoreAPI.Services;
@@ -27,19 +28,29 @@ public class AuthController : ControllerBase
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Login([FromBody] AuthDto loginDto)
         {
-            var token = await _authService.Login(loginDto);
-            if (token == null)
-                return Unauthorized();
-
-            Response.Cookies.Append("access_token", token, new CookieOptions
+            try
             {
-                HttpOnly = true,   // non accessible en JS
-                Secure = true,     // HTTPS uniquement
-                SameSite = SameSiteMode.Strict,
-                Expires = DateTimeOffset.UtcNow.AddHours(1)
-            });
-
-            return Ok(token);
+                var token = await _authService.Login(loginDto);
+                if (token == null)
+                    return Unauthorized("Invalid email or password.");
+    
+                Response.Cookies.Append("access_token", token, new CookieOptions
+                {
+                    HttpOnly = true,   // non accessible en JS
+                    Secure = true,     // HTTPS uniquement
+                    SameSite = SameSiteMode.Strict,
+                    Expires = DateTimeOffset.UtcNow.AddHours(1)
+                });
+                return Ok(token);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized("Invalid email or password.");
+            }
+            catch (SaltParseException ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
         }
 
         /// <summary>
