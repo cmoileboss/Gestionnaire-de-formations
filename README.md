@@ -1,93 +1,366 @@
-# Formation Management
+# Gestionnaire de Formations - Documentation Projet
 
+## Vue d'ensemble
 
+Le **Gestionnaire de Formations** est une application web complète permettant la gestion centralisée des formations, sessions, évaluations et inscriptions des utilisateurs. Le projet propose deux implémentations backend distinctes offrant les mêmes fonctionnalités :
 
-## Getting started
+- **API .NET Core 10** (C#)
+- **API Python FastAPI**
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+## Architecture Technique
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+### Stack Technologique
 
-## Add your files
+#### Back-end .NET Core
+- **Framework** : ASP.NET Core 10.0 (preview .NET 10)
+- **Base de données** : SQL Server avec Entity Framework Core 10.0.3
+- **Authentification** : JWT Bearer tokens + BCrypt.Net-Next 4.1.0
+- **Mapping** : AutoMapper 12.0.1
+- **LDAP** : System.DirectoryServices.Protocols 10.0.0
+- **Pattern** : Architecture en couches (Controllers → Services → Repositories → Models)
 
-* [Create](https://docs.gitlab.com/user/project/repository/web_editor/#create-a-file) or [upload](https://docs.gitlab.com/user/project/repository/web_editor/#upload-a-file) files
-* [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+#### Back-end Python
+- **Framework** : FastAPI
+- **Base de données** : SQL Server avec SQLAlchemy
+- **Authentification** : JWT + Passlib/BCrypt
+- **LDAP** : ldap3
+- **Pattern** : Architecture en couches (Routers → Services → Repositories → Models)
+
+### Modèle de Données
+
+L'application gère les entités suivantes :
+
+1. **User** - Utilisateurs du système
+2. **Formation** - Programmes de formation
+3. **Module** - Modules pédagogiques composant les formations
+4. **Session** - Sessions de formation planifiées
+5. **Evaluation** - Évaluations des compétences
+6. **Subscription** - Inscriptions des utilisateurs aux sessions
+7. **Result** - Résultats des évaluations
+8. **AIRecommandation** - Recommandations générées par IA (future fonctionnalité)
+
+### Architecture en Couches
 
 ```
-cd existing_repo
-git remote add origin https://gitlab.com/pedrona.guillaume/formation-management.git
-git branch -M main
-git push -uf origin main
+┌─────────────────────────────────────┐
+│  Controllers/Routers (API REST)     │  ← Endpoints HTTP
+├─────────────────────────────────────┤
+│  DTOs/Request/Response Models       │  ← Validation & Serialization
+├─────────────────────────────────────┤
+│  Services (Business Logic)          │  ← Logique métier
+├─────────────────────────────────────┤
+│  Repositories (Data Access)         │  ← Accès aux données
+├─────────────────────────────────────┤
+│  Models (Entities)                  │  ← Modèles de domaine
+├─────────────────────────────────────┤
+│  Database (SQL Server)              │  ← Persistance
+└─────────────────────────────────────┘
 ```
 
-## Integrate with your tools
+## Fonctionnalités Principales
 
-* [Set up project integrations](https://gitlab.com/pedrona.guillaume/formation-management/-/settings/integrations)
+### Gestion des Utilisateurs
+- ✅ Inscription et authentification (email/password)
+- ✅ Authentification LDAP/Active Directory
+- ✅ Tokens JWT avec cookies HTTP-only
+- ✅ Autorisation basée sur l'identité
 
-## Collaborate with your team
+### Gestion des Formations
+- ✅ Création et organisation des formations
+- ✅ Association de modules aux formations
+- ✅ Gestion des descriptions et métadonnées
+- ✅ CRUD complet sur les formations
 
-* [Invite team members and collaborators](https://docs.gitlab.com/user/project/members/)
-* [Create a new merge request](https://docs.gitlab.com/user/project/merge_requests/creating_merge_requests/)
-* [Automatically close issues from merge requests](https://docs.gitlab.com/user/project/issues/managing_issues/#closing-issues-automatically)
-* [Enable merge request approvals](https://docs.gitlab.com/user/project/merge_requests/approvals/)
-* [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+### Gestion des Modules
+- ✅ Création de modules pédagogiques
+- ✅ Organisation par sujet et description
+- ✅ Réutilisation dans plusieurs formations
+- ✅ CRUD complet sur les modules
 
-## Test and Deploy
+### Gestion des Sessions
+- ✅ Planification de sessions de formation
+- ✅ Gestion des dates, lieux et capacités
+- ✅ Lien avec les formations
+- ✅ Liste des participants inscrits
 
-Use the built-in continuous integration in GitLab.
+### Système d'Inscription
+- ✅ Inscription des utilisateurs aux sessions
+- ✅ Désinscription
+- ✅ Suivi des dates d'inscription
+- ✅ Consultation des sessions par utilisateur
 
-* [Get started with GitLab CI/CD](https://docs.gitlab.com/ci/quick_start/)
-* [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/user/application_security/sast/)
-* [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/topics/autodevops/requirements/)
-* [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/user/clusters/agent/)
-* [Set up protected environments](https://docs.gitlab.com/ci/environments/protected_environments/)
+### Évaluations et Résultats
+- ✅ Création d'évaluations liées aux modules
+- ✅ Enregistrement des résultats (score, succès/échec)
+- ✅ Suivi des performances utilisateurs
+- ✅ Horodatage des évaluations
 
-***
+## Bonnes Pratiques Implémentées
 
-# Editing this README
+### Gestion d'Erreurs (.NET Core)
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+Le projet utilise le **pattern Result** pour une gestion d'erreurs robuste et performante :
 
-## Suggestions for a good README
+```csharp
+// Pattern Result<T> pour éviter les exceptions coûteuses
+public async Task<Result<UserDto>> GetByIdAsync(int id)
+{
+    try
+    {
+        var user = await _userRepository.GetByIdAsync(id);
+        if (user == null)
+            return Result<UserDto>.Failure($"User {id} not found");
+        return Result<UserDto>.Success(_mapper.Map<UserDto>(user));
+    }
+    catch (Exception ex)
+    {
+        throw new InvalidOperationException("Database error", ex);
+    }
+}
+```
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+**Avantages** :
+- ✅ Performance optimale (évite le coût des exceptions)
+- ✅ Séparation claire entre erreurs métier et erreurs système
+- ✅ Type de retour explicite documentant les erreurs possibles
+- ✅ Middleware global pour les erreurs imprévues
 
-## Name
-Choose a self-explaining name for your project.
+### Gestion d'Erreurs (Python)
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+Le projet suit la **philosophie EAFP** (Easier to Ask for Forgiveness than Permission) de Python :
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+```python
+# Exceptions personnalisées pour la logique métier
+def get_user(self, user_id: int) -> User:
+    user = self.user_repository.get_by_id(user_id)
+    if user is None:
+        raise NotFoundError("Utilisateur", user_id)
+    return user
+```
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+**Exceptions personnalisées** :
+- `NotFoundError` → HTTP 404
+- `DuplicateError` → HTTP 409
+- `UnauthorizedError` → HTTP 401
+- `ForbiddenError` → HTTP 403
+- `ValidationError` → HTTP 400
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+**Handlers globaux** pour convertir automatiquement les exceptions en réponses HTTP appropriées.
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+### Sécurité
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+#### Authentification Multi-Modes
+1. **JWT Bearer** : Tokens stockés dans cookies HTTP-only sécurisés
+2. **LDAP/Active Directory** : Intégration d'entreprise pour SSO
+3. **Hachage BCrypt** : Mots de passe sécurisés avec salt
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+#### Autorisations
+- Protection des endpoints par authentification requise
+- Validation de l'identité (un utilisateur ne peut modifier que ses propres données)
+- Gestion fine des droits d'accès via exceptions `ForbiddenError`
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+### Validation des Données
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+#### .NET Core
+- **DTOs dédiés** pour création/mise à jour vs lecture
+- **Annotations de validation** sur les modèles
+- **AutoMapper** pour séparer les modèles du domaine et l'API
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+#### Python
+- **Pydantic models** pour validation automatique
+- **Request/Response models** séparés
+- **Validation au niveau FastAPI** avec messages d'erreur explicites
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+## Structure des Projets
 
-## License
-For open source projects, say how it is licensed.
+### .NET Core API
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+```
+NetCoreAPI/
+├── Controllers/          # API REST endpoints
+├── Services/            # Logique métier
+│   └── Interfaces/      # Contrats de services
+├── Repositories/        # Accès aux données
+│   └── Interfaces/      # Contrats de repositories
+├── Models/              # Entités du domaine
+├── DTOs/                # Data Transfer Objects
+├── Data/                # DbContext EF Core
+├── Utils/               # Utilitaires (Result<T>)
+├── Migrations/          # Migrations Entity Framework
+└── Program.cs           # Point d'entrée & configuration
+```
+
+### Python API
+
+```
+Python/
+├── routers/                # API REST endpoints
+├── services/               # Logique métier
+├── repositories/           # Accès aux données
+├── models/                 # Entités SQLAlchemy
+├── apirequests/            # Modèles de requêtes
+├── apiresponses/           # Modèles de réponses
+├── exceptions.py           # Exceptions personnalisées
+├── error_handlers.py       # Handlers d'exceptions
+├── database_connection.py  # Connexion à la base de données SQL Server 2025
+└── main.py                 # Point d'entrée FastAPI
+```
+
+## Configuration Requise
+
+### Variables d'Environnement
+
+#### .NET Core
+```
+ConnectionStrings__DefaultConnection=Server=...;Database=GestionFormation;...
+Jwt__Key=<secret_key>
+Jwt__Issuer=api.formation.com
+Jwt__Audience=api.formation.com
+LDAP_SERVER=ldap.entreprise.local
+LDAP_DOMAIN=ENTREPRISE
+```
+
+#### Python
+```
+DATABASE_URL=mssql+pyodbc://...
+JWT_SECRET_KEY=<secret_key>
+JWT_ALGORITHM=HS256
+LDAP_SERVER=ldap.entreprise.local
+LDAP_DOMAIN=ENTREPRISE
+```
+
+### Prérequis
+- SQL Server 2025
+- .NET Runtime 10.0+ (pour API C#)
+- Python 3.11+ (pour API Python)
+- Active Directory/LDAP (optionnel, pour authentification entreprise)
+
+## API REST - Endpoints Principaux
+
+### Authentification
+- `POST /users/login` - Connexion (JWT)
+- `POST /users/register` - Inscription
+- `POST /users/logout` - Déconnexion
+- `POST /users/ldap` - Authentification LDAP
+
+### Utilisateurs
+- `GET /users` - Liste des utilisateurs
+- `GET /users/{id}` - Détails utilisateur
+- `PUT /users/{id}` - Mise à jour profil
+- `DELETE /users/{id}` - Suppression compte
+
+### Formations
+- `GET /formations` - Liste des formations
+- `GET /formations/{id}` - Détails formation
+- `POST /formations` - Créer formation
+- `PUT /formations/{id}` - Modifier formation
+- `DELETE /formations/{id}` - Supprimer formation
+- `GET /formations/{id}/modules` - Modules de la formation
+- `POST /formations/{id}/modules/{moduleId}` - Associer module
+- `DELETE /formations/{id}/modules/{moduleId}` - Retirer module
+
+### Sessions
+- `GET /sessions` - Liste des sessions
+- `GET /sessions/{id}` - Détails session
+- `POST /sessions` - Créer session
+- `PUT /sessions/{id}` - Modifier session
+- `DELETE /sessions/{id}` - Supprimer session
+- `GET /sessions/{id}/users` - Participants
+
+### Inscriptions
+- `POST /users/{userId}/sessions/{sessionId}` - S'inscrire
+- `DELETE /users/{userId}/sessions/{sessionId}` - Se désinscrire
+- `GET /users/{userId}/sessions` - Sessions de l'utilisateur
+
+### Évaluations
+- `GET /evaluations` - Liste des évaluations
+- `GET /evaluations/{id}` - Détails évaluation
+- `POST /evaluations` - Créer évaluation
+- `PUT /evaluations/{id}` - Modifier évaluation
+- `DELETE /evaluations/{id}` - Supprimer évaluation
+
+### Résultats
+- `GET /results` - Liste des résultats
+- `GET /results/{id}` - Détails résultat
+- `POST /results` - Enregistrer résultat
+- `DELETE /results/{id}` - Supprimer résultat
+
+## Documentation API
+
+Les deux implémentations exposent une documentation interactive :
+
+- **.NET Core** : Swagger UI accessible via `/swagger`
+- **Python** : ReDoc et Swagger UI via FastAPI (`/docs` et `/redoc`)
+
+## Performances et Scalabilité
+
+### .NET Core
+- ✅ Pattern Result évitant les exceptions coûteuses
+- ✅ Async/await pour opérations I/O
+- ✅ Entity Framework Core avec tracking optimisé
+- ✅ Compilation AOT possible (.NET 10)
+
+### Python
+- ✅ FastAPI asynchrone pour haute concurrence
+- ✅ Exceptions légères (overhead faible en Python)
+- ✅ SQLAlchemy avec query optimization
+- ✅ Pydantic pour validation ultra-rapide
+
+## Tests et Quality Assurance
+
+### Validation
+- ✅ Aucune erreur de compilation (.NET)
+- ✅ Aucune erreur de linting (Python)
+- ✅ Schémas de validation cohérents
+- ✅ Gestion d'erreurs complète et robuste
+
+### Sécurité
+- ✅ Hachage BCrypt pour mots de passe
+- ✅ Tokens JWT sécurisés
+- ✅ Cookies HTTP-only
+- ✅ Validation des entrées utilisateur
+- ✅ Protection CSRF via SameSite cookies
+- ✅ Séparation des erreurs métier/système
+
+## Points Forts du Projet
+
+1. **Double Implémentation** : Flexibilité technologique (C# ou Python selon besoins)
+2. **Architecture Solide** : Séparation claire des responsabilités
+3. **Sécurité Renforcée** : Multi-modes d'authentification, tokens sécurisés
+4. **Maintenabilité** : Code structuré, bonnes pratiques, gestion d'erreurs cohérente
+5. **Performance** : Pattern optimisés pour chaque langage
+6. **Extensibilité** : Architecture prête pour IA (recommandations), rapports, notifications
+7. **Documentation** : APIs documentées automatiquement (Swagger/OpenAPI)
+8. **Prêt pour la Production** : Gestion d'erreurs robuste, logging, middleware global
+
+## Évolutions Futures Possibles
+
+### Fonctionnalités Métier
+- 📊 Tableau de bord et statistiques
+- 🤖 Recommandations IA basées sur le profil utilisateur
+- 📧 Notifications par email (inscriptions, rappels)
+- 📅 Export calendrier (iCal)
+- 📄 Génération de certificats PDF
+- 🎓 Badges et gamification
+
+### Technique
+- 🔄 Synchronisation temps réel (SignalR / WebSockets)
+- 📱 Application mobile (API prête)
+- 🌍 Internationalisation (i18n)
+- 📈 Monitoring et observabilité (Application Insights / Prometheus)
+- 🧪 Tests unitaires et d'intégration
+- 🐳 Containerisation Docker
+- ☁️ Déploiement cloud (Azure / AWS)
+
+## Conclusion
+
+Le **Gestionnaire de Formations** est une solution complète, sécurisée et performante pour la gestion des formations en entreprise. Les deux implémentations (C# et Python) suivent les meilleures pratiques de leur écosystème respectif, garantissant maintenabilité et évolutivité du projet.
+
+Le système est prêt pour un déploiement en production et peut facilement être étendu avec de nouvelles fonctionnalités selon les besoins du client.
+
+---
+
+**Date de livraison** : Mars 2026  
+**Versions** : .NET Core 10.0 / Python 3.11 + FastAPI  
+**Base de données** : SQL Server 2025
+**Status** : ✅ Production-ready
