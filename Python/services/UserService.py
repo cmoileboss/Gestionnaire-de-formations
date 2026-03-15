@@ -2,6 +2,7 @@ import bcrypt
 from datetime import datetime
 from sqlalchemy.orm import Session
 
+from models.UserRolesEnum import UserRoles
 from repositories.UserRepository import UserRepository
 from repositories.SubscriptionRepository import SubscriptionRepository
 from repositories.SessionRepository import SessionRepository
@@ -39,10 +40,12 @@ class UserService:
             raise NotFoundError("Utilisateur", user_id)
         return user
 
-    def create_user(self, email: str, password: str, address: str = None) -> User:
+    def create_user(self, email: str, password: str, address: str = None, role: str = UserRoles.USER) -> User:
         """Crée un utilisateur en hachant son mot de passe avec bcrypt."""
+        if self.user_repository.get_by_email(email):
+            raise DuplicateError(f"Un utilisateur avec l'email {email} existe déjà")
         hashed = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
-        return self.user_repository.create(email, hashed, address)
+        return self.user_repository.create(email, hashed, address, role)
 
     def update_user(self, user_id: int, email: str = None, password: str = None, address: str = None) -> User:
         """Met à jour un utilisateur. Hache le mot de passe si fourni. Lève NotFoundError si introuvable."""

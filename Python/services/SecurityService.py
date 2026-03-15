@@ -1,5 +1,6 @@
 from fastapi import Depends, HTTPException
 from fastapi.security import APIKeyCookie
+from models.UserRolesEnum import UserRoles
 from models.User import User
 from repositories.UserRepository import UserRepository
 from sqlalchemy.orm import Session
@@ -52,7 +53,8 @@ class SecurityService:
             raise ValueError("Token invalide ou expiré")
         except Exception as e:
             raise ValueError(f"Erreur lors de la vérification du token : {str(e)}")
-        
+
+
     async def get_current_user(db: Session = Depends(get_db), access_token: str = Depends(cookie_scheme)):
         if access_token is None:
             raise HTTPException(status_code=401, detail="Non authentifié")
@@ -66,3 +68,13 @@ class SecurityService:
             return user
         except ValueError as e:
             raise HTTPException(status_code=401, detail=str(e))
+    
+    @staticmethod
+    def check_roles_token(roles: list[UserRoles]):
+
+        def role_checker(user = Depends(SecurityService.get_current_user)):
+            if user.role not in roles:
+                raise HTTPException(status_code=403, detail="Accès refusé")
+            return user
+
+        return role_checker

@@ -16,3 +16,5 @@ class UserResponse(BaseModel):
     email: str
     #: Optional postal address of the user.
     address: Optional[str] = None
+    #: Role of the user (e.g. "user", "admin", "trainer").
+    role: str

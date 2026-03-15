@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from models.UserRolesEnum import UserRoles
 from models.User import User
 
 
@@ -14,18 +15,20 @@ class UserRepository:
         """
         self.db = db
 
-    def create(self, email: str, password: str, address: str = None) -> User:
+    def create(self, email: str, password: str, address: str = None, role: str = UserRoles.USER) -> User:
         """
         Crée un nouvel utilisateur et le persiste en base.
         :param email: Email de l'utilisateur
         :param password: Mot de passe hashé
         :param address: Adresse postale (optionnelle)
+        :param role: Rôle de l'utilisateur (optionnel, par défaut "user")
         :return: L'utilisateur créé
         """
         user = User(
             email=email,
             password_hash=password,
-            address=address
+            address=address,
+            role=role
         )
         self.db.add(user)
         self.db.commit()

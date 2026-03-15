@@ -5,7 +5,6 @@ from fastapi import APIRouter, Depends, Response
 from sqlalchemy.orm import Session
 from typing import Annotated
 
-
 from services.ResultService import ResultService
 from services.UserService import UserService
 from services.SecurityService import SecurityService
@@ -16,14 +15,18 @@ from database_connection import get_db
 from models.User import User
 from models.Session import Session as SessionModel
 from models.Evaluation import Evaluation
+from models.Result import Result
+from models.UserRolesEnum import UserRoles
 
 from apirequests.UserCreationRequest import UserCreationRequest
-from apirequests.LoginRegisterRequest import LoginRegisterRequest
+from apirequests.LoginRequest import LoginRequest
+from apirequests.RegisterRequest import RegisterRequest
 from apirequests.LDAPRequest import LDAPRequest
 
 from apiresponses.UserResponse import UserResponse
 from apiresponses.SessionResponse import SessionResponse
 from apiresponses.EvaluationResponse import EvaluationResponse
+from apiresponses.ResultResponse import ResultResponse
 
 from exceptions import ForbiddenError
 
@@ -51,7 +54,7 @@ LDAPServiceDep = Annotated[LDAPService, Depends(get_ldap_service)]
 ResultServiceDep = Annotated[ResultService, Depends(get_result_service)]
 
 @users_router.post("/login", response_model=UserResponse)
-def login(response: Response, request: LoginRegisterRequest, user_service: UserServiceDep) -> User:
+def login(response: Response, request: LoginRequest, user_service: UserServiceDep) -> User:
     """Endpoint de login utilisateur avec création de JWT. Lève UnauthorizedError si identifiants invalides."""
     user = user_service.login(request.email, request.password)
     token = SecurityService.create_access_token(user.email)
@@ -78,13 +81,13 @@ def logout(response: Response):
     return {"message": "Déconnecté"}
     
 @users_router.post("/register", response_model=UserResponse)
-def register(request: LoginRegisterRequest, user_service: UserServiceDep) -> User:
+def register(request: RegisterRequest, user_service: UserServiceDep) -> User:
     """Endpoint d'inscription utilisateur avec création de compte."""
-    new_user = user_service.create_user(request.email, request.password)
+    new_user = user_service.create_user(request.email, request.password, role=request.role)
     return new_user
 
 @users_router.get("/", response_model=list[UserResponse])
-def read_users(user_service: UserServiceDep, current_user: User = Depends(SecurityService.get_current_user)) -> list[User]:
+def read_users(user_service: UserServiceDep, current_user: User = Depends(SecurityService.check_roles_token([UserRoles.ADMIN]))) -> list[User]:
     """Return the list of all registered users.
 
     :param user_service: Injected user service.
@@ -103,7 +106,7 @@ def read_user(user_id: int, user_service: UserServiceDep, current_user: User = D
     :param current_user: Currently authenticated user.
     :return: The matching User record.
     """
-    if current_user.user_id != user_id:
+    if current_user.user_id != user_id and current_user.role != UserRoles.ADMIN:
         raise ForbiddenError("Vous ne pouvez accéder qu'à vos propres informations")
     return user_service.get_user(user_id)
 
@@ -118,7 +121,7 @@ def update_user(user_id: int, request: UserCreationRequest, user_service: UserSe
     :param current_user: Currently authenticated user.
     :return: The updated User record.
     """
-    if current_user.user_id != user_id:
+    if current_user.user_id != user_id and current_user.role != UserRoles.ADMIN:
         raise ForbiddenError("Vous ne pouvez modifier que vos propres informations")
     return user_service.update_user(user_id, request.email, request.password, request.address)
 
@@ -131,7 +134,7 @@ def delete_user(response: Response, user_id: int, user_service: UserServiceDep, 
     :param current_user: Currently authenticated user.
     :return: Confirmation message on success.
     """
-    if current_user.user_id != user_id:
+    if current_user.user_id != user_id and current_user.role != UserRoles.ADMIN:
         raise ForbiddenError("Vous ne pouvez supprimer que votre propre compte")
     user_service.delete_user(user_id)
     response.delete_cookie("access_token")
@@ -148,7 +151,7 @@ def get_user_sessions(user_id: int, user_service: UserServiceDep, current_user: 
     :param current_user: Currently authenticated user.
     :return: List of Session records the user is subscribed to.
     """
-    if current_user.user_id != user_id:
+    if current_user.user_id != user_id and current_user.role != UserRoles.ADMIN:
         raise ForbiddenError("Vous ne pouvez accéder qu'à vos propres informations de session")
     return user_service.get_user_sessions(user_id)
 
@@ -162,10 +165,10 @@ def subscribe_user_to_session(user_id: int, session_id: int, user_service: UserS
     :param current_user: Currently authenticated user.
     :return: Confirmation message on success.
     """
-    if current_user.user_id != user_id:
+    if current_user.user_id != user_id and current_user.role != UserRoles.ADMIN:
         raise ForbiddenError("Vous ne pouvez gérer que vos propres inscriptions")
     user_service.subscribe_to_session(user_id, session_id)
-    return {"message": "Utilisateur inscrit à la session avec succès"}
+    return {"user_id": user_id, "session_id": session_id, "message": "Utilisateur inscrit à la session avec succès"}
 
 @users_router.delete("/{user_id}/sessions/{session_id}", response_model=dict)
 def unsubscribe_user_from_session(user_id: int, session_id: int, user_service: UserServiceDep, current_user: User = Depends(SecurityService.get_current_user)) -> dict:
@@ -177,10 +180,10 @@ def unsubscribe_user_from_session(user_id: int, session_id: int, user_service: U
     :param current_user: Currently authenticated user.
     :return: Confirmation message on success.
     """
-    if current_user.user_id != user_id:
+    if current_user.user_id != user_id and current_user.role != UserRoles.ADMIN:
         raise ForbiddenError("Vous ne pouvez gérer que vos propres inscriptions")
     user_service.unsubscribe_from_session(user_id, session_id)
-    return {"message": "Utilisateur désinscrit de la session avec succès"}
+    return {"user_id": user_id, "session_id": session_id, "message": "Utilisateur désinscrit de la session avec succès"}
 
 # Endpoints for managing user evaluations
 
@@ -193,12 +196,12 @@ def get_user_evaluations(user_id: int, result_service: ResultServiceDep, current
     :param current_user: Currently authenticated user.
     :return: List of Evaluation records the user participates in.
     """
-    if current_user.user_id != user_id:
+    if current_user.user_id != user_id and current_user.role != UserRoles.ADMIN:
         raise ForbiddenError("Vous ne pouvez accéder qu'à vos propres informations d'évaluation")
     return result_service.get(user_id)
 
-@users_router.post("/{user_id}/evaluations/{evaluation_id}", response_model=dict)
-def enroll_user_in_evaluation(user_id: int, evaluation_id: int, result_service: ResultServiceDep, current_user: User = Depends(SecurityService.get_current_user)) -> dict:
+@users_router.post("/{user_id}/evaluations/{evaluation_id}", response_model=ResultResponse)
+def enroll_user_in_evaluation(user_id: int, evaluation_id: int, result_service: ResultServiceDep, current_user: User = Depends(SecurityService.get_current_user)) -> Result:
     """Enroll a user in a specific evaluation.
 
     :param user_id: Primary key of the user to enroll.
@@ -207,10 +210,10 @@ def enroll_user_in_evaluation(user_id: int, evaluation_id: int, result_service: 
     :param current_user: Currently authenticated user.
     :return: Confirmation message on success.
     """
-    if current_user.user_id != user_id:
+    if current_user.user_id != user_id and current_user.role != UserRoles.ADMIN:
         raise ForbiddenError("Vous ne pouvez gérer que vos propres évaluations")
-    result_service.create_result(user_id, evaluation_id)
-    return {"message": "Utilisateur inscrit à l'évaluation avec succès"}
+    result = result_service.create_result(user_id, evaluation_id)
+    return result
 
 
 @users_router.delete("/{user_id}/evaluations/{evaluation_id}", response_model=dict)
@@ -223,8 +226,8 @@ def unenroll_user_from_evaluation(user_id: int, evaluation_id: int, result_servi
     :param current_user: Currently authenticated user.
     :return: Confirmation message on success.
     """
-    if current_user.user_id != user_id:
+    if current_user.user_id != user_id and current_user.role != UserRoles.ADMIN:
         raise ForbiddenError("Vous ne pouvez gérer que vos propres évaluations")
     result_service.delete_result(user_id, evaluation_id)
-    return {"message": "Utilisateur désinscrit de l'évaluation avec succès"}
+    return {"user_id": user_id, "evaluation_id": evaluation_id, "message": "Utilisateur désinscrit de l'évaluation avec succès"}
 
