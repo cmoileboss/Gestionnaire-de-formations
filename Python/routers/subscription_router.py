@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from typing import Annotated
 
 
+from models.UserRolesEnum import UserRoles
 from database_connection import get_db
 
 from models.Subscription import Subscription
@@ -33,12 +34,15 @@ subscription_router = APIRouter(
 SubscriptionServiceDep = Annotated[SubscriptionService, Depends(get_subscription_service)]
 
 @subscription_router.get("/", response_model=list[SubscriptionResponse])
-def read_subscriptions(subscription_service: SubscriptionServiceDep) -> list[Subscription]:
+def read_subscriptions(subscription_service: SubscriptionServiceDep, current_user: User = Depends(SecurityService.check_roles_token([UserRoles.ADMIN]))) -> list[Subscription]:
     """Return the list of all subscriptions.
 
     :param subscription_service: Injected subscription service.
     :return: List of all Subscription records.
     """
+    if current_user.role != UserRoles.ADMIN:
+        raise ForbiddenError("Vous n'avez pas les droits pour accéder à cette ressource")
+
     return subscription_service.get_all_subscriptions()
 
 @subscription_router.get("/user/{user_id}", response_model=list[SubscriptionResponse])
@@ -50,18 +54,22 @@ def read_subscriptions_by_user(user_id: int, subscription_service: SubscriptionS
     :param current_user: Currently authenticated user.
     :return: List of Subscription records for the given user.
     """
-    if current_user.id != user_id:
+    if current_user.user_id != user_id and current_user.role != UserRoles.ADMIN:
         raise ForbiddenError("Vous ne pouvez accéder qu'à vos propres inscriptions")
     return subscription_service.get_subscriptions_by_user(user_id)
 
 @subscription_router.get("/session/{session_id}", response_model=list[SubscriptionResponse])
-def read_subscriptions_by_session(session_id: int, subscription_service: SubscriptionServiceDep) -> list[Subscription]:
+def read_subscriptions_by_session(session_id: int, subscription_service: SubscriptionServiceDep, current_user: User = Depends(SecurityService.get_current_user)) -> list[Subscription]:
     """Return all subscriptions for a specific training session.
 
     :param session_id: Primary key of the session whose subscriptions to retrieve.
     :param subscription_service: Injected subscription service.
+    :param current_user: Currently authenticated user.
     :return: List of Subscription records for the given session.
     """
+    if current_user.role != UserRoles.ADMIN: #TODO: Add a check to allow session organizers to view subscriptions for their sessions
+        raise ForbiddenError("Vous n'avez pas les droits pour accéder à cette ressource")
+
     return subscription_service.get_subscriptions_by_session(session_id)
 
 @subscription_router.get("/{user_id}/{session_id}", response_model=SubscriptionResponse)
@@ -74,7 +82,7 @@ def read_subscription(user_id: int, session_id: int, subscription_service: Subsc
     :param current_user: Currently authenticated user.
     :return: The matching Subscription record.
     """
-    if current_user.id != user_id:
+    if current_user.id != user_id and current_user.role != UserRoles.ADMIN: #TODO: Add a check to allow session organizers to view subscriptions for their sessions
         raise ForbiddenError("Vous ne pouvez accéder qu'à vos propres inscriptions")
     return subscription_service.get_subscription(user_id, session_id)
 
@@ -87,7 +95,7 @@ def create_subscription(request: SubscriptionCreationRequest, subscription_servi
     :param current_user: Currently authenticated user.
     :return: The newly created Subscription record.
     """
-    if current_user.id != request.user_id:
+    if current_user.user_id != request.user_id:
         raise ForbiddenError("Vous ne pouvez créer des inscriptions que pour vous-même")
     return subscription_service.create_subscription(
         request.user_id,
@@ -105,7 +113,7 @@ def delete_subscription(user_id: int, session_id: int, subscription_service: Sub
     :param current_user: Currently authenticated user.
     :return: Confirmation message on success.
     """
-    if current_user.id != user_id:
+    if current_user.user_id != user_id and current_user.role != UserRoles.ADMIN: #TODO: Add a check to allow session organizers to delete subscriptions for their sessions
         raise ForbiddenError("Vous ne pouvez supprimer que vos propres inscriptions")
     subscription_service.delete_subscription(user_id, session_id)
     return {"message": "Inscription supprimée avec succès"}

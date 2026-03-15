@@ -49,7 +49,7 @@ def create_result(result_service: ResultServiceDep, result_request: ResultCreati
     :param current_user: Currently authenticated user.
     :return: The newly created Result record.
     """
-    if current_user.id != result_request.user_id:
+    if current_user.user_id != result_request.user_id:
         raise ForbiddenError("Vous ne pouvez créer des résultats que pour vous-même")
     return result_service.create_result(result_request.user_id, result_request.evaluation_id, result_request.score, result_request.success, result_request.date)
 
@@ -63,7 +63,7 @@ def read_result(user_id: int, evaluation_id: int, result_service: ResultServiceD
     :param current_user: Currently authenticated user.
     :return: The matching Result record.
     """
-    if current_user.id != user_id:
+    if current_user.user_id != user_id:
         raise ForbiddenError("Vous ne pouvez accéder qu'à vos propres résultats")
     result = result_service.get_result(user_id, evaluation_id)
     return result
@@ -79,7 +79,7 @@ def update_result(user_id: int, evaluation_id: int, result_request: ResultUpdate
     :param current_user: Currently authenticated user.
     :return: The updated Result record.
     """
-    if current_user.id != user_id:
+    if current_user.user_id != user_id:
         raise ForbiddenError("Vous ne pouvez modifier que vos propres résultats")
     result = result_service.update_result(user_id, evaluation_id, result_request.score, result_request.success, result_request.date)
     return result
@@ -94,7 +94,7 @@ def delete_result(user_id: int, evaluation_id: int, result_service: ResultServic
     :param current_user: Currently authenticated user.
     :return: Confirmation message on success.
     """
-    if current_user.id != user_id:
+    if current_user.user_id != user_id:
         raise ForbiddenError("Vous ne pouvez supprimer que vos propres résultats")
     result_service.delete_result(user_id, evaluation_id)
     return {"message": "Résultat supprimé avec succès"}
